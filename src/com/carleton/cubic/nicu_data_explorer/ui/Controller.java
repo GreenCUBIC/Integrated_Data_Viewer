@@ -10,6 +10,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.media.MediaView;
 import javafx.stage.FileChooser;
+import org.controlsfx.control.RangeSlider;
 
 import java.io.File;
 
@@ -21,6 +22,8 @@ public class Controller
     @FXML
     private Button playButton;
     @FXML
+    private Button loopButton;
+    @FXML
     private Slider timeSlider;
     @FXML
     private Label playTime;
@@ -30,6 +33,8 @@ public class Controller
     private Button fileLoadButton;
     @FXML
     private Canvas psmCanvas;
+    @FXML
+    private RangeSlider rangeSlider;
 
     private VideoDataViewer videoDataViewer;
     private PSMDataViewer psmDataViewer;
@@ -65,7 +70,7 @@ public class Controller
             if (dataSelectionValue.equalsIgnoreCase(VIDEO_SELECTOR_LABEL))
             {
                 videoDataViewer = new VideoDataViewer(file);
-                videoDataViewer.openWithControls(playButton, timeSlider, mediaView, playTime);
+                videoDataViewer.openWithControls(playButton, timeSlider, mediaView, playTime,rangeSlider,loopButton);
             }
             else if (dataSelectionValue.equalsIgnoreCase(PSM_SELECTOR_LABEL))
             {

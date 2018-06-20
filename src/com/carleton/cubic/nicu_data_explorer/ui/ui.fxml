@@ -17,6 +17,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.media.MediaView?>
+<?import org.controlsfx.control.RangeSlider?>
 
 <VBox minHeight="-Infinity" minWidth="-Infinity" prefHeight="610.0" prefWidth="1017.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.carleton.cubic.nicu_data_explorer.ui.Controller">
   <children>
@@ -67,6 +68,10 @@
                                  <padding>
                                     <Insets left="20.0" right="20.0" />
                                  </padding></Slider>
+                               <RangeSlider fx:id="rangeSlider" prefHeight="25.0" prefWidth="488.0">
+                                   <padding>
+                                       <Insets left="20.0" right="20.0" />
+                                   </padding></RangeSlider>
                               <HBox alignment="CENTER" prefHeight="25.0" prefWidth="488.0">
                                  <children>
                                     <Label text="Selected Data:">
@@ -84,6 +89,7 @@
                                           <Insets right="200.0" />
                                        </HBox.margin>
                                     </Button>
+                                    <Button fx:id="loopButton" mnemonicParsing="false" text="Loop:Off" />
                                     <Button fx:id="playButton" mnemonicParsing="false" text="Play" />
                                     <Label fx:id="playTime" alignment="TOP_LEFT" text="--/--">
                                        <HBox.margin>
