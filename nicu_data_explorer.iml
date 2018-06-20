@@ -24,5 +24,6 @@
       </library>
     </orderEntry>
     <orderEntry type="library" scope="PROVIDED" name="commons-io:commons-io:2.6" level="project" />
+    <orderEntry type="library" name="lib" level="project" />
   </component>
 </module>
