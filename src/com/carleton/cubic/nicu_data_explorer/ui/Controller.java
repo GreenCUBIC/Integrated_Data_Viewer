@@ -28,6 +28,10 @@ public class Controller
     @FXML
     private Label playTime;
     @FXML
+    private Label lowValText;
+    @FXML
+    private Label highValText;
+    @FXML
     private ChoiceBox dataChoiceBox;
     @FXML
     private Button fileLoadButton;
@@ -70,7 +74,7 @@ public class Controller
             if (dataSelectionValue.equalsIgnoreCase(VIDEO_SELECTOR_LABEL))
             {
                 videoDataViewer = new VideoDataViewer(file);
-                videoDataViewer.openWithControls(playButton, timeSlider, mediaView, playTime,rangeSlider,loopButton);
+                videoDataViewer.openWithControls(playButton, timeSlider, mediaView, playTime,rangeSlider,loopButton,lowValText,highValText);
             }
             else if (dataSelectionValue.equalsIgnoreCase(PSM_SELECTOR_LABEL))
             {
