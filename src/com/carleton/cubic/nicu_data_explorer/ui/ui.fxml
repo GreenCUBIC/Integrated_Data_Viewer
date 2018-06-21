@@ -74,6 +74,12 @@
                                    </padding></RangeSlider>
                               <HBox alignment="CENTER" prefHeight="25.0" prefWidth="488.0">
                                  <children>
+                                    <Label fx:id="lowValText" text="LowLimit" />
+                                    <Label fx:id="highValText" text="HighLimit">
+                                       <HBox.margin>
+                                          <Insets left="15.0" right="15.0" />
+                                       </HBox.margin>
+                                    </Label>
                                     <Label text="Selected Data:">
                                        <HBox.margin>
                                           <Insets right="20.0" />

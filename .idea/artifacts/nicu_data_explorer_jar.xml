@@ -1,0 +1,18 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="nicu_data_explorer:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/nicu_data_explorer_jar</output-path>
+    <root id="archive" name="nicu_data_explorer.jar">
+      <element id="module-output" name="nicu_data_explorer" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/lib/jcodec-0.2.3.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/lib/jsr305-3.0.2.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/lib/commons-io-2.6.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/lib/isoparser-1.1.22.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/lib/opentest4j-1.0.0.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/lib/controlsfx-8.40.14.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/lib/jcodec-javase-0.2.3.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/lib/apiguardian-api-1.0.0.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/lib/junit-jupiter-api-5.0.0.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/lib/junit-platform-commons-1.0.0.jar" path-in-jar="/" />
+    </root>
+  </artifact>
+</component>

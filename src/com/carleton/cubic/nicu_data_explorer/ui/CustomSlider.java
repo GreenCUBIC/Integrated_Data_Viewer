@@ -1,13 +1,17 @@
 package com.carleton.cubic.nicu_data_explorer.ui;
 
+import com.carleton.cubic.nicu_data_explorer.util.TimeUtils;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
+import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.input.MouseDragEvent;
 import javafx.scene.media.MediaPlayer;
 import javafx.util.Duration;
 import org.controlsfx.control.RangeSlider;
+
+import java.text.DecimalFormat;
 
 public class CustomSlider
 {
@@ -96,14 +100,11 @@ public class CustomSlider
 
     public boolean shouldLoopAtEnd(Slider mainSlider, RangeSlider rangeSlider, boolean loopActive)
     {
-
         if (mainSlider.getValue() == rangeSlider.getHighValue() && loopActive == true)
         {
             return true;
-
         }
         return false;
-
     }
 
     public boolean isPositionOutOfBounds(Slider mainSlider, RangeSlider rangeSlider)
@@ -117,5 +118,26 @@ public class CustomSlider
 
     }
 
+    public void updateLabels(RangeSlider rangeSlider, Label lowVal, Label highVal)
+    {
+        DecimalFormat df = new DecimalFormat("#.00");
+        rangeSlider.lowValueProperty().addListener(new ChangeListener<Number>()
+        {
+            public void changed(ObservableValue<? extends Number> ov,
+                                Number old_val, Number new_val)
+            {
+                lowVal.setText(TimeUtils.formatDisplayTime(Duration.seconds(rangeSlider.getLowValue() / 10)));
+            }
+        });
+        rangeSlider.highValueProperty().addListener(new ChangeListener<Number>()
+        {                  //Listener on main slider
+            public void changed(ObservableValue<? extends Number> ov,
+                                Number old_val, Number new_val)
+            {
+                highVal.setText(TimeUtils.formatDisplayTime(Duration.seconds(rangeSlider.getHighValue() / 10)));
+            }
+        });
+
+    }
 
 }

@@ -70,10 +70,11 @@ public class VideoDataViewer
         }
     }
 //good//
-    public void openWithControls(Button playButton, Slider timeSlider, MediaView mediaView, Label playTime, RangeSlider rangeSlider, Button loopButton)
+    public void openWithControls(Button playButton, Slider timeSlider, MediaView mediaView, Label playTime,
+                                 RangeSlider rangeSlider, Button loopButton,Label lowValText, Label highValText)
     {
         mediaPlayer.currentTimeProperty().addListener(observable -> updateValues(playTime, timeSlider));
-
+        customSlider.updateLabels(rangeSlider,lowValText,highValText);  //Updates labels of low val, high val positions of range slider
         mediaPlayer.setOnPlaying(() -> {
             customSlider.sliderLimit(timeSlider,rangeSlider);                   //Limits thumb movement of main slider.
                 playButton.setText("Pause");
