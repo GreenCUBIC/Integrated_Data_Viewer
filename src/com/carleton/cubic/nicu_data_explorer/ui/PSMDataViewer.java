@@ -52,7 +52,7 @@ public class PSMDataViewer
                                 drawFrame(psmRecording.getFrameData(frameIndex[0]), canvas);
                                 frameIndex[0]++;
                                 Duration currentFrameTime = Duration.seconds(frameIndex[0] / psmFrameRatePerSec);
-                                playTime.setText(TimeUtils.formatDisplayTime(currentFrameTime));
+                                playTime.setText(TimeUtils.formattedDurationForDisplay(currentFrameTime));
                                 programmaticSliderValueChange = true;
                                 timeSlider.setValue(currentFrameTime.toSeconds() * 10);
                                 programmaticSliderValueChange = false;

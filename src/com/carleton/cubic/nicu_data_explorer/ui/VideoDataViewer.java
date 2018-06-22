@@ -56,7 +56,7 @@ public class VideoDataViewer
         {
             Platform.runLater(() -> {
                 Duration currentTime = mediaPlayer.getCurrentTime();
-                playTime.setText(TimeUtils.formatDisplayTime(currentTime));
+                playTime.setText(TimeUtils.formattedDurationForDisplay(currentTime));
                 timeSlider.setDisable(duration.isUnknown());
                 if (!timeSlider.isDisabled()
                         && duration.greaterThan(Duration.ZERO)
@@ -73,8 +73,9 @@ public class VideoDataViewer
     public void openWithControls(Button playButton, Slider timeSlider, MediaView mediaView, Label playTime,
                                  RangeSlider rangeSlider, Button loopButton,Label lowValText, Label highValText)
     {
+        Date absoluteRecordingTime = getAbsoluteRecordingStartTime();
         mediaPlayer.currentTimeProperty().addListener(observable -> updateValues(playTime, timeSlider));
-        customSlider.updateLabels(rangeSlider,lowValText,highValText);  //Updates labels of low val, high val positions of range slider
+
         mediaPlayer.setOnPlaying(() -> {
             customSlider.sliderLimit(timeSlider,rangeSlider);                   //Limits thumb movement of main slider.
                 playButton.setText("Pause");
@@ -120,7 +121,7 @@ public class VideoDataViewer
             if(customSlider.isPositionOutOfBounds(timeSlider,rangeSlider)){
                 programmaticSliderValueChange = true;
                 timeSlider.setValue(rangeSlider.getLowValue());
-                mediaPlayer.seek(Duration.millis(rangeSlider.getLowValue()*100));
+                mediaPlayer.seek(Duration.seconds(rangeSlider.getLowValue() / 10));
                 programmaticSliderValueChange = false;
             }
         });
@@ -142,7 +143,7 @@ public class VideoDataViewer
             if (!programmaticSliderValueChange)
             {
                 // Slider has value of duration in 10th of a second. Multiply by 100 to convert to ms
-                mediaPlayer.seek(new Duration(timeSlider.getValue() * 100));
+                mediaPlayer.seek(Duration.millis(timeSlider.getValue() * 100));
             }
             if(customSlider.shouldStopAtEnd(timeSlider,rangeSlider,loopRequested)){           //Checks if it needs to stop at end of interval
                 mediaPlayer.pause();
@@ -167,21 +168,21 @@ public class VideoDataViewer
         });
         timeSlider.setMinorTickCount(0);
         timeSlider.setMajorTickUnit(10 * 3600);
-
         timeSlider.setShowTickMarks(true);
         timeSlider.setShowTickLabels(true);
 
-        Date absoluteRecordingTime = getAbsoluteRecordingStartTime();
+        //rangeSlider.setMinorTickCount(10 * 60); // Every ten seconds
+        rangeSlider.setMajorTickUnit(10 * 600); // Every ten minute
+        rangeSlider.setShowTickMarks(true);
 
-        timeSlider.setLabelFormatter(new StringConverter()
+
+        StringConverter labelFormatterForSlider = new StringConverter()
         {
             @Override
-            public String toString(Object object)
+            public String toString(Object timeValFromSlider)
             {
-                Date tickTime = new Date();
-                tickTime.setTime(absoluteRecordingTime.getTime() + (((Double)object).longValue() * 100));
-                SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
-                return dateFormat.format(tickTime);
+                Date tickTime = TimeUtils.addOffsetToTime(absoluteRecordingTime, (Double)timeValFromSlider * 100);
+                return TimeUtils.getFormattedTimeWithOutMillis(tickTime);
             }
 
             @Override
@@ -190,6 +191,16 @@ public class VideoDataViewer
                 //TODO: Not sure why this is needed
                 return 0.0;
             }
+        };
+
+        timeSlider.setLabelFormatter(labelFormatterForSlider);
+        rangeSlider.setLabelFormatter(labelFormatterForSlider);
+
+        rangeSlider.lowValueProperty().addListener((ov, old_val, new_val) -> {
+            lowValText.setText(TimeUtils.getFormattedTimeWithMillis(TimeUtils.addOffsetToTime(absoluteRecordingTime,rangeSlider.getLowValue() * 100)));
+        });
+        rangeSlider.highValueProperty().addListener((ov, old_val, new_val) -> {
+            highValText.setText(TimeUtils.getFormattedTimeWithMillis(TimeUtils.addOffsetToTime(absoluteRecordingTime,rangeSlider.getHighValue() * 100)));
         });
 
         mediaView.setMediaPlayer(mediaPlayer);
@@ -197,7 +208,12 @@ public class VideoDataViewer
 //good (1 improvement)
     public Date getAbsoluteRecordingStartTime()
     {
-        String dateTimeStr = customMetaDataMap.get("Recording Start");
+        String dateTimeStr = customMetaDataMap.get("recordingStart");
+        if(dateTimeStr == null)
+        {
+            dateTimeStr = customMetaDataMap.get("Recording Start");
+        }
+
         if (dateTimeStr != null)
         {
             // Trim last few ms parts of the date time format from the metadata

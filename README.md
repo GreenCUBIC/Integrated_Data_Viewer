@@ -1,4 +1,4 @@
-#NICU Data Explorer
+# NICU Data Explorer
 
 This project is an integrated data exploration tool for Patient Monitoring in NICU study.
 
