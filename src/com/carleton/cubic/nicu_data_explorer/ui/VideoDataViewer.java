@@ -1,5 +1,6 @@
 package com.carleton.cubic.nicu_data_explorer.ui;
 
+import com.carleton.cubic.nicu_data_explorer.util.TimeUtils;
 import javafx.application.Platform;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -9,29 +10,31 @@ import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaView;
 import javafx.util.Duration;
 import javafx.util.StringConverter;
+import org.controlsfx.control.RangeSlider;
 import org.jcodec.containers.mp4.boxes.MetaValue;
 import org.jcodec.movtool.MetadataEditor;
-import com.carleton.cubic.nicu_data_explorer.util.TimeUtils;
-import org.controlsfx.control.RangeSlider;
+
 import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
 public class VideoDataViewer
 {
-
+    private String AnnotationStart;
+    private String AnnotationEnd;
     private MediaPlayer mediaPlayer;
     private File mediaFile;
     private boolean loopRequested = false;
     private Duration duration;
     private boolean programmaticSliderValueChange = true;
     private Map<String, String> customMetaDataMap;
-    CustomSlider customSlider = new CustomSlider();             //Not sure if this is the right place to put it.
-
+    CustomSlider customSlider = new CustomSlider();
 
     public VideoDataViewer(File mediaFile)
     {
@@ -49,7 +52,7 @@ public class VideoDataViewer
             e.printStackTrace();
         }
     }
-//good//
+
     protected void updateValues(Label playTime, Slider timeSlider)
     {
         if (playTime != null && timeSlider != null)
@@ -69,16 +72,15 @@ public class VideoDataViewer
             });
         }
     }
-//good//
+
     public void openWithControls(Button playButton, Slider timeSlider, MediaView mediaView, Label playTime,
-                                 RangeSlider rangeSlider, Button loopButton,Label lowValText, Label highValText)
+                                 RangeSlider rangeSlider, Button loopButton, Label lowValText, Label highValText)
     {
         Date absoluteRecordingTime = getAbsoluteRecordingStartTime();
         mediaPlayer.currentTimeProperty().addListener(observable -> updateValues(playTime, timeSlider));
-
         mediaPlayer.setOnPlaying(() -> {
-            customSlider.sliderLimit(timeSlider,rangeSlider);                   //Limits thumb movement of main slider.
-                playButton.setText("Pause");
+            customSlider.sliderLimit(timeSlider, rangeSlider);
+            playButton.setText("Pause");
         });
 
         mediaPlayer.setOnPaused(() -> {
@@ -88,22 +90,21 @@ public class VideoDataViewer
         mediaPlayer.setOnReady(() -> {
             duration = mediaPlayer.getMedia().getDuration();
             timeSlider.setMax(duration.toSeconds() * 10);
-            rangeSlider.setMax(duration.toSeconds() * 10);      //Naman adds set max for range slider so the two slider have same timescale
+            rangeSlider.setMax(duration.toSeconds() * 10);
             updateValues(playTime, timeSlider);
         });
 
         mediaPlayer.setCycleCount(1);
         mediaPlayer.setOnEndOfMedia(() -> {
             playButton.setText("Play");
-            updateValues(playTime, timeSlider);             //End of media plays but on playing does not near the end with loops
+            updateValues(playTime, timeSlider);
         });
 
         playButton.setOnAction(e -> {
             MediaPlayer.Status status = mediaPlayer.getStatus();
 
-            if (status == MediaPlayer.Status.UNKNOWN || status == MediaPlayer.Status.HALTED || timeSlider.getValue() == rangeSlider.getHighValue())       //Add not at end of interval condition?
+            if (status == MediaPlayer.Status.UNKNOWN || status == MediaPlayer.Status.HALTED || timeSlider.getValue() == rangeSlider.getHighValue())
             {
-                // don't do anything in these states
                 return;
             }
 
@@ -118,7 +119,8 @@ public class VideoDataViewer
                 mediaPlayer.pause();
             }
 
-            if(customSlider.isPositionOutOfBounds(timeSlider,rangeSlider)){
+            if (customSlider.isPositionOutOfBounds(timeSlider, rangeSlider))
+            {
                 programmaticSliderValueChange = true;
                 timeSlider.setValue(rangeSlider.getLowValue());
                 mediaPlayer.seek(Duration.seconds(rangeSlider.getLowValue() / 10));
@@ -127,29 +129,30 @@ public class VideoDataViewer
         });
         loopButton.setOnAction(e -> {
 
-            if(loopRequested == false){
+            if (loopRequested == false)
+            {
                 loopRequested = true;
                 loopButton.setText("Loop:On");
             }
-            else{
+            else
+            {
                 loopRequested = false;
                 loopButton.setText("Loop:Off");
             }
 
-
         });
-//good ( 1 bug )//
         timeSlider.valueProperty().addListener(ov -> {
             if (!programmaticSliderValueChange)
             {
-                // Slider has value of duration in 10th of a second. Multiply by 100 to convert to ms
                 mediaPlayer.seek(Duration.millis(timeSlider.getValue() * 100));
             }
-            if(customSlider.shouldStopAtEnd(timeSlider,rangeSlider,loopRequested)){           //Checks if it needs to stop at end of interval
+            if (customSlider.shouldStopAtEnd(timeSlider, rangeSlider, loopRequested))
+            {
                 mediaPlayer.pause();
             }
-            if(customSlider.shouldLoopAtEnd(timeSlider,rangeSlider,loopRequested)){           //Checks if it needs to loop at end of interval
-                mediaPlayer.seek(Duration.millis(rangeSlider.getLowValue()*100));
+            if (customSlider.shouldLoopAtEnd(timeSlider, rangeSlider, loopRequested))
+            {
+                mediaPlayer.seek(Duration.millis(rangeSlider.getLowValue() * 100));
                 timeSlider.adjustValue(rangeSlider.getLowValue());
                 mediaPlayer.play();
             }
@@ -163,7 +166,7 @@ public class VideoDataViewer
         timeSlider.setOnMouseClicked(click -> {
             mediaPlayer.pause();
         });
-        timeSlider.setOnMouseDragged(drag -> {                  //These 4 set on states could be shortened into one method on custom slider?
+        timeSlider.setOnMouseDragged(drag -> {
             mediaPlayer.pause();
         });
         timeSlider.setMinorTickCount(0);
@@ -171,7 +174,6 @@ public class VideoDataViewer
         timeSlider.setShowTickMarks(true);
         timeSlider.setShowTickLabels(true);
 
-        //rangeSlider.setMinorTickCount(10 * 60); // Every ten seconds
         rangeSlider.setMajorTickUnit(10 * 600); // Every ten minute
         rangeSlider.setShowTickMarks(true);
 
@@ -181,7 +183,7 @@ public class VideoDataViewer
             @Override
             public String toString(Object timeValFromSlider)
             {
-                Date tickTime = TimeUtils.addOffsetToTime(absoluteRecordingTime, (Double)timeValFromSlider * 100);
+                Date tickTime = TimeUtils.addOffsetToTime(absoluteRecordingTime, (Double) timeValFromSlider * 100);
                 return TimeUtils.getFormattedTimeWithOutMillis(tickTime);
             }
 
@@ -197,21 +199,23 @@ public class VideoDataViewer
         rangeSlider.setLabelFormatter(labelFormatterForSlider);
 
         rangeSlider.lowValueProperty().addListener((ov, old_val, new_val) -> {
-            lowValText.setText(TimeUtils.getFormattedTimeWithMillis(TimeUtils.addOffsetToTime(absoluteRecordingTime,rangeSlider.getLowValue() * 100)));
+            lowValText.setText(TimeUtils.getFormattedTimeWithMillis(TimeUtils.addOffsetToTime(absoluteRecordingTime, rangeSlider.getLowValue() * 100)));
         });
         rangeSlider.highValueProperty().addListener((ov, old_val, new_val) -> {
-            highValText.setText(TimeUtils.getFormattedTimeWithMillis(TimeUtils.addOffsetToTime(absoluteRecordingTime,rangeSlider.getHighValue() * 100)));
+            highValText.setText(TimeUtils.getFormattedTimeWithMillis(TimeUtils.addOffsetToTime(absoluteRecordingTime, rangeSlider.getHighValue() * 100)));
         });
 
         mediaView.setMediaPlayer(mediaPlayer);
     }
-//good (1 improvement)
+
     public Date getAbsoluteRecordingStartTime()
     {
-        String dateTimeStr = customMetaDataMap.get("recordingStart");
-        if(dateTimeStr == null)
+        //String dateTimeStr = customMetaDataMap.get("recordingStart");
+        String dateTimeStr = "11:36:30.370"; 
+        if (dateTimeStr == null)
         {
             dateTimeStr = customMetaDataMap.get("Recording Start");
+
         }
 
         if (dateTimeStr != null)
@@ -219,7 +223,9 @@ public class VideoDataViewer
             // Trim last few ms parts of the date time format from the metadata
             int fractionPartIndex = dateTimeStr.indexOf(".");
             String trimmedDateTimeStr = dateTimeStr.substring(0, fractionPartIndex + 3);
-            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+            //SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+            SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss.SSS");
+
             try
             {
                 return format.parse(trimmedDateTimeStr);
@@ -247,4 +253,7 @@ public class VideoDataViewer
 
         return customMetaDataMap;
     }
+
+
+
 }

@@ -19,9 +19,9 @@
 <?import javafx.scene.media.MediaView?>
 <?import org.controlsfx.control.RangeSlider?>
 
-<VBox minHeight="-Infinity" minWidth="-Infinity" prefHeight="610.0" prefWidth="1017.0" xmlns="http://javafx.com/javafx/8.0.101" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.carleton.cubic.nicu_data_explorer.ui.Controller">
-  <children>
-    <MenuBar VBox.vgrow="NEVER">
+<VBox minHeight="-Infinity" minWidth="-Infinity" prefHeight="610.0" prefWidth="1017.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.carleton.cubic.nicu_data_explorer.ui.Controller">
+    <children>
+        <MenuBar VBox.vgrow="NEVER">
       <menus>
         <Menu mnemonicParsing="false" text="File">
           <items>
@@ -93,6 +93,13 @@
                                     <Button fx:id="fileLoadButton" mnemonicParsing="false" text="Load">
                                        <HBox.margin>
                                           <Insets right="200.0" />
+                                       </HBox.margin>
+                                    </Button>
+                                    <Button fx:id="saveJsonButton" mnemonicParsing="false" prefHeight="39.0" prefWidth="103.0" text="Save Json As" />
+                                    <Button fx:id="loadJsonButton" mnemonicParsing="false" prefHeight="39.0" prefWidth="75.0" text="Load Json" />
+                                    <Button fx:id="setAnnotation" mnemonicParsing="false" prefHeight="39.0" prefWidth="65.0" text="Set">
+                                       <HBox.margin>
+                                          <Insets right="100.0" />
                                        </HBox.margin>
                                     </Button>
                                     <Button fx:id="loopButton" mnemonicParsing="false" text="Loop:Off" />

@@ -1,0 +1,103 @@
+{
+  "annotations":[
+    {
+      "category":"Motion",
+      "end_time":"1530027419243",
+      "name":"Full Body",
+      "start_time":"1530027393179"
+    },
+    {
+      "category":"Routine Care",
+      "end_time":"1530027424990",
+      "name":"Feeding- BOTTLE",
+      "start_time":"1530027395993"
+    },
+    {
+      "category":"Routine Care",
+      "end_time":"1530027425568",
+      "name":"Stethoscope",
+      "start_time":"1530027396784"
+    },
+    {
+      "category":"Physiological Events",
+      "end_time":"1530027421839",
+      "name":"Cough",
+      "start_time":"1530027400087"
+    },
+    {
+      "category":"Physiological Events",
+      "end_time":"1530027401272",
+      "name":"Sneeze",
+      "start_time":"1530027401259"
+    },
+    {
+      "category":"Physiological Events",
+      "end_time":"1530027401893",
+      "name":"Sneeze",
+      "start_time":"1530027401879"
+    },
+    {
+      "category":"Interruptions",
+      "end_time":"1530027405376",
+      "name":"Pause Session",
+      "start_time":"1530027404764"
+    },
+    {
+      "category":"Alarm",
+      "end_time":"1530027415620",
+      "metadata":[
+        {
+          "key":"Severity",
+          "value":"Leads Off"
+        },
+        {
+          "key":"Validity",
+          "value":"Indeterminate"
+        }
+      ],
+      "name":"Heart Rate",
+      "start_time":"1530027408250"
+    }
+  ],
+  "end_time":"1530027432307",
+  "metadata":[
+    {
+      "key":"patient_id",
+      "value":"5"
+    },
+    {
+      "key":"gender",
+      "value":"Male"
+    },
+    {
+      "key":"spo2_location",
+      "value":"head"
+    },
+    {
+      "key":"spo2_alarm_limit_low",
+      "value":""
+    },
+    {
+      "key":"spo2_alarm_limit_high",
+      "value":""
+    },
+    {
+      "key":"hr_alarm_limit_low",
+      "value":""
+    },
+    {
+      "key":"hr_alarm_limit_high",
+      "value":""
+    },
+    {
+      "key":"rr_alarm_limit_low",
+      "value":""
+    },
+    {
+      "key":"rr_alarm_limit_high",
+      "value":""
+    }
+  ],
+  "name":"patient_5_Jun 26 11:36:28",
+  "start_time":"1530027390370"
+}
