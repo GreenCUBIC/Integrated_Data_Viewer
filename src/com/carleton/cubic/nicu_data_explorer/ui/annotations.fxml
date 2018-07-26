@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ButtonBar?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
@@ -19,8 +21,8 @@
                           <columns>
                             <TableColumn fx:id="category" prefWidth="110.0" text="Category" />
                             <TableColumn fx:id="name" prefWidth="110.0" text="Name" />
-                              <TableColumn fx:id="start_time" prefWidth="60.0" text="Start" />
-                              <TableColumn fx:id="end_time" prefWidth="60.0" text="Stop" />
+                              <TableColumn fx:id="displayStartTime" prefWidth="60.0" text="Start" />
+                              <TableColumn fx:id="displayEndTime" prefWidth="60.0" text="Stop" />
                           </columns>
                         </TableView>
                      </content>
@@ -29,5 +31,11 @@
             </AnchorPane>
         </content>
       </TitledPane>
+      <ButtonBar prefHeight="40.0" prefWidth="200.0">
+        <buttons>
+          <Button fx:id="saveUpdatesButton" mnemonicParsing="false" text="Save Updates" />
+            <Button fx:id="saveSessionButton" mnemonicParsing="false" text="Save File" />
+        </buttons>
+      </ButtonBar>
    </children>
 </VBox>

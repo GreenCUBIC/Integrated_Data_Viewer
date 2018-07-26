@@ -18,16 +18,12 @@ import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.Instant;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
 public class VideoDataViewer
 {
-    private String AnnotationStart;
-    private String AnnotationEnd;
     private MediaPlayer mediaPlayer;
     private File mediaFile;
     private boolean loopRequested = false;
@@ -36,21 +32,44 @@ public class VideoDataViewer
     private Map<String, String> customMetaDataMap;
     CustomSlider customSlider = new CustomSlider();
 
+    private final static String RECORDING_START_HEADER = "recordingStart";
+    private final static String LEGACY_RECORDING_START_HEADER = "Recording Start";
+    private final static String LOOP_STATUS_ON = "Loop:On";
+    private final static String LOOP_STATUS_OFF = "Loop:Off";
+    private final static String PLAY_BUTTON_STATUS_PLAY = "Play";
+    private final static String PLAY_BUTTON_STATUS_PAUSE = "Pause";
+    private final static String LONG_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss.SSS";
+    private final static String DEFAULT_RECODRING_START_TIME = "2018-06-26 11:36:30.370";
+
+
+
+
+
+
+
+    public MediaPlayer getMediaPlayer()
+    {
+        return mediaPlayer;
+    }
+
     public VideoDataViewer(File mediaFile)
     {
         this.mediaFile = mediaFile;
-        Media media = new Media(this.mediaFile.toURI().toString());
-        mediaPlayer = new MediaPlayer(media);
-
 
         try
         {
-            customMetaDataMap = getCustomVideoMetadata();
+            customMetaDataMap = loadCustomVideoMetadata();
+            customMetaDataMap.putIfAbsent(RECORDING_START_HEADER, customMetaDataMap.getOrDefault(LEGACY_RECORDING_START_HEADER,DEFAULT_RECODRING_START_TIME));
+
         }
         catch (IOException e)
         {
             e.printStackTrace();
         }
+
+        Media media = new Media(this.mediaFile.toURI().toString());
+        mediaPlayer = new MediaPlayer(media);
+
     }
 
     protected void updateValues(Label playTime, Slider timeSlider)
@@ -80,13 +99,12 @@ public class VideoDataViewer
         mediaPlayer.currentTimeProperty().addListener(observable -> updateValues(playTime, timeSlider));
         mediaPlayer.setOnPlaying(() -> {
             customSlider.sliderLimit(timeSlider, rangeSlider);
-            playButton.setText("Pause");
+            playButton.setText(PLAY_BUTTON_STATUS_PAUSE);
         });
 
         mediaPlayer.setOnPaused(() -> {
-            playButton.setText("Play");
+            playButton.setText(PLAY_BUTTON_STATUS_PLAY);
         });
-
         mediaPlayer.setOnReady(() -> {
             duration = mediaPlayer.getMedia().getDuration();
             timeSlider.setMax(duration.toSeconds() * 10);
@@ -96,7 +114,7 @@ public class VideoDataViewer
 
         mediaPlayer.setCycleCount(1);
         mediaPlayer.setOnEndOfMedia(() -> {
-            playButton.setText("Play");
+            playButton.setText(PLAY_BUTTON_STATUS_PLAY);
             updateValues(playTime, timeSlider);
         });
 
@@ -132,12 +150,13 @@ public class VideoDataViewer
             if (loopRequested == false)
             {
                 loopRequested = true;
-                loopButton.setText("Loop:On");
+                loopButton.setText(LOOP_STATUS_ON);
+
             }
             else
             {
                 loopRequested = false;
-                loopButton.setText("Loop:Off");
+                loopButton.setText(LOOP_STATUS_OFF);
             }
 
         });
@@ -210,21 +229,13 @@ public class VideoDataViewer
 
     public Date getAbsoluteRecordingStartTime()
     {
-        //String dateTimeStr = customMetaDataMap.get("recordingStart");
-        String dateTimeStr = "11:36:30.370"; 
-        if (dateTimeStr == null)
-        {
-            dateTimeStr = customMetaDataMap.get("Recording Start");
-
-        }
-
+        String dateTimeStr = customMetaDataMap.get(RECORDING_START_HEADER);
         if (dateTimeStr != null)
         {
             // Trim last few ms parts of the date time format from the metadata
             int fractionPartIndex = dateTimeStr.indexOf(".");
             String trimmedDateTimeStr = dateTimeStr.substring(0, fractionPartIndex + 3);
-            //SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
-            SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss.SSS");
+            SimpleDateFormat format = new SimpleDateFormat(LONG_TIME_FORMAT);
 
             try
             {
@@ -239,7 +250,7 @@ public class VideoDataViewer
         return new Date();
     }
 
-    public Map<String, String> getCustomVideoMetadata() throws IOException
+    public Map<String, String> loadCustomVideoMetadata() throws IOException
     {
         MetadataEditor mediaMeta = MetadataEditor.createFrom(mediaFile);
         Map<String, MetaValue> keyedMeta = mediaMeta.getKeyedMeta();
@@ -253,6 +264,14 @@ public class VideoDataViewer
 
         return customMetaDataMap;
     }
+
+    /*public void addCustomVideoMetadata(String key, String value, File mediaFile) throws IOException
+    {
+        MetadataEditor mediaMeta = MetadataEditor.createFrom(mediaFile);
+        Map<String, MetaValue> keyedMeta = mediaMeta.getKeyedMeta();
+        keyedMeta.put(key, MetaValue.createString(value));
+        mediaMeta.save(true);
+    }*/
 
 
 

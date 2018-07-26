@@ -1,5 +1,6 @@
 package com.carleton.cubic.nicu_data_explorer.ui;
 
+import java.util.Date;
 import java.util.List;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
@@ -21,6 +22,18 @@ public class Annotation {
     @SerializedName("metadata")
     @Expose
     private List<Metadatum> metadata = null;
+    @SerializedName("displayStartTime")
+    @Expose
+    private String displayStartTime;
+    @SerializedName("displayEndTime")
+    @Expose
+    private String displayEndTime;
+
+    private boolean isUpdated =false;
+
+    public void setIsUpdated(boolean response){
+        this.isUpdated = response;
+    }
 
     public String getName() {
         return name;
@@ -62,4 +75,17 @@ public class Annotation {
         this.metadata = metadata;
     }
 
+    public String getDisplayStartTime() { return displayStartTime; }
+
+    public void setDisplayStartTime(String displayStartTime) { this.displayStartTime = displayStartTime; }
+
+    public String getDisplayEndTime() { return displayEndTime; }
+
+    public void setDisplayEndTime(String displayEndTime) { this.displayEndTime = displayEndTime; }
+
+
+    public boolean isUpdated()
+    {
+        return isUpdated;
+    }
 }

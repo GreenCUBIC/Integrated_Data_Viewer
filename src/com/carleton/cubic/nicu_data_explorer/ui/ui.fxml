@@ -4,6 +4,7 @@
 <?import javafx.geometry.Rectangle2D?>
 <?import javafx.scene.canvas.Canvas?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.ChoiceBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Menu?>
@@ -13,6 +14,7 @@
 <?import javafx.scene.control.SeparatorMenuItem?>
 <?import javafx.scene.control.Slider?>
 <?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
@@ -74,13 +76,13 @@
                                    </padding></RangeSlider>
                               <HBox alignment="CENTER" prefHeight="25.0" prefWidth="488.0">
                                  <children>
-                                    <Label fx:id="lowValText" text="LowLimit" />
-                                    <Label fx:id="highValText" text="HighLimit">
+                                    <Label fx:id="lowValText" prefHeight="25.0" prefWidth="113.0" text="LowLimit" />
+                                    <Label fx:id="highValText" prefHeight="25.0" prefWidth="116.0" text="HighLimit">
                                        <HBox.margin>
                                           <Insets left="15.0" right="15.0" />
                                        </HBox.margin>
                                     </Label>
-                                    <Label text="Selected Data:">
+                                    <Label prefHeight="27.0" prefWidth="141.0" text="Selected Data:">
                                        <HBox.margin>
                                           <Insets right="20.0" />
                                        </HBox.margin>
@@ -90,21 +92,24 @@
                                           <Insets right="10.0" />
                                        </HBox.margin>
                                     </ChoiceBox>
-                                    <Button fx:id="fileLoadButton" mnemonicParsing="false" text="Load">
+                                    <Button fx:id="fileLoadButton" mnemonicParsing="false" prefHeight="39.0" prefWidth="109.0" text="Load">
                                        <HBox.margin>
                                           <Insets right="200.0" />
                                        </HBox.margin>
                                     </Button>
-                                    <Button fx:id="saveJsonButton" mnemonicParsing="false" prefHeight="39.0" prefWidth="103.0" text="Save Json As" />
-                                    <Button fx:id="loadJsonButton" mnemonicParsing="false" prefHeight="39.0" prefWidth="75.0" text="Load Json" />
-                                    <Button fx:id="setAnnotation" mnemonicParsing="false" prefHeight="39.0" prefWidth="65.0" text="Set">
+                                    <TextField fx:id="scaleTextField" promptText="Scale Factor">
                                        <HBox.margin>
-                                          <Insets right="100.0" />
+                                          <Insets right="30.0" />
                                        </HBox.margin>
-                                    </Button>
-                                    <Button fx:id="loopButton" mnemonicParsing="false" text="Loop:Off" />
-                                    <Button fx:id="playButton" mnemonicParsing="false" text="Play" />
-                                    <Label fx:id="playTime" alignment="TOP_LEFT" text="--/--">
+                                    </TextField>
+                                    <CheckBox fx:id="scaleCheckBox" mnemonicParsing="false" prefHeight="27.0" prefWidth="172.0" text="Scale?">
+                                       <HBox.margin>
+                                          <Insets right="50.0" />
+                                       </HBox.margin>
+                                    </CheckBox>
+                                    <Button fx:id="loopButton" mnemonicParsing="false" prefHeight="25.0" prefWidth="124.0" text="Loop:Off" />
+                                    <Button fx:id="playButton" mnemonicParsing="false" prefHeight="39.0" prefWidth="107.0" text="Play" />
+                                    <Label fx:id="playTime" alignment="TOP_LEFT" prefHeight="25.0" prefWidth="91.0" text="--/--">
                                        <HBox.margin>
                                           <Insets left="50.0" />
                                        </HBox.margin>
