@@ -14,7 +14,7 @@ public class Main extends Application
     {
         Parent root = FXMLLoader.load(getClass().getResource("ui.fxml"));
         primaryStage.setTitle("NICU Data Explorer");
-        primaryStage.setScene(new Scene(root, 1080, 600));
+        primaryStage.setScene(new Scene(root, 1200, 600));
         primaryStage.show();
     }
 

@@ -30,7 +30,7 @@ public class VideoDataViewer
     private Duration duration;
     private boolean programmaticSliderValueChange = true;
     private Map<String, String> customMetaDataMap;
-    CustomSlider customSlider = new CustomSlider();
+    private CustomSlider customSlider = new CustomSlider();
 
     private final static String RECORDING_START_HEADER = "recordingStart";
     private final static String LEGACY_RECORDING_START_HEADER = "Recording Start";
@@ -70,6 +70,7 @@ public class VideoDataViewer
         Media media = new Media(this.mediaFile.toURI().toString());
         mediaPlayer = new MediaPlayer(media);
 
+
     }
 
     protected void updateValues(Label playTime, Slider timeSlider)
@@ -77,6 +78,7 @@ public class VideoDataViewer
         if (playTime != null && timeSlider != null)
         {
             Platform.runLater(() -> {
+
                 Duration currentTime = mediaPlayer.getCurrentTime();
                 playTime.setText(TimeUtils.formattedDurationForDisplay(currentTime));
                 timeSlider.setDisable(duration.isUnknown());
@@ -95,6 +97,8 @@ public class VideoDataViewer
     public void openWithControls(Button playButton, Slider timeSlider, MediaView mediaView, Label playTime,
                                  RangeSlider rangeSlider, Button loopButton, Label lowValText, Label highValText)
     {
+        mediaView.setMediaPlayer(mediaPlayer);
+
         Date absoluteRecordingTime = getAbsoluteRecordingStartTime();
         mediaPlayer.currentTimeProperty().addListener(observable -> updateValues(playTime, timeSlider));
         mediaPlayer.setOnPlaying(() -> {
@@ -109,6 +113,8 @@ public class VideoDataViewer
             duration = mediaPlayer.getMedia().getDuration();
             timeSlider.setMax(duration.toSeconds() * 10);
             rangeSlider.setMax(duration.toSeconds() * 10);
+            rangeSlider.setLowValue(0);
+            rangeSlider.setHighValue(rangeSlider.getMax());
             updateValues(playTime, timeSlider);
         });
 
@@ -147,10 +153,11 @@ public class VideoDataViewer
         });
         loopButton.setOnAction(e -> {
 
-            if (loopRequested == false)
+            if (!loopRequested)
             {
                 loopRequested = true;
                 loopButton.setText(LOOP_STATUS_ON);
+                customSlider.loopIfStoppedAtEnd(rangeSlider,timeSlider,mediaPlayer);
 
             }
             else
@@ -224,7 +231,6 @@ public class VideoDataViewer
             highValText.setText(TimeUtils.getFormattedTimeWithMillis(TimeUtils.addOffsetToTime(absoluteRecordingTime, rangeSlider.getHighValue() * 100)));
         });
 
-        mediaView.setMediaPlayer(mediaPlayer);
     }
 
     public Date getAbsoluteRecordingStartTime()

@@ -76,8 +76,8 @@
                                    </padding></RangeSlider>
                               <HBox alignment="CENTER" prefHeight="25.0" prefWidth="488.0">
                                  <children>
-                                    <Label fx:id="lowValText" prefHeight="25.0" prefWidth="113.0" text="LowLimit" />
-                                    <Label fx:id="highValText" prefHeight="25.0" prefWidth="116.0" text="HighLimit">
+                                    <Label fx:id="lowValText" prefHeight="25.0" prefWidth="143.0" text="LowLimit" />
+                                    <Label fx:id="highValText" prefHeight="25.0" prefWidth="133.0" text="HighLimit">
                                        <HBox.margin>
                                           <Insets left="15.0" right="15.0" />
                                        </HBox.margin>
@@ -107,9 +107,9 @@
                                           <Insets right="50.0" />
                                        </HBox.margin>
                                     </CheckBox>
-                                    <Button fx:id="loopButton" mnemonicParsing="false" prefHeight="25.0" prefWidth="124.0" text="Loop:Off" />
+                                    <Button fx:id="loopButton" mnemonicParsing="false" prefHeight="25.0" prefWidth="132.0" text="Loop:Off" />
                                     <Button fx:id="playButton" mnemonicParsing="false" prefHeight="39.0" prefWidth="107.0" text="Play" />
-                                    <Label fx:id="playTime" alignment="TOP_LEFT" prefHeight="25.0" prefWidth="91.0" text="--/--">
+                                    <Label fx:id="playTime" alignment="TOP_LEFT" prefHeight="25.0" prefWidth="94.0" text="--/--">
                                        <HBox.margin>
                                           <Insets left="50.0" />
                                        </HBox.margin>

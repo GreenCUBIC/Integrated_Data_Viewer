@@ -1,6 +1,8 @@
 package com.carleton.cubic.nicu_data_explorer.ui;
 
 import javafx.scene.control.Slider;
+import javafx.scene.media.MediaPlayer;
+import javafx.util.Duration;
 import org.controlsfx.control.RangeSlider;
 
 public class CustomSlider
@@ -59,6 +61,19 @@ public class CustomSlider
 
         }
         return false;
+
+    }
+
+    public  void loopIfStoppedAtEnd(RangeSlider rangeSlider, Slider mainSlider, MediaPlayer mediaPlayer){
+
+        if(Math.abs(rangeSlider.getHighValue()-mainSlider.getValue())<5){
+
+            mainSlider.setValue(rangeSlider.getLowValue());
+            mediaPlayer.seek(Duration.seconds(rangeSlider.getLowValue()/10));
+        }
+
+
+
 
     }
 

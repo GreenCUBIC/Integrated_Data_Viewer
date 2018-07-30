@@ -56,21 +56,21 @@ public class Controller {
 
     private static final String VIDEO_SELECTOR_LABEL = "Video";
     private static final String PSM_SELECTOR_LABEL = "PSM";
-    private static final String SYNCHRONIZED_SELECTOR_LABEL = "Synchronized";
     private static final String ANNOTATION_SELECTOR_LABEL = "Annotation";
 
 
     @FXML
     public void initialize() {
         dataChoiceBox.setItems(FXCollections.observableArrayList(
-                VIDEO_SELECTOR_LABEL, PSM_SELECTOR_LABEL, SYNCHRONIZED_SELECTOR_LABEL,
-                ANNOTATION_SELECTOR_LABEL)
+                VIDEO_SELECTOR_LABEL, PSM_SELECTOR_LABEL,ANNOTATION_SELECTOR_LABEL)
         );
 
         dataChoiceBox.getSelectionModel().selectFirst();
 
         fileLoadButton.setOnAction(actionEvent -> {
             FileChooser fileChooser = new FileChooser();
+            setFileExtension(dataChoiceBox, fileChooser);
+
             File file = fileChooser.showOpenDialog(((Node) actionEvent.getTarget()).getScene().getWindow());
             if (file == null) {
                 return;
@@ -96,6 +96,32 @@ public class Controller {
                 }
             }
         });
+
+    }
+
+    private void setFileExtension(ChoiceBox dataChoiceBox, FileChooser fileChooser) {
+
+        int selectedChoice = dataChoiceBox.getSelectionModel().getSelectedIndex() + 1;
+        FileChooser.ExtensionFilter extFilter;
+
+        switch (selectedChoice) {
+
+            case 1:
+                extFilter = new FileChooser.ExtensionFilter("MP4 files (*.mp4)", "*.mp4");
+                fileChooser.getExtensionFilters().add(extFilter);
+                break;
+            case 2:
+                extFilter = new FileChooser.ExtensionFilter("Text files (*.txt)", "*.txt");
+                fileChooser.getExtensionFilters().add(extFilter);
+                break;
+            case 3:
+                extFilter = new FileChooser.ExtensionFilter("JSON files (*.json)", "*.json");
+                fileChooser.getExtensionFilters().add(extFilter);
+                break;
+
+
+        }
+
 
     }
 

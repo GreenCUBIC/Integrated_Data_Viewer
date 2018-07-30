@@ -30,20 +30,12 @@ public class AnnotationTableHandler {
     private Button saveUpdatesButton;
     private static final String SIMPLE_DATE_FORMAT = "HH:mm:ss.SSS";
     private static final String HIGHLIGHTED_CELL_FORMAT = "-fx-background-color: yellow";
-
     JsonDataViewer jsonDataViewer;
-    ObservableList<Annotation> tableData;
-    ObservableList<Annotation> highlightedRows;
-    private File file;
     private Date absoluteVideoStartDate;
     private Session session;
     public void calculateAbsoluteVideoStartDate(VideoDataViewer videoDataViewer){
 
-        MediaPlayer mediaPlayer = videoDataViewer.getMediaPlayer();
-        Date absoluteStartTime = videoDataViewer.getAbsoluteRecordingStartTime();
-        Long absoluteEndMillis = absoluteStartTime.toInstant().toEpochMilli() + (long) mediaPlayer.getStopTime().toMillis();
-        Date absoluteEndTime = new Date(absoluteEndMillis);
-        this.absoluteVideoStartDate = absoluteStartTime;
+        this.absoluteVideoStartDate = videoDataViewer.getAbsoluteRecordingStartTime();
     }
     public TableView<Annotation> getAnnotationTable() {
         return annotationTable;
@@ -81,29 +73,10 @@ public class AnnotationTableHandler {
         }
     }
 
-    private String formatStartDate(Annotation annotation, SimpleDateFormat format) {
-
-        Date startDate = new Date(Long.parseLong(annotation.getStart_time()));
-        String formattedStartDate = format.format(startDate);
-        return formattedStartDate;
-
-    }
-
-    private String formatEndDate(Annotation annotation, SimpleDateFormat format) {
-
-        Date endDate = new Date(Long.parseLong(annotation.getEnd_time()));
-        String formattedEndDate = format.format(endDate);
-        return formattedEndDate;
-
-    }
 
 
-    public Annotation getSelectedAnnotation() {
-        Annotation selectedAnnotation;
-        selectedAnnotation = annotationTable.getSelectionModel().getSelectedItem();
-        return selectedAnnotation;
 
-    }
+
 
     public void updateTable() {
         for (int i = 0; i < annotationTable.getColumns().size(); i++) {
@@ -136,21 +109,14 @@ public class AnnotationTableHandler {
             Long startInSliderUnits = (annotationStartDate.getTime() - sliderStartDate.getTime()) / 100;
             Long endInSliderUnits = (annotationEndDate.getTime() - sliderStartDate.getTime()) / 100;
 
-            System.out.println(rangeSlider.getMin());
-            System.out.println(rangeSlider.getMax());
-
-            rangeSlider.setLowValue(rangeSlider.getMin());
-            rangeSlider.setHighValue(rangeSlider.getMax());
-            rangeSlider.setLowValue(rangeSlider.getMin()+startInSliderUnits);
-            rangeSlider.setHighValue(rangeSlider.getMin()+endInSliderUnits);
-
-            System.out.println(rangeSlider.getLowValue());
-            System.out.println(rangeSlider.getHighValue());
+            setNewRangeSliderBounds(rangeSlider,startInSliderUnits,endInSliderUnits);
 
             videoDataViewer.getMediaPlayer().seek(Duration.seconds((startInSliderUnits/(float)10)+videoDataViewer.getMediaPlayer().getStartTime().toSeconds()));
         }
 
     }
+
+
 
     public void SaveAndUpdateButtonHandler(RangeSlider rangeSlider, VideoDataViewer videoDataViewer) {
         saveUpdatesButton.setOnAction(actionEvent -> {
@@ -170,7 +136,6 @@ public class AnnotationTableHandler {
 
             Long newUnixStartTime = newStartDate.toInstant().toEpochMilli();
             Long newUnixEndTime = newEndDate.toInstant().toEpochMilli();
-
             annotation.setStart_time(newUnixStartTime.toString());
             annotation.setEnd_time(newUnixEndTime.toString());
             annotation.setIsUpdated(true);
@@ -183,10 +148,8 @@ public class AnnotationTableHandler {
             @Override
             public void handle(ActionEvent event) {
                 FileChooser fileChooser = new FileChooser();
-
                 FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("JSON files (*.json)", "*.json");
                 fileChooser.getExtensionFilters().add(extFilter);
-
                 File file = fileChooser.showSaveDialog(((Node) event.getTarget()).getScene().getWindow());
 
                 if (file != null) {
@@ -203,30 +166,52 @@ public class AnnotationTableHandler {
 
     }
 
-    private void formatAndSetNewDisplayStartTime(SimpleDateFormat format, Date newStartDate, Annotation annotation) {
+    public void formatAndSetNewDisplayStartTime(SimpleDateFormat format, Date newStartDate, Annotation annotation) {
         String newDisplayStartTime = format.format(newStartDate);
         annotation.setDisplayStartTime(newDisplayStartTime);
     }
+    public String formatStartDate(Annotation annotation, SimpleDateFormat format) {
 
-    private void formatAndSetNewDisplayEndTime(SimpleDateFormat format, Date newEndDate, Annotation annotation) {
+        Date startDate = new Date(Long.parseLong(annotation.getStart_time()));
+        String formattedStartDate = format.format(startDate);
+        return formattedStartDate;
+
+    }
+
+    public String formatEndDate(Annotation annotation, SimpleDateFormat format) {
+
+        Date endDate = new Date(Long.parseLong(annotation.getEnd_time()));
+        String formattedEndDate = format.format(endDate);
+        return formattedEndDate;
+
+    }
+
+    public void formatAndSetNewDisplayEndTime(SimpleDateFormat format, Date newEndDate, Annotation annotation) {
         String newDisplayEndTime = format.format(newEndDate);
         annotation.setDisplayEndTime(newDisplayEndTime);
     }
+    public void setNewRangeSliderBounds(RangeSlider rangeSlider, Long startInSliderUnits, Long endInSliderUnits) {
 
+        rangeSlider.setLowValue(rangeSlider.getMin());
+        rangeSlider.setHighValue(rangeSlider.getMax());
+        rangeSlider.setLowValue(rangeSlider.getMin()+startInSliderUnits);
+        rangeSlider.setHighValue(rangeSlider.getMin()+endInSliderUnits);
+
+    }
     public void highlightColumnChanges() {
         TableColumn categoryColumn = annotationTable.getColumns().get(0);
         TableColumn nameColumn = annotationTable.getColumns().get(1);
         TableColumn startColumn = annotationTable.getColumns().get(2);
         TableColumn endColumn = annotationTable.getColumns().get(3);
 
-        handleRowFactory(categoryColumn);
-        handleRowFactory(nameColumn);
-        handleRowFactory(startColumn);
-        handleRowFactory(endColumn);
+        highlightUpdatedCells(categoryColumn);
+        highlightUpdatedCells(nameColumn);
+        highlightUpdatedCells(startColumn);
+        highlightUpdatedCells(endColumn);
 
     }
 
-    public void handleRowFactory(TableColumn tableColumn) {
+    public void highlightUpdatedCells(TableColumn tableColumn) {
 
         tableColumn.setCellFactory(column -> new TableCell<Annotation, String>() {
             @Override
@@ -253,6 +238,12 @@ public class AnnotationTableHandler {
 
     }
 
+    public Annotation getSelectedAnnotation() {
+        Annotation selectedAnnotation;
+        selectedAnnotation = annotationTable.getSelectionModel().getSelectedItem();
+        return selectedAnnotation;
+
+    }
     public void removeHighlightingOnSave() {
         for (int i = 0; i < annotationTable.getColumns().size(); i++) {
             TableColumn tableColumn = annotationTable.getColumns().get(i);
