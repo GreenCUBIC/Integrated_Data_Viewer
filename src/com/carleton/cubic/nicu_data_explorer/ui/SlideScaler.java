@@ -16,7 +16,7 @@ public class SlideScaler {
     private Date absoluteStartDate;
     private Date absoluteEndDate;
 
-    private Boolean isActive = false;
+    private Boolean isActive =false;
 
     public Boolean getIsActive() {
         return isActive;
@@ -29,10 +29,15 @@ public class SlideScaler {
     public SlideScaler() {
     }
 
-    public void calculateAbsoluteStartEndTimes(VideoDataViewer videoDataViewer) {
+    public void calculateAbsoluteVideoStartEndTimes(VideoDataViewer videoDataViewer) {
 
         this.absoluteStartDate = videoDataViewer.getAbsoluteRecordingStartTime();
         this.absoluteEndDate = new Date((long) (absoluteStartDate.getTime() + videoDataViewer.getMediaPlayer().getTotalDuration().toMillis()));
+    }
+    public void calculateAbsolutePSMStartEndTimes(PSMDataViewer psmDataViewer) {
+
+        this.absoluteStartDate = psmDataViewer.getAbsolutePSMStartDate();
+        this.absoluteEndDate = new Date((absoluteStartDate.getTime() + psmDataViewer.getAbsolutePSMEndDate().getTime()));
     }
 
     public void calculateRelativeScalingBoundaries(AnnotationTableHandler annotationTableHandler, CheckBox scaleCheckBox, TextField scaleTextField) {
@@ -42,7 +47,6 @@ public class SlideScaler {
         defaultScaleTextFieldIfEmpty(scaleTextField);
 
         if (isActive) {
-
 
             Long scaleFactor = (long) Double.parseDouble(scaleTextField.getText());
 
@@ -58,13 +62,12 @@ public class SlideScaler {
             this.relativeStartDate = relativeStartDate;
             this.relativeEndDate = relativeEndDate;
 
-
         }
 
     }
 
 
-    public void setRelativeSliderBoundaries(Slider slider, RangeSlider rangeSlider, MediaPlayer mediaPlayer) {
+    public void setRelativeSliderVideoBoundaries(Slider slider, RangeSlider rangeSlider, MediaPlayer mediaPlayer) {
 
         if (getIsActive()) {
 
@@ -84,9 +87,30 @@ public class SlideScaler {
             return;
         }
     }
+    public void setRelativeSliderPSMBoundaries(Slider slider, RangeSlider rangeSlider,PSMDataViewer psmDataViewer) {
+
+        if (getIsActive()) {
+
+            this.relativeStartDate = absoluteStartIfExceedLowerBound();
+            this.relativeEndDate = absoluteEndIfExceedHigherBound();
 
 
-    private Boolean checkIfScalingActive(CheckBox scaleCheckBox) {
+            Long sliderMaxLimit = (absoluteEndDate.getTime() - absoluteStartDate.getTime()) / 100;
+            Long startInSliderUnits = (relativeStartDate.getTime() - absoluteStartDate.getTime()) / 100;
+            Long endInSliderUnits = (relativeEndDate.getTime() - absoluteStartDate.getTime()) / 100;
+            slider = setSliderBounds(startInSliderUnits, endInSliderUnits, sliderMaxLimit, slider);
+            rangeSlider = setRangeSliderBounds(startInSliderUnits, endInSliderUnits, sliderMaxLimit, rangeSlider);
+            //TODO: DO I NEED TO ADD LIMITS TO THE PSM ON CANVAS???
+
+
+
+        } else {
+            return;
+        }
+    }
+
+
+    public Boolean checkIfScalingActive(CheckBox scaleCheckBox) {
 
         if (scaleCheckBox.isSelected()) {
 
@@ -100,13 +124,16 @@ public class SlideScaler {
         return isActive;
     }
 
-    private MediaPlayer setMediaPlayerBounds(Long startInSliderUnits, Long endInSliderUnits, Long sliderMaxLimit, MediaPlayer mediaPlayer) {
+    public MediaPlayer setMediaPlayerBounds(Long startInSliderUnits, Long endInSliderUnits, Long sliderMaxLimit, MediaPlayer mediaPlayer) {
 
-        mediaPlayer.setStartTime(Duration.seconds(0));
-        mediaPlayer.setStopTime(Duration.seconds(sliderMaxLimit / (float)10));
+        if (isActive) {
+            mediaPlayer.setStartTime(Duration.seconds(0));
+            mediaPlayer.setStopTime(Duration.seconds(sliderMaxLimit / (float) 10));
 
-        mediaPlayer.setStartTime(Duration.seconds(startInSliderUnits / (float)10));
-        mediaPlayer.setStopTime(Duration.seconds(endInSliderUnits / (float)10));
+            mediaPlayer.setStartTime(Duration.seconds(startInSliderUnits / (float) 10));
+            mediaPlayer.setStopTime(Duration.seconds(endInSliderUnits / (float) 10));
+        }
+
         return mediaPlayer;
     }
 

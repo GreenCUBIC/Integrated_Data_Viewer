@@ -2,6 +2,7 @@ package com.carleton.cubic.nicu_data_explorer.ui;
 
 import com.carleton.cubic.nicu_data_explorer.util.TimeUtils;
 import javafx.application.Platform;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
@@ -22,8 +23,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-public class VideoDataViewer
-{
+public class VideoDataViewer {
     private MediaPlayer mediaPlayer;
     private File mediaFile;
     private boolean loopRequested = false;
@@ -31,6 +31,12 @@ public class VideoDataViewer
     private boolean programmaticSliderValueChange = true;
     private Map<String, String> customMetaDataMap;
     private CustomSlider customSlider = new CustomSlider();
+    private MediaView mediaView;
+    private RangeSlider rangeSlider;
+    private Slider timeSlider;
+    private Button playButton;
+    private Button loopButton;
+    private Scene scene;
 
     private final static String RECORDING_START_HEADER = "recordingStart";
     private final static String LEGACY_RECORDING_START_HEADER = "Recording Start";
@@ -39,44 +45,39 @@ public class VideoDataViewer
     private final static String PLAY_BUTTON_STATUS_PLAY = "Play";
     private final static String PLAY_BUTTON_STATUS_PAUSE = "Pause";
     private final static String LONG_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss.SSS";
-    private final static String DEFAULT_RECODRING_START_TIME = "2018-06-26 11:36:30.370";
+    private final static String DEFAULT_RECODRING_START_TIME = "2016-10-20 08:22:32.644";
 
 
+    //TODO: sync up the annotation log w/ all videos
 
 
-
-
-
-    public MediaPlayer getMediaPlayer()
-    {
+    public MediaPlayer getMediaPlayer() {
         return mediaPlayer;
     }
 
-    public VideoDataViewer(File mediaFile)
-    {
+    public VideoDataViewer(File mediaFile, MediaView mediaView, Slider timeSlider, RangeSlider rangeSlider, Button loopButton, Button playButton, Scene scene) {
         this.mediaFile = mediaFile;
-
-        try
-        {
+        this.mediaView = mediaView;
+        this.timeSlider = timeSlider;
+        this.rangeSlider = rangeSlider;
+        this.loopButton = loopButton;
+        this.playButton = playButton;
+        this.scene = scene;
+        try {
             customMetaDataMap = loadCustomVideoMetadata();
-            customMetaDataMap.putIfAbsent(RECORDING_START_HEADER, customMetaDataMap.getOrDefault(LEGACY_RECORDING_START_HEADER,DEFAULT_RECODRING_START_TIME));
+            customMetaDataMap.putIfAbsent(RECORDING_START_HEADER, customMetaDataMap.getOrDefault(LEGACY_RECORDING_START_HEADER, DEFAULT_RECODRING_START_TIME));
 
-        }
-        catch (IOException e)
-        {
+        } catch (IOException e) {
             e.printStackTrace();
         }
 
         Media media = new Media(this.mediaFile.toURI().toString());
         mediaPlayer = new MediaPlayer(media);
 
-
     }
 
-    protected void updateValues(Label playTime, Slider timeSlider)
-    {
-        if (playTime != null && timeSlider != null)
-        {
+    protected void updateValues(Label playTime, Slider timeSlider) {
+        if (playTime != null && timeSlider != null) {
             Platform.runLater(() -> {
 
                 Duration currentTime = mediaPlayer.getCurrentTime();
@@ -84,8 +85,7 @@ public class VideoDataViewer
                 timeSlider.setDisable(duration.isUnknown());
                 if (!timeSlider.isDisabled()
                         && duration.greaterThan(Duration.ZERO)
-                        && !timeSlider.isValueChanging())
-                {
+                        && !timeSlider.isValueChanging()) {
                     programmaticSliderValueChange = true;
                     timeSlider.setValue(currentTime.toSeconds() * 10);
                     programmaticSliderValueChange = false;
@@ -95,10 +95,10 @@ public class VideoDataViewer
     }
 
     public void openWithControls(Button playButton, Slider timeSlider, MediaView mediaView, Label playTime,
-                                 RangeSlider rangeSlider, Button loopButton, Label lowValText, Label highValText)
-    {
-        mediaView.setMediaPlayer(mediaPlayer);
+                                 RangeSlider rangeSlider, Button loopButton, Label lowValText, Label highValText) {
 
+
+        mediaView.setMediaPlayer(mediaPlayer);
         Date absoluteRecordingTime = getAbsoluteRecordingStartTime();
         mediaPlayer.currentTimeProperty().addListener(observable -> updateValues(playTime, timeSlider));
         mediaPlayer.setOnPlaying(() -> {
@@ -127,24 +127,19 @@ public class VideoDataViewer
         playButton.setOnAction(e -> {
             MediaPlayer.Status status = mediaPlayer.getStatus();
 
-            if (status == MediaPlayer.Status.UNKNOWN || status == MediaPlayer.Status.HALTED || timeSlider.getValue() == rangeSlider.getHighValue())
-            {
+            if (status == MediaPlayer.Status.UNKNOWN || status == MediaPlayer.Status.HALTED || timeSlider.getValue() == rangeSlider.getHighValue()) {
                 return;
             }
 
             if (status == MediaPlayer.Status.PAUSED
                     || status == MediaPlayer.Status.READY
-                    || status == MediaPlayer.Status.STOPPED)
-            {
+                    || status == MediaPlayer.Status.STOPPED) {
                 mediaPlayer.play();
-            }
-            else
-            {
+            } else {
                 mediaPlayer.pause();
             }
 
-            if (customSlider.isPositionOutOfBounds(timeSlider, rangeSlider))
-            {
+            if (customSlider.isPositionOutOfBounds(timeSlider, rangeSlider)) {
                 programmaticSliderValueChange = true;
                 timeSlider.setValue(rangeSlider.getLowValue());
                 mediaPlayer.seek(Duration.seconds(rangeSlider.getLowValue() / 10));
@@ -153,31 +148,25 @@ public class VideoDataViewer
         });
         loopButton.setOnAction(e -> {
 
-            if (!loopRequested)
-            {
+            if (!loopRequested) {
                 loopRequested = true;
                 loopButton.setText(LOOP_STATUS_ON);
-                customSlider.loopIfStoppedAtEnd(rangeSlider,timeSlider,mediaPlayer);
+                customSlider.loopIfStoppedAtEnd(rangeSlider, timeSlider, mediaPlayer);
 
-            }
-            else
-            {
+            } else {
                 loopRequested = false;
                 loopButton.setText(LOOP_STATUS_OFF);
             }
 
         });
         timeSlider.valueProperty().addListener(ov -> {
-            if (!programmaticSliderValueChange)
-            {
+            if (!programmaticSliderValueChange) {
                 mediaPlayer.seek(Duration.millis(timeSlider.getValue() * 100));
             }
-            if (customSlider.shouldStopAtEnd(timeSlider, rangeSlider, loopRequested))
-            {
+            if (customSlider.shouldStopAtEnd(timeSlider, rangeSlider, loopRequested)) {
                 mediaPlayer.pause();
             }
-            if (customSlider.shouldLoopAtEnd(timeSlider, rangeSlider, loopRequested))
-            {
+            if (customSlider.shouldLoopAtEnd(timeSlider, rangeSlider, loopRequested)) {
                 mediaPlayer.seek(Duration.millis(rangeSlider.getLowValue() * 100));
                 timeSlider.adjustValue(rangeSlider.getLowValue());
                 mediaPlayer.play();
@@ -204,18 +193,15 @@ public class VideoDataViewer
         rangeSlider.setShowTickMarks(true);
 
 
-        StringConverter labelFormatterForSlider = new StringConverter()
-        {
+        StringConverter labelFormatterForSlider = new StringConverter() {
             @Override
-            public String toString(Object timeValFromSlider)
-            {
+            public String toString(Object timeValFromSlider) {
                 Date tickTime = TimeUtils.addOffsetToTime(absoluteRecordingTime, (Double) timeValFromSlider * 100);
                 return TimeUtils.getFormattedTimeWithOutMillis(tickTime);
             }
 
             @Override
-            public Double fromString(String s)
-            {
+            public Double fromString(String s) {
                 //TODO: Not sure why this is needed
                 return 0.0;
             }
@@ -233,22 +219,17 @@ public class VideoDataViewer
 
     }
 
-    public Date getAbsoluteRecordingStartTime()
-    {
+    public Date getAbsoluteRecordingStartTime() {
         String dateTimeStr = customMetaDataMap.get(RECORDING_START_HEADER);
-        if (dateTimeStr != null)
-        {
+        if (dateTimeStr != null) {
             // Trim last few ms parts of the date time format from the metadata
             int fractionPartIndex = dateTimeStr.indexOf(".");
             String trimmedDateTimeStr = dateTimeStr.substring(0, fractionPartIndex + 3);
             SimpleDateFormat format = new SimpleDateFormat(LONG_TIME_FORMAT);
 
-            try
-            {
+            try {
                 return format.parse(trimmedDateTimeStr);
-            }
-            catch (ParseException e)
-            {
+            } catch (ParseException e) {
                 e.printStackTrace();
                 return new Date();
             }
@@ -256,14 +237,12 @@ public class VideoDataViewer
         return new Date();
     }
 
-    public Map<String, String> loadCustomVideoMetadata() throws IOException
-    {
+    public Map<String, String> loadCustomVideoMetadata() throws IOException {
         MetadataEditor mediaMeta = MetadataEditor.createFrom(mediaFile);
         Map<String, MetaValue> keyedMeta = mediaMeta.getKeyedMeta();
 
         Map<String, String> customMetaDataMap = new HashMap<>();
-        for (String key : keyedMeta.keySet())
-        {
+        for (String key : keyedMeta.keySet()) {
             MetaValue value = keyedMeta.get(key);
             customMetaDataMap.put(key, value.getString());
         }
@@ -279,6 +258,27 @@ public class VideoDataViewer
         mediaMeta.save(true);
     }*/
 
+    public MediaView getMediaView() {
+        return mediaView;
+    }
 
+    public RangeSlider getRangeSlider() {
+        return rangeSlider;
+    }
 
+    public Slider getTimeSlider() {
+        return timeSlider;
+    }
+
+    public Button getPlayButton() {
+        return playButton;
+    }
+
+    public Button getLoopButton() {
+        return loopButton;
+    }
+
+    public Scene getScene() {
+        return scene;
+    }
 }

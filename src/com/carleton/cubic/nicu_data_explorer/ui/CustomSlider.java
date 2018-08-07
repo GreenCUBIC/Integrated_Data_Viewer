@@ -77,4 +77,12 @@ public class CustomSlider
 
     }
 
+    public void loopIfStoppedAtEndPSM(RangeSlider rangeSlider, Slider timeSlider, int[] frameIndex, double psmFrameRatePerSec) {
+
+        if(Math.abs(rangeSlider.getHighValue()-timeSlider.getValue())<5){
+
+            timeSlider.setValue(rangeSlider.getLowValue());
+            double seekDurationValueSeconds = rangeSlider.getLowValue() / 10;
+            frameIndex[0]=(int) (seekDurationValueSeconds*psmFrameRatePerSec);        }
+    }
 }
