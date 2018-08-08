@@ -2,10 +2,13 @@ package com.carleton.cubic.nicu_data_explorer.ui;
 
 import com.carleton.cubic.nicu_data_explorer.util.TimeUtils;
 import javafx.application.Platform;
+import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaView;
@@ -14,6 +17,7 @@ import javafx.util.StringConverter;
 import org.controlsfx.control.RangeSlider;
 import org.jcodec.containers.mp4.boxes.MetaValue;
 import org.jcodec.movtool.MetadataEditor;
+import org.w3c.dom.ranges.Range;
 
 import java.io.File;
 import java.io.IOException;
@@ -24,6 +28,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class VideoDataViewer {
+    private  CheckBox sliderLockCheckBox;
     private MediaPlayer mediaPlayer;
     private File mediaFile;
     private boolean loopRequested = false;
@@ -32,11 +37,12 @@ public class VideoDataViewer {
     private Map<String, String> customMetaDataMap;
     private CustomSlider customSlider = new CustomSlider();
     private MediaView mediaView;
-    private RangeSlider rangeSlider;
+    private CustomRangeSlider rangeSlider;
     private Slider timeSlider;
     private Button playButton;
     private Button loopButton;
     private Scene scene;
+    private boolean locked = false;
 
     private final static String RECORDING_START_HEADER = "recordingStart";
     private final static String LEGACY_RECORDING_START_HEADER = "Recording Start";
@@ -55,13 +61,15 @@ public class VideoDataViewer {
         return mediaPlayer;
     }
 
-    public VideoDataViewer(File mediaFile, MediaView mediaView, Slider timeSlider, RangeSlider rangeSlider, Button loopButton, Button playButton, Scene scene) {
+    public VideoDataViewer(File mediaFile, MediaView mediaView, Slider timeSlider, CustomRangeSlider rangeSlider, Button loopButton, Button playButton, Scene scene, CheckBox sliderLockCheckBox) {
         this.mediaFile = mediaFile;
         this.mediaView = mediaView;
         this.timeSlider = timeSlider;
         this.rangeSlider = rangeSlider;
         this.loopButton = loopButton;
         this.playButton = playButton;
+        this.sliderLockCheckBox = sliderLockCheckBox;
+        this.locked = sliderLockCheckBox.isSelected();
         this.scene = scene;
         try {
             customMetaDataMap = loadCustomVideoMetadata();
@@ -237,6 +245,14 @@ public class VideoDataViewer {
         return new Date();
     }
 
+    public Date getAbsoluteRecordingEndTime(){
+
+
+        Duration duration = mediaPlayer.getTotalDuration();
+        Long durationInSliderTime = ((long)(duration.toSeconds()*10));
+        return new Date(getAbsoluteRecordingStartTime().getTime()+durationInSliderTime);
+    }
+
     public Map<String, String> loadCustomVideoMetadata() throws IOException {
         MetadataEditor mediaMeta = MetadataEditor.createFrom(mediaFile);
         Map<String, MetaValue> keyedMeta = mediaMeta.getKeyedMeta();
@@ -250,6 +266,10 @@ public class VideoDataViewer {
         return customMetaDataMap;
     }
 
+
+
+
+
     /*public void addCustomVideoMetadata(String key, String value, File mediaFile) throws IOException
     {
         MetadataEditor mediaMeta = MetadataEditor.createFrom(mediaFile);
@@ -262,7 +282,7 @@ public class VideoDataViewer {
         return mediaView;
     }
 
-    public RangeSlider getRangeSlider() {
+    public CustomRangeSlider getRangeSlider() {
         return rangeSlider;
     }
 
@@ -280,5 +300,9 @@ public class VideoDataViewer {
 
     public Scene getScene() {
         return scene;
+    }
+
+    public boolean isLocked() {
+        return locked;
     }
 }

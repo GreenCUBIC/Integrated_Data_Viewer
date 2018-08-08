@@ -21,107 +21,97 @@
 <?import javafx.scene.media.MediaView?>
 <?import org.controlsfx.control.RangeSlider?>
 
-<VBox minHeight="-Infinity" minWidth="-Infinity" prefHeight="610.0" prefWidth="1017.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.carleton.cubic.nicu_data_explorer.ui.Controller">
-    <children>
-        <MenuBar VBox.vgrow="NEVER">
-      <menus>
+<VBox minHeight="-Infinity" minWidth="-Infinity" prefHeight="610.0" prefWidth="1017.0"
+      xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.carleton.cubic.nicu_data_explorer.ui.Controller">
+    <MenuBar VBox.vgrow="NEVER">
         <Menu mnemonicParsing="false" text="File">
-          <items>
-            <MenuItem fx:id="menuItemFileOpen" mnemonicParsing="false" text="Open…" />
-            <SeparatorMenuItem mnemonicParsing="false" />
-            <MenuItem mnemonicParsing="false" text="Quit" />
-          </items>
+            <MenuItem fx:id="menuItemFileOpen" mnemonicParsing="false" text="Open…"/>
+            <SeparatorMenuItem mnemonicParsing="false"/>
+            <MenuItem mnemonicParsing="false" text="Quit"/>
         </Menu>
         <Menu mnemonicParsing="false" text="Help">
-          <items>
-            <MenuItem mnemonicParsing="false" text="About" />
-          </items>
+            <MenuItem mnemonicParsing="false" text="About"/>
         </Menu>
-      </menus>
     </MenuBar>
-      <AnchorPane VBox.vgrow="ALWAYS">
-         <children>
-            <SplitPane dividerPositions="0.7828282828282829" orientation="VERTICAL" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-              <items>
-                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
-                     <children>
-                        <HBox prefHeight="100.0" prefWidth="200.0">
-                           <children>
-                              <MediaView fx:id="mediaView" fitHeight="400.0" fitWidth="534.0">
-                                 <viewport>
-                                    <Rectangle2D height="480.0" width="640.0" />
-                                 </viewport>
-                              </MediaView>
-                              <Separator orientation="VERTICAL" prefHeight="200.0">
-                                 <HBox.margin>
-                                    <Insets left="20.0" right="20.0" />
-                                 </HBox.margin>
-                              </Separator>
-                              <Canvas fx:id="psmCanvas" height="400.0" width="400.0" />
-                           </children>
-                        </HBox>
-                     </children>
-                  </AnchorPane>
-                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
-                     <children>
-                        <VBox prefHeight="70.0" prefWidth="488.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                           <children>
-                              <Slider fx:id="timeSlider" prefHeight="25.0" prefWidth="488.0">
-                                 <padding>
-                                    <Insets left="20.0" right="20.0" />
-                                 </padding></Slider>
-                               <RangeSlider fx:id="rangeSlider" prefHeight="25.0" prefWidth="488.0">
-                                   <padding>
-                                       <Insets left="20.0" right="20.0" />
-                                   </padding></RangeSlider>
-                              <HBox alignment="CENTER" prefHeight="25.0" prefWidth="488.0">
-                                 <children>
-                                    <Label fx:id="lowValText" prefHeight="25.0" prefWidth="143.0" text="LowLimit" />
-                                    <Label fx:id="highValText" prefHeight="25.0" prefWidth="133.0" text="HighLimit">
-                                       <HBox.margin>
-                                          <Insets left="15.0" right="15.0" />
-                                       </HBox.margin>
-                                    </Label>
-                                    <Label prefHeight="27.0" prefWidth="141.0" text="Selected Data:">
-                                       <HBox.margin>
-                                          <Insets right="20.0" />
-                                       </HBox.margin>
-                                    </Label>
-                                    <ChoiceBox fx:id="dataChoiceBox" prefWidth="150.0">
-                                       <HBox.margin>
-                                          <Insets right="10.0" />
-                                       </HBox.margin>
-                                    </ChoiceBox>
-                                    <Button fx:id="fileLoadButton" mnemonicParsing="false" prefHeight="39.0" prefWidth="109.0" text="Load">
-                                       <HBox.margin>
-                                          <Insets right="200.0" />
-                                       </HBox.margin>
-                                    </Button>
-                                    <TextField fx:id="scaleTextField" promptText="Scale Factor">
-                                       <HBox.margin>
-                                          <Insets right="30.0" />
-                                       </HBox.margin>
-                                    </TextField>
-                                    <CheckBox fx:id="scaleCheckBox" mnemonicParsing="false" prefHeight="27.0" prefWidth="172.0" text="Scale?">
-                                       <HBox.margin>
-                                          <Insets right="50.0" />
-                                       </HBox.margin>
-                                    </CheckBox>
-                                    <Button fx:id="loopButton" mnemonicParsing="false" prefHeight="25.0" prefWidth="132.0" text="Loop:Off" />
-                                    <Button fx:id="playButton" mnemonicParsing="false" prefHeight="39.0" prefWidth="107.0" text="Play" />
-                                    <Label fx:id="playTime" alignment="TOP_LEFT" prefHeight="25.0" prefWidth="94.0" text="--/--">
-                                       <HBox.margin>
-                                          <Insets left="50.0" />
-                                       </HBox.margin>
-                                    </Label>
-                                 </children>
-                              </HBox>
-                           </children>
-                        </VBox>
-                     </children></AnchorPane>
-              </items>
-            </SplitPane>
-         </children>
-      </AnchorPane>
-  </children>
+    <AnchorPane VBox.vgrow="ALWAYS">
+        <SplitPane dividerPositions="0.7828282828282829" orientation="VERTICAL" AnchorPane.bottomAnchor="0.0"
+                   AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
+                <HBox prefHeight="100.0" prefWidth="200.0">
+                    <MediaView fx:id="mediaView" fitHeight="400.0" fitWidth="534.0">
+                        <viewport>
+                            <Rectangle2D height="480.0" width="640.0"/>
+                        </viewport>
+                    </MediaView>
+                    <Separator orientation="VERTICAL" prefHeight="200.0">
+                        <HBox.margin>
+                            <Insets left="20.0" right="20.0"/>
+                        </HBox.margin>
+                    </Separator>
+                    <Canvas fx:id="psmCanvas" height="400.0" width="400.0"/>
+                </HBox>
+            </AnchorPane>
+            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
+                <VBox prefHeight="70.0" prefWidth="488.0" AnchorPane.bottomAnchor="0.0"
+                      AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                    <Slider fx:id="timeSlider" prefHeight="25.0" prefWidth="488.0">
+                        <padding>
+                            <Insets left="20.0" right="20.0"/>
+                        </padding>
+                    </Slider>
+                    <RangeSlider fx:id="rangeSlider" prefHeight="25.0" prefWidth="488.0">
+                        <padding>
+                            <Insets left="20.0" right="20.0"/>
+                        </padding>
+                    </RangeSlider>
+                    <HBox alignment="CENTER" prefHeight="25.0" prefWidth="488.0">
+                        <Label fx:id="lowValText" prefHeight="25.0" prefWidth="143.0" text="LowLimit"/>
+                        <Label fx:id="highValText" prefHeight="25.0" prefWidth="133.0" text="HighLimit">
+                            <HBox.margin>
+                                <Insets left="15.0" right="15.0"/>
+                            </HBox.margin>
+                        </Label>
+                        <Label prefHeight="27.0" prefWidth="141.0" text="Selected Data:">
+                            <HBox.margin>
+                                <Insets right="20.0"/>
+                            </HBox.margin>
+                        </Label>
+                        <ChoiceBox fx:id="dataChoiceBox" prefWidth="150.0">
+                            <HBox.margin>
+                                <Insets right="10.0"/>
+                            </HBox.margin>
+                        </ChoiceBox>
+                        <Button fx:id="fileLoadButton" mnemonicParsing="false" prefHeight="39.0"
+                                prefWidth="109.0" text="Load">
+                            <HBox.margin>
+                                <Insets right="200.0"/>
+                            </HBox.margin>
+                        </Button>
+                        <TextField fx:id="scaleTextField" promptText="Scale Factor">
+                            <HBox.margin>
+                                <Insets right="30.0"/>
+                            </HBox.margin>
+                        </TextField>
+                        <CheckBox fx:id="scaleCheckBox" mnemonicParsing="false" prefHeight="27.0"
+                                  prefWidth="172.0" text="Scale?">
+                            <HBox.margin>
+                                <Insets right="50.0"/>
+                            </HBox.margin>
+                        </CheckBox>
+                        <Button fx:id="loopButton" mnemonicParsing="false" prefHeight="25.0"
+                                prefWidth="132.0" text="Loop:Off"/>
+                        <Button fx:id="playButton" mnemonicParsing="false" prefHeight="39.0"
+                                prefWidth="107.0" text="Play"/>
+                        <Label fx:id="playTime" alignment="TOP_LEFT" prefHeight="25.0" prefWidth="94.0"
+                               text="--/--">
+                            <HBox.margin>
+                                <Insets left="50.0"/>
+                            </HBox.margin>
+                        </Label>
+                    </HBox>
+                </VBox>
+            </AnchorPane>
+        </SplitPane>
+    </AnchorPane>
 </VBox>

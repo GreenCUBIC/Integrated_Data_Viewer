@@ -9,33 +9,27 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1">
-   <children>
-      <TitledPane animated="false" text="Annotation Log">
-        <content>
-          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="536.0" prefWidth="598.0">
-               <children>
-                  <ScrollPane prefHeight="350.0" prefWidth="600.0">
-                     <content>
-                        <TableView fx:id="annotationTable" editable="true" prefHeight="350.0" prefWidth="600.0" tableMenuButtonVisible="true">
-                          <columns>
-                            <TableColumn fx:id="category" prefWidth="110.0" text="Category" />
-                            <TableColumn fx:id="name" prefWidth="110.0" text="Name" />
-                              <TableColumn fx:id="displayStartTime" prefWidth="60.0" text="Start" />
-                              <TableColumn fx:id="displayEndTime" prefWidth="60.0" text="Stop" />
-                          </columns>
-                        </TableView>
-                     </content>
-                  </ScrollPane>
-               </children>
-            </AnchorPane>
-        </content>
-      </TitledPane>
-      <ButtonBar prefHeight="40.0" prefWidth="200.0">
-        <buttons>
-          <Button fx:id="saveUpdatesButton" mnemonicParsing="false" text="Save Updates" />
-            <Button fx:id="saveSessionButton" mnemonicParsing="false" text="Save File" />
-        </buttons>
-      </ButtonBar>
-   </children>
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0"
+      prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1">
+    <TitledPane animated="false" text="Annotation Log">
+        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="536.0" prefWidth="598.0">
+            <ScrollPane prefHeight="350.0" prefWidth="600.0">
+                <TableView fx:id="annotationTable" editable="true" prefHeight="350.0" prefWidth="600.0"
+                           tableMenuButtonVisible="true">
+                    <columns>
+                        <TableColumn fx:id="category" prefWidth="110.0" text="Category"/>
+                        <TableColumn fx:id="name" prefWidth="110.0" text="Name"/>
+                        <TableColumn fx:id="displayStartTime" prefWidth="60.0" text="Start"/>
+                        <TableColumn fx:id="displayEndTime" prefWidth="60.0" text="Stop"/>
+                    </columns>
+                </TableView>
+            </ScrollPane>
+        </AnchorPane>
+    </TitledPane>
+    <ButtonBar prefHeight="40.0" prefWidth="200.0">
+      <buttons>
+          <Button fx:id="saveUpdatesButton" mnemonicParsing="false" text="Save Updates"/>
+          <Button fx:id="saveSessionButton" mnemonicParsing="false" text="Save File"/>
+      </buttons>
+    </ButtonBar>
 </VBox>

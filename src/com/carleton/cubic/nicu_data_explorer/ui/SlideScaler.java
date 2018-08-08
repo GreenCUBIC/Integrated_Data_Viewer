@@ -112,13 +112,7 @@ public class SlideScaler {
 
     public Boolean checkIfScalingActive(CheckBox scaleCheckBox) {
 
-        if (scaleCheckBox.isSelected()) {
-
-            isActive = true;
-        } else {
-
-            isActive = false;
-        }
+        isActive = scaleCheckBox.isSelected();
 
 
         return isActive;
@@ -145,8 +139,7 @@ public class SlideScaler {
         }
 
         Long relativeStartTime = annotationStartDate.getTime() - ((scaleFactor * annotationRange) * 100);
-        Date relativeStartDate = new Date(relativeStartTime);
-        return relativeStartDate;
+        return new Date(relativeStartTime);
     }
 
 
@@ -156,8 +149,7 @@ public class SlideScaler {
             annotationRange = (long) 20;
         }
         Long relativeEndTime = (annotationEndDate.getTime() + ((scaleFactor * annotationRange)) * 100);
-        Date relativeEndDate = new Date(relativeEndTime);
-        return relativeEndDate;
+        return new Date(relativeEndTime);
     }
 
     private Slider setSliderBounds(Long startInSliderUnits, Long endInSliderUnits, Long sliderMaxLimit, Slider slider) {
@@ -180,11 +172,7 @@ public class SlideScaler {
 
     private boolean isInstant(Long annotationRange) {
 
-        if (annotationRange < 20) {
-
-            return true;
-        }
-        return false;
+        return annotationRange < 20;
 
     }
 

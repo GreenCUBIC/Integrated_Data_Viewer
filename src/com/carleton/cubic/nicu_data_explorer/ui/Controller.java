@@ -8,7 +8,11 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.VBox;
 import javafx.scene.media.MediaView;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -16,18 +20,12 @@ import org.controlsfx.control.RangeSlider;
 
 import java.io.File;
 import java.io.IOException;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Controller {
 
-    @FXML
-    private Button playButton;
-    @FXML
-    private Button loopButton;
-    @FXML
-    private Slider timeSlider;
+
     @FXML
     private Label playTime;
     @FXML
@@ -35,28 +33,23 @@ public class Controller {
     @FXML
     private Label highValText;
     @FXML
-    private ChoiceBox dataChoiceBox;
+    private ChoiceBox<String> dataChoiceBox;
     @FXML
     private Button fileLoadButton;
-    @FXML
-    private Canvas psmCanvas;
-    @FXML
-    private RangeSlider rangeSlider;
     @FXML
     private TextField scaleTextField;
     @FXML
     private CheckBox scaleCheckBox;
 
+    private ToggleButton synchronizeButton;
     private AnnotationTableHandler annotationTableHandler;
     private SlideScaler slideScaler;
-
     private VideoDataViewer videoDataViewerInstance;
     private List<VideoDataViewer> listOfVideoDataViewers = new ArrayList<>();
     private List<PSMDataViewer> listOfPSMDataViewers = new ArrayList<>();
-    private String type;
-
     private PSMDataViewer psmDataViewerInstance;
 
+    private boolean synchronization = false;
 
     public Controller() {
 
@@ -71,8 +64,8 @@ public class Controller {
     public void initialize() {
 
 
-
         loadFile();
+
         dataChoiceBox.setItems(FXCollections.observableArrayList(
                 VIDEO_SELECTOR_LABEL, PSM_SELECTOR_LABEL, ANNOTATION_SELECTOR_LABEL)
         );
@@ -88,7 +81,7 @@ public class Controller {
                 return;
             }
 
-            String dataSelectionValue = (String) dataChoiceBox.getValue();
+            String dataSelectionValue = dataChoiceBox.getValue();
             if (dataSelectionValue.equalsIgnoreCase(VIDEO_SELECTOR_LABEL)) {
 
                 loadVideoInstance(file);
@@ -105,6 +98,19 @@ public class Controller {
             }
         });
 
+        synchronizeButton.setOnAction(actionEvent -> {
+
+            synchronization = synchronizeButton.isSelected();
+
+            if (synchronization) {
+                synchronizeButton.setText("Synchro Is Active");
+            } else {
+                synchronizeButton.setText("Synchro Is Inactive");
+            }
+            synchronizeSliders();
+
+        });
+
     }
 
     private void createAnnotationInstance(File file) {
@@ -113,27 +119,32 @@ public class Controller {
 
             createAnnotationTable(file);
             scaleAndSetAnnotationsOnInstances();
-            if(videoDataViewerInstance!=null) {
-                for (int i = 0; i < listOfVideoDataViewers.size(); i++) {
-                    annotationTableHandler.SaveAndUpdateButtonHandler("Video",videoDataViewerInstance.getRangeSlider());
+            if (videoDataViewerInstance != null) {
+                for (VideoDataViewer videoDataViewer : listOfVideoDataViewers) {
+
+                    slideScaler = new SlideScaler();
+                    slideScaler.calculateAbsoluteVideoStartEndTimes(videoDataViewer);
+                    videoDataViewer.getScene().setOnMouseClicked(event -> {
+                        annotationTableHandler.SaveAndUpdateButtonHandler(getSelectedInstanceType(),getSelectedRangeSlider());
+                    });
                 }
-                slideScaler = new SlideScaler();
-                slideScaler.calculateAbsoluteVideoStartEndTimes(videoDataViewerInstance);
             }
-            if(psmDataViewerInstance !=null) {
-                for (int i = 0; i < listOfPSMDataViewers.size(); i++) {
-                    annotationTableHandler.SaveAndUpdateButtonHandler("PSM",psmDataViewerInstance.getRangeSlider());      //TODO GOTTA CHANGE THIS INTO PSM VERSION
+            if (psmDataViewerInstance != null) {
+                for (PSMDataViewer psmDataViewer : listOfPSMDataViewers) {
+                    slideScaler = new SlideScaler();
+                    slideScaler.calculateAbsolutePSMStartEndTimes(psmDataViewer);
+                    psmDataViewer.getScene().setOnMouseClicked(event -> {
+                        annotationTableHandler.SaveAndUpdateButtonHandler(getSelectedInstanceType(),getSelectedRangeSlider());
+                    });
                 }
-                slideScaler = new SlideScaler();
-                slideScaler.calculateAbsolutePSMStartEndTimes(psmDataViewerInstance);
             }
-        } catch (IOException | ParseException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
 
-    private void setFileExtension(ChoiceBox dataChoiceBox, FileChooser fileChooser) {
+    private void setFileExtension(ChoiceBox<String> dataChoiceBox, FileChooser fileChooser) {
 
         int selectedChoice = dataChoiceBox.getSelectionModel().getSelectedIndex() + 1;
         FileChooser.ExtensionFilter extFilter;
@@ -159,40 +170,37 @@ public class Controller {
 
     }
 
-    public void scaleAndSetAnnotationsOnInstances() {
+    private void scaleAndSetAnnotationsOnInstances() {
         annotationTableHandler.getAnnotationTable().setOnMouseClicked((MouseEvent event) -> {
 
             if (event.getClickCount() > 1) {
-                try {
-                    if (videoDataViewerInstance != null) {
-                        scaleAndSetAnnotationOnVideoSliders();
-                    }
-                    if (psmDataViewerInstance != null) {
-                        scaleAndSetAnnotationOnPSMSliders();
-                    }
-
-
-                } catch (ParseException e) {
-                    e.printStackTrace();
+                if (videoDataViewerInstance != null) {
+                    scaleAndSetAnnotationOnVideoSliders();
                 }
+                if (psmDataViewerInstance != null) {
+                    scaleAndSetAnnotationOnPSMSliders();
+                }
+
+
             }
         });
     }
 
-    public void scaleAndSetAnnotationOnVideoSliders() throws ParseException {
+    private void scaleAndSetAnnotationOnVideoSliders() {
 
-                    slideScaler.calculateRelativeScalingBoundaries(annotationTableHandler, scaleCheckBox, scaleTextField);
-                    annotationTableHandler.scaleAndSetAnnotationsPerVideo(listOfVideoDataViewers, slideScaler, annotationTableHandler);
+        slideScaler.calculateRelativeScalingBoundaries(annotationTableHandler, scaleCheckBox, scaleTextField);
+        annotationTableHandler.scaleAndSetAnnotationsPerVideo(listOfVideoDataViewers, slideScaler, annotationTableHandler);
+
+    }
+
+    private void scaleAndSetAnnotationOnPSMSliders() {
+
+        slideScaler.calculateAbsolutePSMStartEndTimes(psmDataViewerInstance);
+        annotationTableHandler.scaleAndSetAnnotationsPerPSM(listOfPSMDataViewers, slideScaler, annotationTableHandler);
 
     }
 
-    private void scaleAndSetAnnotationOnPSMSliders() throws ParseException {
-
-                    slideScaler.calculateAbsolutePSMStartEndTimes(psmDataViewerInstance);
-                    annotationTableHandler.scaleAndSetAnnotationsPerPSM(listOfPSMDataViewers, slideScaler, annotationTableHandler);
-
-    }
-    public void loadVideoInstance(File file) {
+    private void loadVideoInstance(File file) {
 
 
         Stage stage = new Stage();
@@ -208,19 +216,22 @@ public class Controller {
         MediaView mediaViewInstance = (MediaView) scene.lookup("#mediaView");
         Slider sliderInstance = (Slider) scene.lookup("#mainSlider");
         RangeSlider rangeSliderInstance = (RangeSlider) scene.lookup("#rangeSlider");
+        CustomRangeSlider customRangeSliderInstance = new CustomRangeSlider(rangeSliderInstance);
         Button loopButtonInstance = (Button) scene.lookup("#loopButton");
         Button playButtonInstance = (Button) scene.lookup("#playButton");
+        CheckBox sliderLockCheckBox = (CheckBox) scene.lookup("#sliderLockCheckBox");
 
         stage.show();
 
-        videoDataViewerInstance = new VideoDataViewer(file, mediaViewInstance, sliderInstance, rangeSliderInstance, loopButtonInstance, playButtonInstance,scene);
+        videoDataViewerInstance = new VideoDataViewer(file, mediaViewInstance, sliderInstance, customRangeSliderInstance, loopButtonInstance, playButtonInstance, scene, sliderLockCheckBox);
         videoDataViewerInstance.openWithControls(playButtonInstance, sliderInstance, mediaViewInstance, playTime, rangeSliderInstance, loopButtonInstance, lowValText, highValText);
 
 
         listOfVideoDataViewers.add(videoDataViewerInstance);
-
+        synchronizeSliders();
     }
-    public void loadPSMInstance(File file) {
+
+    private void loadPSMInstance(File file) {
 
 
         Stage stage = new Stage();
@@ -236,19 +247,22 @@ public class Controller {
         Canvas canvasInstance = (Canvas) scene.lookup("#canvas");
         Slider sliderInstance = (Slider) scene.lookup("#mainSlider");
         RangeSlider rangeSliderInstance = (RangeSlider) scene.lookup("#rangeSlider");
+        CustomRangeSlider customRangeSliderInstance = new CustomRangeSlider(rangeSliderInstance);
         Button loopButtonInstance = (Button) scene.lookup("#loopButton");
         Button playButtonInstance = (Button) scene.lookup("#playButton");
 
         stage.show();
 
-         psmDataViewerInstance = new PSMDataViewer(file);
-        psmDataViewerInstance.openWithControls(canvasInstance,sliderInstance,playButtonInstance,playTime,rangeSliderInstance,loopButtonInstance,scene);
+
+        psmDataViewerInstance = new PSMDataViewer(file);
+        psmDataViewerInstance.openWithControls(canvasInstance, sliderInstance, playButtonInstance, playTime, customRangeSliderInstance, loopButtonInstance, scene);
 
         listOfPSMDataViewers.add(psmDataViewerInstance);
-
+        synchronizeSliders();
     }
 
-    public void createAnnotationTable(File file) throws IOException, ParseException {
+
+    private void createAnnotationTable(File file) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader();
         fxmlLoader.setLocation(getClass().getResource("annotations.fxml"));
         Scene scene = new Scene(fxmlLoader.load(), 600, 400);
@@ -262,7 +276,8 @@ public class Controller {
 
     }
 
-    public void loadFile() {
+
+    private void loadFile() {
 
 
         Stage stage = new Stage();
@@ -275,10 +290,133 @@ public class Controller {
         Scene scene = new Scene(root);
         stage.setScene(scene);
 
-        dataChoiceBox = (ChoiceBox) scene.lookup("#dataChoiceBox");
+        dataChoiceBox = (ChoiceBox<String>) scene.lookup("#dataChoiceBox");
         fileLoadButton = (Button) scene.lookup("#fileLoadButton");
+        scaleCheckBox = (CheckBox) scene.lookup("#scaleCheckBox");
+        scaleTextField = (TextField) scene.lookup("#scaleTextField");
+        synchronizeButton = (ToggleButton) scene.lookup("#synchronizeButton");
+        synchronization = synchronizeButton.isSelected();
         stage.show();
 
+    }
+
+    private void synchronizeSliders() {
+
+
+        for (PSMDataViewer psmDataViewer : listOfPSMDataViewers) {
+
+            CustomRangeSlider rangeSlider = psmDataViewer.getCustomRangeSlider();
+            rangeSlider.setAbsoluteStartDate(psmDataViewer.getAbsolutePSMStartDate());
+            rangeSlider.setAbsoluteEndDate(psmDataViewer.getAbsolutePSMEndDate());
+            setValueForOtherRangeSliders(rangeSlider);
+        }
+        for (VideoDataViewer videoDataViewer : listOfVideoDataViewers) {
+
+            CustomRangeSlider rangeSlider = videoDataViewer.getRangeSlider();
+            rangeSlider.setAbsoluteStartDate(videoDataViewer.getAbsoluteRecordingStartTime());
+            rangeSlider.setAbsoluteEndDate(videoDataViewer.getAbsoluteRecordingEndTime());
+            setValueForOtherRangeSliders(rangeSlider);
+        }
+
+
+    }
+
+    private void setValueForOtherRangeSliders(CustomRangeSlider customRangeSlider) {
+
+        customRangeSlider.getRangeSlider().lowValueProperty().addListener((ov, old_val, new_val) -> {
+            if (synchronization) {
+                for (PSMDataViewer psmDataViewer2 : listOfPSMDataViewers) {
+
+                    CustomRangeSlider rangeSlider2 = psmDataViewer2.getCustomRangeSlider();
+                    rangeSlider2.setLowValueUsingDate(psmDataViewer2.getAbsolutePSMStartDate(),rangeSlider2.getAbsoluteStartDate());
+
+                }
+                for (VideoDataViewer videoDataViewer2 : listOfVideoDataViewers) {
+
+                    CustomRangeSlider rangeSlider2 = videoDataViewer2.getRangeSlider();
+                    rangeSlider2.setLowValueUsingDate(videoDataViewer2.getAbsoluteRecordingStartTime(),rangeSlider2.getAbsoluteStartDate());
+
+                }
+            }
+        });
+
+        customRangeSlider.getRangeSlider().highValueProperty().addListener((ov, old_val, new_val) -> {
+            if (synchronization) {
+                for (PSMDataViewer psmDataViewer2 : listOfPSMDataViewers) {
+
+                    CustomRangeSlider rangeSlider2 = psmDataViewer2.getCustomRangeSlider();
+                    rangeSlider2.setHighValueUsingDate(psmDataViewer2.getAbsolutePSMStartDate(),rangeSlider2.getAbsoluteEndDate());
+
+                }
+                for (VideoDataViewer videoDataViewer2 : listOfVideoDataViewers) {
+
+                    CustomRangeSlider rangeSlider2 = videoDataViewer2.getRangeSlider();
+                    rangeSlider2.setHighValueUsingDate(videoDataViewer2.getAbsoluteRecordingStartTime(),rangeSlider2.getAbsoluteEndDate());
+
+                }
+            }
+        });
+
+
+    }
+
+    private RangeSlider getSelectedRangeSlider() {
+
+        Scene selectedScene = null;
+
+        for (PSMDataViewer psmDataViewer : listOfPSMDataViewers) {
+
+            if (psmDataViewer.getScene().getWindow().isFocused()) {
+
+                selectedScene = psmDataViewer.getScene();
+
+            }
+        }
+        for (VideoDataViewer videoDataViewer : listOfVideoDataViewers) {
+
+            if (videoDataViewer.getScene().getWindow().isFocused()) {
+
+                selectedScene = videoDataViewer.getScene();
+
+            }
+        }
+        RangeSlider rangeSlider = new RangeSlider();
+        if (selectedScene != null) {
+            rangeSlider = (RangeSlider) selectedScene.lookup("#rangeSlider");
+        }
+        return rangeSlider;
+    }
+
+
+    private String getSelectedInstanceType() {
+
+        Scene selectedScene = null;
+
+        for (PSMDataViewer psmDataViewer : listOfPSMDataViewers) {
+
+            if (psmDataViewer.getScene().getWindow().isFocused()) {
+
+                selectedScene = psmDataViewer.getScene();
+
+            }
+        }
+        for (VideoDataViewer videoDataViewer : listOfVideoDataViewers) {
+
+            if (videoDataViewer.getScene().getWindow().isFocused()) {
+
+                selectedScene = videoDataViewer.getScene();
+
+            }
+        }
+        String type = "";
+        if (selectedScene != null) {
+            if ((VBox) selectedScene.lookup("#video") != null) {
+                type = "Video";
+            } else {
+                type = "PSM";
+            }
+        }
+        return type;
     }
 
 }

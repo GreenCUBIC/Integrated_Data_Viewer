@@ -35,32 +35,18 @@ public class CustomSlider
     public boolean shouldStopAtEnd(Slider mainSlider, RangeSlider rangeSlider, boolean loopActive)
     {
 
-        if (mainSlider.getValue() == rangeSlider.getHighValue() && loopActive == false)
-        {
-            return true;
-
-        }
-        return false;
+        return mainSlider.getValue() == rangeSlider.getHighValue() && !loopActive;
 
     }
 
     public boolean shouldLoopAtEnd(Slider mainSlider, RangeSlider rangeSlider, boolean loopActive)
     {
-        if (mainSlider.getValue() == rangeSlider.getHighValue() && loopActive == true)
-        {
-            return true;
-        }
-        return false;
+        return mainSlider.getValue() == rangeSlider.getHighValue() && loopActive;
     }
 
     public boolean isPositionOutOfBounds(Slider mainSlider, RangeSlider rangeSlider)
     {
-        if (mainSlider.getValue() < rangeSlider.getLowValue() - 1 || mainSlider.getValue() > rangeSlider.getHighValue() + 1)
-        {
-            return true;
-
-        }
-        return false;
+        return mainSlider.getValue() < rangeSlider.getLowValue() - 1 || mainSlider.getValue() > rangeSlider.getHighValue() + 1;
 
     }
 
