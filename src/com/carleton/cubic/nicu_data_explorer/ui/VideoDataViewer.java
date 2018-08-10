@@ -24,6 +24,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class VideoDataViewer {
+    private  Label lowValText;
+    private  Label highValText;
     private MediaPlayer mediaPlayer;
     private File mediaFile;
     private boolean loopRequested = false;
@@ -55,13 +57,15 @@ public class VideoDataViewer {
         return mediaPlayer;
     }
 
-    public VideoDataViewer(File mediaFile, MediaView mediaView, Slider timeSlider, RangeSlider rangeSlider, Button loopButton, Button playButton, Scene scene) {
+    public VideoDataViewer(File mediaFile, MediaView mediaView, Slider timeSlider, RangeSlider rangeSlider, Button loopButton, Button playButton, Scene scene,Label lowValText,Label highValText) {
         this.mediaFile = mediaFile;
         this.mediaView = mediaView;
         this.timeSlider = timeSlider;
         this.rangeSlider = rangeSlider;
         this.loopButton = loopButton;
         this.playButton = playButton;
+        this.lowValText = lowValText;
+        this.highValText = highValText;
         this.scene = scene;
         try {
             customMetaDataMap = loadCustomVideoMetadata();

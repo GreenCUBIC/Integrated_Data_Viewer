@@ -205,6 +205,8 @@ public class Controller {
         Scene scene = new Scene(root);
         stage.setScene(scene);
 
+        Label lowValText = (Label) scene.lookup("#lowValText");
+        Label highValText = (Label) scene.lookup("#highValText");
         MediaView mediaViewInstance = (MediaView) scene.lookup("#mediaView");
         Slider sliderInstance = (Slider) scene.lookup("#mainSlider");
         RangeSlider rangeSliderInstance = (RangeSlider) scene.lookup("#rangeSlider");
@@ -213,7 +215,7 @@ public class Controller {
 
         stage.show();
 
-        videoDataViewerInstance = new VideoDataViewer(file, mediaViewInstance, sliderInstance, rangeSliderInstance, loopButtonInstance, playButtonInstance,scene);
+        videoDataViewerInstance = new VideoDataViewer(file, mediaViewInstance, sliderInstance, rangeSliderInstance, loopButtonInstance, playButtonInstance,scene,lowValText,highValText);
         videoDataViewerInstance.openWithControls(playButtonInstance, sliderInstance, mediaViewInstance, playTime, rangeSliderInstance, loopButtonInstance, lowValText, highValText);
 
 
