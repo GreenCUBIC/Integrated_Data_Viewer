@@ -310,9 +310,9 @@ public class AnnotationTableHandler {
     public void scaleAndSetAnnotationsPerVideo(List<VideoDataViewer> list, SlideScaler slideScaler, AnnotationTableHandler annotationTableHandler) {
 
         for (VideoDataViewer videoDataViewer : list) {
-            slideScaler.setRelativeSliderVideoBoundaries(videoDataViewer.getTimeSlider(), videoDataViewer.getRangeSlider().getRangeSlider(), videoDataViewer.getMediaPlayer());
+            slideScaler.setRelativeSliderVideoBoundaries(videoDataViewer.getTimeSlider(), videoDataViewer.getCustomRangeSlider().getRangeSlider(), videoDataViewer.getMediaPlayer());
             annotationTableHandler.calculateAbsoluteVideoStartDate(videoDataViewer);
-            annotationTableHandler.setAnnotationOnVideoSlider(videoDataViewer, videoDataViewer.getRangeSlider().getRangeSlider(), slideScaler);
+            annotationTableHandler.setAnnotationOnVideoSlider(videoDataViewer, videoDataViewer.getCustomRangeSlider().getRangeSlider(), slideScaler);
         }
     }
     public void scaleAndSetAnnotationsPerPSM(List<PSMDataViewer> listOfPSMDataViewers, SlideScaler slideScaler, AnnotationTableHandler annotationTableHandler) {

@@ -23,6 +23,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.lang.Thread.sleep;
+
 public class Controller {
 
 
@@ -41,15 +43,12 @@ public class Controller {
     @FXML
     private CheckBox scaleCheckBox;
 
-    private ToggleButton synchronizeButton;
     private AnnotationTableHandler annotationTableHandler;
     private SlideScaler slideScaler;
     private VideoDataViewer videoDataViewerInstance;
     private List<VideoDataViewer> listOfVideoDataViewers = new ArrayList<>();
     private List<PSMDataViewer> listOfPSMDataViewers = new ArrayList<>();
     private PSMDataViewer psmDataViewerInstance;
-
-    private boolean synchronization = false;
 
     public Controller() {
 
@@ -98,18 +97,6 @@ public class Controller {
             }
         });
 
-        synchronizeButton.setOnAction(actionEvent -> {
-
-            synchronization = synchronizeButton.isSelected();
-
-            if (synchronization) {
-                synchronizeButton.setText("Synchro Is Active");
-            } else {
-                synchronizeButton.setText("Synchro Is Inactive");
-            }
-            synchronizeSliders();
-
-        });
 
     }
 
@@ -219,16 +206,13 @@ public class Controller {
         CustomRangeSlider customRangeSliderInstance = new CustomRangeSlider(rangeSliderInstance);
         Button loopButtonInstance = (Button) scene.lookup("#loopButton");
         Button playButtonInstance = (Button) scene.lookup("#playButton");
-        CheckBox sliderLockCheckBox = (CheckBox) scene.lookup("#sliderLockCheckBox");
-
+        SliderAndButtonPackage sliderAndButtonPackage = new SliderAndButtonPackage(playButtonInstance,loopButtonInstance,sliderInstance,customRangeSliderInstance);
         stage.show();
 
-        videoDataViewerInstance = new VideoDataViewer(file, mediaViewInstance, sliderInstance, customRangeSliderInstance, loopButtonInstance, playButtonInstance, scene, sliderLockCheckBox);
-        videoDataViewerInstance.openWithControls(playButtonInstance, sliderInstance, mediaViewInstance, playTime, rangeSliderInstance, loopButtonInstance, lowValText, highValText);
-
-
+        videoDataViewerInstance = new VideoDataViewer(file, mediaViewInstance, sliderAndButtonPackage, scene);
+        videoDataViewerInstance.openWithControls(mediaViewInstance, playTime, lowValText, highValText, listOfVideoDataViewers,listOfPSMDataViewers);
         listOfVideoDataViewers.add(videoDataViewerInstance);
-        synchronizeSliders();
+
     }
 
     private void loadPSMInstance(File file) {
@@ -250,15 +234,14 @@ public class Controller {
         CustomRangeSlider customRangeSliderInstance = new CustomRangeSlider(rangeSliderInstance);
         Button loopButtonInstance = (Button) scene.lookup("#loopButton");
         Button playButtonInstance = (Button) scene.lookup("#playButton");
-
+        SliderAndButtonPackage sliderAndButtonPackage = new SliderAndButtonPackage(playButtonInstance,loopButtonInstance,sliderInstance,customRangeSliderInstance);
         stage.show();
 
 
-        psmDataViewerInstance = new PSMDataViewer(file);
-        psmDataViewerInstance.openWithControls(canvasInstance, sliderInstance, playButtonInstance, playTime, customRangeSliderInstance, loopButtonInstance, scene);
+        psmDataViewerInstance = new PSMDataViewer(file,sliderAndButtonPackage);
+        psmDataViewerInstance.openWithControls(canvasInstance, playTime  , scene, listOfVideoDataViewers,listOfPSMDataViewers);
 
         listOfPSMDataViewers.add(psmDataViewerInstance);
-        synchronizeSliders();
     }
 
 
@@ -294,71 +277,11 @@ public class Controller {
         fileLoadButton = (Button) scene.lookup("#fileLoadButton");
         scaleCheckBox = (CheckBox) scene.lookup("#scaleCheckBox");
         scaleTextField = (TextField) scene.lookup("#scaleTextField");
-        synchronizeButton = (ToggleButton) scene.lookup("#synchronizeButton");
-        synchronization = synchronizeButton.isSelected();
         stage.show();
 
     }
 
-    private void synchronizeSliders() {
 
-
-        for (PSMDataViewer psmDataViewer : listOfPSMDataViewers) {
-
-            CustomRangeSlider rangeSlider = psmDataViewer.getCustomRangeSlider();
-            rangeSlider.setAbsoluteStartDate(psmDataViewer.getAbsolutePSMStartDate());
-            rangeSlider.setAbsoluteEndDate(psmDataViewer.getAbsolutePSMEndDate());
-            setValueForOtherRangeSliders(rangeSlider);
-        }
-        for (VideoDataViewer videoDataViewer : listOfVideoDataViewers) {
-
-            CustomRangeSlider rangeSlider = videoDataViewer.getRangeSlider();
-            rangeSlider.setAbsoluteStartDate(videoDataViewer.getAbsoluteRecordingStartTime());
-            rangeSlider.setAbsoluteEndDate(videoDataViewer.getAbsoluteRecordingEndTime());
-            setValueForOtherRangeSliders(rangeSlider);
-        }
-
-
-    }
-
-    private void setValueForOtherRangeSliders(CustomRangeSlider customRangeSlider) {
-
-        customRangeSlider.getRangeSlider().lowValueProperty().addListener((ov, old_val, new_val) -> {
-            if (synchronization) {
-                for (PSMDataViewer psmDataViewer2 : listOfPSMDataViewers) {
-
-                    CustomRangeSlider rangeSlider2 = psmDataViewer2.getCustomRangeSlider();
-                    rangeSlider2.setLowValueUsingDate(psmDataViewer2.getAbsolutePSMStartDate(),rangeSlider2.getAbsoluteStartDate());
-
-                }
-                for (VideoDataViewer videoDataViewer2 : listOfVideoDataViewers) {
-
-                    CustomRangeSlider rangeSlider2 = videoDataViewer2.getRangeSlider();
-                    rangeSlider2.setLowValueUsingDate(videoDataViewer2.getAbsoluteRecordingStartTime(),rangeSlider2.getAbsoluteStartDate());
-
-                }
-            }
-        });
-
-        customRangeSlider.getRangeSlider().highValueProperty().addListener((ov, old_val, new_val) -> {
-            if (synchronization) {
-                for (PSMDataViewer psmDataViewer2 : listOfPSMDataViewers) {
-
-                    CustomRangeSlider rangeSlider2 = psmDataViewer2.getCustomRangeSlider();
-                    rangeSlider2.setHighValueUsingDate(psmDataViewer2.getAbsolutePSMStartDate(),rangeSlider2.getAbsoluteEndDate());
-
-                }
-                for (VideoDataViewer videoDataViewer2 : listOfVideoDataViewers) {
-
-                    CustomRangeSlider rangeSlider2 = videoDataViewer2.getRangeSlider();
-                    rangeSlider2.setHighValueUsingDate(videoDataViewer2.getAbsoluteRecordingStartTime(),rangeSlider2.getAbsoluteEndDate());
-
-                }
-            }
-        });
-
-
-    }
 
     private RangeSlider getSelectedRangeSlider() {
 

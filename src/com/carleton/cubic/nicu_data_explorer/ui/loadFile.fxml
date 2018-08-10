@@ -6,7 +6,6 @@
 <?import javafx.scene.control.ChoiceBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TextField?>
-<?import javafx.scene.control.ToggleButton?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
@@ -35,10 +34,7 @@
         </ChoiceBox>
         <Button fx:id="fileLoadButton" mnemonicParsing="false" text="Load" />
     </HBox>
-   <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
-      <children>
-         <ToggleButton fx:id="synchronizeButton" mnemonicParsing="false" text="Synchronize All Sliders" />
-      </children></HBox>
+   <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" />
     <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
          <TextField fx:id="scaleTextField" disable="true" prefHeight="25.0" prefWidth="94.0" promptText="Scale Factor" />
          <CheckBox fx:id="scaleCheckBox" disable="true" mnemonicParsing="false" text="Scale">

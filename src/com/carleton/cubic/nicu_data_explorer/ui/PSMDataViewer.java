@@ -20,6 +20,9 @@ import java.io.File;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
+
+import static java.lang.Thread.sleep;
 
 public class PSMDataViewer {
 
@@ -49,18 +52,18 @@ public class PSMDataViewer {
     private int[] frameIndex;
     private double psmFrameRatePerSec = 18;
 
-    public PSMDataViewer(File psmFile) {
+    public PSMDataViewer(File psmFile,SliderAndButtonPackage sliderAndButtonPackage) {
+        this.timeSlider = sliderAndButtonPackage.getTimeSlider();
+        this.playButton = sliderAndButtonPackage.getPlayButton();
+        this.customRangeSlider = sliderAndButtonPackage.getCustomRangeSlider();
+        this.loopButton = sliderAndButtonPackage.getLoopButton();
         xsensorASCIIParser = new XsensorASCIIParser(psmFile);
     }
 
 
-    public void openWithControls(Canvas canvas, Slider timeSlider, Button playButton, Label playTime, CustomRangeSlider rangeSlider, Button loopButton, Scene scene) {
+    public void openWithControls(Canvas canvas, Label playTime, Scene scene, List<VideoDataViewer> listOfVideoDataViewers, List<PSMDataViewer> listOfPSMDataViewers) {
         this.canvas = canvas;
-        this.timeSlider = timeSlider;
-        this.playButton = playButton;
         this.playTime = playTime;
-        this.customRangeSlider = rangeSlider;
-        this.loopButton = loopButton;
         this.scene = scene;
 
         double psmFrameRatePerSec = 18; //TODO: How to get this from the PSM file?
@@ -179,6 +182,16 @@ public class PSMDataViewer {
             drawFrame(psmRecording.getFrameData(frameIndex[0]), canvas);
             frameIndex[0]++;
         }
+        while(!psmRecording.isParsingComplete()){
+            try {
+                sleep(50);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        if(psmRecording.isParsingComplete()){
+            adjustOtherVideoInstanceRangeSliders(customRangeSlider,listOfVideoDataViewers,listOfPSMDataViewers);
+        }
     }
 
     private Color getColorForPressureValue(float value) {
@@ -238,9 +251,17 @@ public class PSMDataViewer {
 
     public Date getAbsolutePSMEndDate() {
 
+        while(!psmRecording.isParsingComplete()){
+            try {
+                sleep(50);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
 
-        String stringDate = psmRecording.getFrameHeader(frameIndex.length - 1, "Date").stringValue();
-        String stringTime = psmRecording.getFrameHeader(frameIndex.length - 1, "Time").stringValue();
+
+        String stringDate = psmRecording.getFrameHeader(psmRecording.frameCount() - 1, "Date").stringValue();
+        String stringTime = psmRecording.getFrameHeader(psmRecording.frameCount() - 1, "Time").stringValue();
         stringDate = stringDate.replaceAll("^\"|\"$", "");
         stringTime = stringTime.replaceAll("^\"|\"$", "");
         String fullDateString = stringDate.concat(" ").concat(stringTime);
@@ -258,6 +279,44 @@ public class PSMDataViewer {
     public void seek(double seekDurationValueSeconds) {
         frameIndex[0] = (int) (seekDurationValueSeconds * psmFrameRatePerSec);
 
+    }
+
+    private void adjustOtherVideoInstanceRangeSliders(CustomRangeSlider customRangeSlider, List<VideoDataViewer> videoDataViewers,List<PSMDataViewer> listOfPSMDataViewers) {
+
+        customRangeSlider.getRangeSlider().lowValueProperty().addListener((ov, old_val, new_val) -> {
+
+            setNewValuesForVideoInstances(videoDataViewers);
+            setNewValuesForPSMInstances(listOfPSMDataViewers);
+
+        });
+        customRangeSlider.getRangeSlider().highValueProperty().addListener((ov, old_val, new_val) -> {
+
+            setNewValuesForVideoInstances(videoDataViewers);
+            setNewValuesForPSMInstances(listOfPSMDataViewers);
+
+
+        });
+    }
+    private void setNewValuesForPSMInstances(List<PSMDataViewer> listOfPSMDataViewers) {
+
+        for (PSMDataViewer psmDataViewer : listOfPSMDataViewers) {
+
+            CustomRangeSlider customRangeSlider1 = psmDataViewer.getCustomRangeSlider();
+            Date absoluteStartDate = this.getAbsolutePSMStartDate();
+            customRangeSlider1.setLowValueUsingDate(this.customRangeSlider.getLowValueInDate(absoluteStartDate));
+            customRangeSlider1.setHighValueUsingDate(this.customRangeSlider.getHighValueInDate(absoluteStartDate));
+        }
+    }
+
+    private void setNewValuesForVideoInstances(List<VideoDataViewer> videoDataViewers) {
+
+        for (VideoDataViewer videoDataViewer2 : videoDataViewers) {
+
+            CustomRangeSlider customRangeSlider1 = videoDataViewer2.getCustomRangeSlider();
+            Date absoluteStartDate = this.getAbsolutePSMStartDate();
+            customRangeSlider1.setLowValueUsingDate(this.customRangeSlider.getLowValueInDate(absoluteStartDate));
+            customRangeSlider1.setHighValueUsingDate(this.customRangeSlider.getHighValueInDate(absoluteStartDate));
+        }
     }
 
     public Canvas getCanvas() {
