@@ -1,9 +1,6 @@
 package com.carleton.cubic.nicu_data_explorer.ui;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
+import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 import org.controlsfx.control.RangeSlider;
@@ -37,7 +34,7 @@ public class JsonDataViewer {
     }
 
     public void openJson() throws FileNotFoundException {
-        Gson gson = new Gson();
+        Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
         FileReader reader = new FileReader(jsonFile);
         JsonObject jsonObject = gson.fromJson(reader, JsonObject.class);
         JsonArray annotationArray = jsonObject.getAsJsonArray("annotations");
@@ -48,7 +45,7 @@ public class JsonDataViewer {
     }
 
     public Session loadSession(File sessionFile) throws FileNotFoundException {
-        Gson gson = new Gson();
+        Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
         JsonReader reader = new JsonReader(new FileReader(sessionFile.getAbsolutePath()));
         Session session = gson.fromJson(reader, Session.class);
         this.session = session;
@@ -57,7 +54,7 @@ public class JsonDataViewer {
 
     public void SaveFile(File saveFile) throws FileNotFoundException, ParseException {
 
-        Gson gson = new Gson();
+        Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
 
         try {
             FileWriter fileWriter = null;
