@@ -190,6 +190,7 @@ public class PSMDataViewer {
             }
         }
         if(psmRecording.isParsingComplete()){
+            setCustomRangeSliderStartAndEndDates();
             adjustOtherVideoInstanceRangeSliders(customRangeSlider,listOfVideoDataViewers,listOfPSMDataViewers);
         }
     }
@@ -229,6 +230,11 @@ public class PSMDataViewer {
         gc.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
         gc.setFill(Color.BLACK);
         gc.fillText("Loading " + progressPercent + "% ...", 20, 20);
+    }
+
+    private void setCustomRangeSliderStartAndEndDates() {
+        customRangeSlider.setAbsoluteStartDate(getAbsolutePSMStartDate());
+        customRangeSlider.setAbsoluteEndDate(getAbsolutePSMEndDate());
     }
 
     public Date getAbsolutePSMStartDate() {

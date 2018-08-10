@@ -36,8 +36,8 @@
     </HBox>
    <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" />
     <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
-         <TextField fx:id="scaleTextField" disable="true" prefHeight="25.0" prefWidth="94.0" promptText="Scale Factor" />
-         <CheckBox fx:id="scaleCheckBox" disable="true" mnemonicParsing="false" text="Scale">
+         <TextField fx:id="scaleTextField" prefHeight="25.0" prefWidth="94.0" promptText="Scale Factor" />
+         <CheckBox fx:id="scaleCheckBox" mnemonicParsing="false" text="Scale">
          <HBox.margin>
             <Insets left="10.0" />
          </HBox.margin></CheckBox>

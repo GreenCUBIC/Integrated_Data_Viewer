@@ -89,27 +89,30 @@ public class AnnotationTableHandler {
         Annotation annotation = getSelectedAnnotation();
         Date sessionStartDate = new Date(Long.parseLong(session.getStart_time()));
         Date videoStartDate = videoDataViewer.getAbsoluteRecordingStartTime();
+        Date relativeStartDate;
 
         if (sessionStartDate.getTime() < videoStartDate.getTime()) {
             return;
         } else {
-
-            Date sliderStartDate;
-            if (slideScaler.getIsActive()) {
-                sliderStartDate = slideScaler.getRelativeStartDate();
-            } else {
-                sliderStartDate = videoStartDate;
+            if(slideScaler.getActive()){
+                relativeStartDate = slideScaler.getRelativeStartDate();
+            }else{
+                relativeStartDate = videoStartDate;
             }
-
 
             Date annotationStartDate = new Date(Long.parseLong(annotation.getStart_time()));
             Date annotationEndDate = new Date(Long.parseLong(annotation.getEnd_time()));
-            Long startInSliderUnits = (annotationStartDate.getTime() - sliderStartDate.getTime()) / 100;
-            Long endInSliderUnits = (annotationEndDate.getTime() - sliderStartDate.getTime()) / 100;
+            Long startInSliderUnits = (annotationStartDate.getTime() - relativeStartDate.getTime()) / 100;
+            Long endInSliderUnits = (annotationEndDate.getTime() - relativeStartDate.getTime()) / 100;
 
-            setNewRangeSliderBounds(rangeSlider, startInSliderUnits, endInSliderUnits);
+            if(startInSliderUnits<0 || endInSliderUnits<0){
 
-            videoDataViewer.getMediaPlayer().seek(Duration.seconds((startInSliderUnits / (float) 10) + videoDataViewer.getMediaPlayer().getStartTime().toSeconds()));
+                return;
+            }
+            else {
+                setNewRangeSliderBounds(rangeSlider, startInSliderUnits, endInSliderUnits);
+                videoDataViewer.getMediaPlayer().seek(Duration.seconds((startInSliderUnits / (float) 10) + videoDataViewer.getMediaPlayer().getStartTime().toSeconds()));
+            }
         }
 
     }
@@ -119,28 +122,33 @@ public class AnnotationTableHandler {
         Annotation annotation = getSelectedAnnotation();
         Date sessionStartDate = new Date(Long.parseLong(session.getStart_time()));
         Date psmStartDate = psmDataViewer.getAbsolutePSMStartDate();
+        Date relativeStartDate;
 
         if (sessionStartDate.getTime() < psmStartDate.getTime()) {
             return;
         } else {
 
-            Date sliderStartDate;
-            if (slideScaler.getIsActive()) {
-                sliderStartDate = slideScaler.getRelativeStartDate();
-            } else {
-                sliderStartDate = psmStartDate;
+            if(slideScaler.getActive()){
+                relativeStartDate = slideScaler.getRelativeStartDate();
+            }else{
+                relativeStartDate = psmStartDate;
             }
-
-
             Date annotationStartDate = new Date(Long.parseLong(annotation.getStart_time()));
             Date annotationEndDate = new Date(Long.parseLong(annotation.getEnd_time()));
-            Long startInSliderUnits = (annotationStartDate.getTime() - sliderStartDate.getTime()) / 100;
-            Long endInSliderUnits = (annotationEndDate.getTime() - sliderStartDate.getTime()) / 100;
 
-            setNewRangeSliderBounds(rangeSlider, startInSliderUnits, endInSliderUnits);
+            Long startInSliderUnits = (annotationStartDate.getTime() - relativeStartDate.getTime()) / 100;
+            Long endInSliderUnits = (annotationEndDate.getTime() - relativeStartDate.getTime()) / 100;
 
-            double seekDurationValueSeconds = rangeSlider.getLowValue() / 10;
-            psmDataViewer.seek(seekDurationValueSeconds);
+            if(startInSliderUnits<0 || endInSliderUnits<0){
+
+                return;
+            }
+            else {
+                setNewRangeSliderBounds(rangeSlider, startInSliderUnits, endInSliderUnits);
+                double seekDurationValueSeconds = rangeSlider.getLowValue() / 10;
+                psmDataViewer.seek(seekDurationValueSeconds);
+            }
+
         }
 
     }
@@ -307,18 +315,16 @@ public class AnnotationTableHandler {
     }
 
 
-    public void scaleAndSetAnnotationsPerVideo(List<VideoDataViewer> list, SlideScaler slideScaler, AnnotationTableHandler annotationTableHandler) {
+    public void SetAnnotationsPerVideo(List<VideoDataViewer> list, SlideScaler slideScaler, AnnotationTableHandler annotationTableHandler) {
 
         for (VideoDataViewer videoDataViewer : list) {
-            slideScaler.setRelativeSliderVideoBoundaries(videoDataViewer.getTimeSlider(), videoDataViewer.getCustomRangeSlider().getRangeSlider(), videoDataViewer.getMediaPlayer());
             annotationTableHandler.calculateAbsoluteVideoStartDate(videoDataViewer);
             annotationTableHandler.setAnnotationOnVideoSlider(videoDataViewer, videoDataViewer.getCustomRangeSlider().getRangeSlider(), slideScaler);
         }
     }
-    public void scaleAndSetAnnotationsPerPSM(List<PSMDataViewer> listOfPSMDataViewers, SlideScaler slideScaler, AnnotationTableHandler annotationTableHandler) {
+    public void SetAnnotationsPerPSM(List<PSMDataViewer> listOfPSMDataViewers, SlideScaler slideScaler, AnnotationTableHandler annotationTableHandler) {
 
         for (PSMDataViewer psmDataViewer : listOfPSMDataViewers) {
-            slideScaler.setRelativeSliderPSMBoundaries(psmDataViewer.getTimeSlider(), psmDataViewer.getCustomRangeSlider().getRangeSlider(), psmDataViewer);
             annotationTableHandler.calculateAbsolutePSMStartDate(psmDataViewer);
             annotationTableHandler.setAnnotationOnPSMSlider(psmDataViewer, psmDataViewer.getCustomRangeSlider().getRangeSlider(), slideScaler);
         }

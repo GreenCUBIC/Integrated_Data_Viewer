@@ -1,5 +1,7 @@
 package com.carleton.cubic.nicu_data_explorer.ui;
 
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -23,7 +25,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static java.lang.Thread.sleep;
 
 public class Controller {
 
@@ -44,11 +45,12 @@ public class Controller {
     private CheckBox scaleCheckBox;
 
     private AnnotationTableHandler annotationTableHandler;
-    private SlideScaler slideScaler;
     private VideoDataViewer videoDataViewerInstance;
     private List<VideoDataViewer> listOfVideoDataViewers = new ArrayList<>();
     private List<PSMDataViewer> listOfPSMDataViewers = new ArrayList<>();
     private PSMDataViewer psmDataViewerInstance;
+    private SlideScaler slideScaler = new SlideScaler();
+
 
     public Controller() {
 
@@ -103,14 +105,11 @@ public class Controller {
     private void createAnnotationInstance(File file) {
 
         try {
-
+            retrieveScalingFactorAndScalingActive();
             createAnnotationTable(file);
-            scaleAndSetAnnotationsOnInstances();
+            SetAnnotationsOnInstances();
             if (videoDataViewerInstance != null) {
                 for (VideoDataViewer videoDataViewer : listOfVideoDataViewers) {
-
-                    slideScaler = new SlideScaler();
-                    slideScaler.calculateAbsoluteVideoStartEndTimes(videoDataViewer);
                     videoDataViewer.getScene().setOnMouseClicked(event -> {
                         annotationTableHandler.SaveAndUpdateButtonHandler(getSelectedInstanceType(),getSelectedRangeSlider());
                     });
@@ -118,8 +117,6 @@ public class Controller {
             }
             if (psmDataViewerInstance != null) {
                 for (PSMDataViewer psmDataViewer : listOfPSMDataViewers) {
-                    slideScaler = new SlideScaler();
-                    slideScaler.calculateAbsolutePSMStartEndTimes(psmDataViewer);
                     psmDataViewer.getScene().setOnMouseClicked(event -> {
                         annotationTableHandler.SaveAndUpdateButtonHandler(getSelectedInstanceType(),getSelectedRangeSlider());
                     });
@@ -157,15 +154,17 @@ public class Controller {
 
     }
 
-    private void scaleAndSetAnnotationsOnInstances() {
+    private void SetAnnotationsOnInstances() {
         annotationTableHandler.getAnnotationTable().setOnMouseClicked((MouseEvent event) -> {
 
             if (event.getClickCount() > 1) {
                 if (videoDataViewerInstance != null) {
-                    scaleAndSetAnnotationOnVideoSliders();
+                    slideScaler.calculateRelativeScalingDates(videoDataViewerInstance.getCustomRangeSlider(),annotationTableHandler.getSelectedAnnotation());
+                    annotationTableHandler.SetAnnotationsPerVideo(listOfVideoDataViewers, slideScaler, annotationTableHandler);
                 }
                 if (psmDataViewerInstance != null) {
-                    scaleAndSetAnnotationOnPSMSliders();
+                    slideScaler.calculateRelativeScalingDates(videoDataViewerInstance.getCustomRangeSlider(),annotationTableHandler.getSelectedAnnotation());
+                    annotationTableHandler.SetAnnotationsPerPSM(listOfPSMDataViewers, slideScaler, annotationTableHandler);
                 }
 
 
@@ -173,19 +172,6 @@ public class Controller {
         });
     }
 
-    private void scaleAndSetAnnotationOnVideoSliders() {
-
-        slideScaler.calculateRelativeScalingBoundaries(annotationTableHandler, scaleCheckBox, scaleTextField);
-        annotationTableHandler.scaleAndSetAnnotationsPerVideo(listOfVideoDataViewers, slideScaler, annotationTableHandler);
-
-    }
-
-    private void scaleAndSetAnnotationOnPSMSliders() {
-
-        slideScaler.calculateAbsolutePSMStartEndTimes(psmDataViewerInstance);
-        annotationTableHandler.scaleAndSetAnnotationsPerPSM(listOfPSMDataViewers, slideScaler, annotationTableHandler);
-
-    }
 
     private void loadVideoInstance(File file) {
 
@@ -211,6 +197,7 @@ public class Controller {
 
         videoDataViewerInstance = new VideoDataViewer(file, mediaViewInstance, sliderAndButtonPackage, scene);
         videoDataViewerInstance.openWithControls(mediaViewInstance, playTime, lowValText, highValText, listOfVideoDataViewers,listOfPSMDataViewers);
+
         listOfVideoDataViewers.add(videoDataViewerInstance);
 
     }
@@ -340,6 +327,28 @@ public class Controller {
             }
         }
         return type;
+    }
+
+    public void retrieveScalingFactorAndScalingActive(){
+
+        scaleCheckBox.selectedProperty().addListener(new ChangeListener<Boolean>() {
+            @Override
+            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+
+                slideScaler.setActive(newValue);
+
+            }
+        });
+
+        scaleTextField.textProperty().addListener((observable, oldValue, newValue) -> {
+
+            slideScaler.setScalingFactor(Long.parseLong(newValue));
+        });
+    }
+    public void someRandoMethod(){
+
+
+
     }
 
 }
