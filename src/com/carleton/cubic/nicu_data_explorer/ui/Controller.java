@@ -249,6 +249,7 @@ public class Controller {
 
         for (PSMDataViewer psmDataViewer : listOfPSMDataViewers) {
 
+
             if (psmDataViewer.getScene().getWindow().isFocused()) {
 
                 selectedScene = psmDataViewer.getScene();

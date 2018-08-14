@@ -27,13 +27,9 @@ public class Annotation {
     @Expose
     private List<Metadatum> metadata = null;
 
-    @SerializedName("displayStartTime")
+
     private String displayStartTime;
-
-    @SerializedName("displayEndTime")
     private String displayEndTime;
-
-
     private boolean isUpdated =false;
 
     public void setIsUpdated(boolean response){
