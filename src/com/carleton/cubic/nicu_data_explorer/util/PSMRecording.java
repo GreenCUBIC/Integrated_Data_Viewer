@@ -58,10 +58,7 @@ public class PSMRecording
         }
 
         float[][] singleFrameData = frameData.get(frameIndex);
-        for (int i = 0; i < columnValues.length; i++)
-        {
-            singleFrameData[frameRow][i] = columnValues[i];
-        }
+        System.arraycopy(columnValues, 0, singleFrameData[frameRow], 0, columnValues.length);
     }
 
     public int frameCount()

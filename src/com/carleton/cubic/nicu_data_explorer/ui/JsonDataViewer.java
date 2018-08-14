@@ -52,13 +52,12 @@ public class JsonDataViewer {
         return session;
     }
 
-    public void SaveFile(File saveFile) throws FileNotFoundException, ParseException {
+    public void SaveFile(File saveFile) {
 
         Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
 
         try {
-            FileWriter fileWriter = null;
-            fileWriter = new FileWriter(saveFile);
+            FileWriter fileWriter = new FileWriter(saveFile);
             fileWriter.write(gson.toJson(session));
             fileWriter.close();
         } catch (IOException ex) {

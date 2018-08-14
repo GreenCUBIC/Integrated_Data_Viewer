@@ -10,18 +10,23 @@ public class Annotation {
     @SerializedName("name")
     @Expose
     private String name;
+
     @SerializedName("start_time")
     @Expose
     private String startTime;
+
     @SerializedName("end_time")
     @Expose
     private String endTime;
+
     @SerializedName("category")
     @Expose
     private String category;
+
     @SerializedName("metadata")
     @Expose
     private List<Metadatum> metadata = null;
+
 
     private String displayStartTime;
     private String displayEndTime;

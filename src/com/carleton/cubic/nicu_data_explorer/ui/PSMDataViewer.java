@@ -3,6 +3,8 @@ package com.carleton.cubic.nicu_data_explorer.ui;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
@@ -21,6 +23,9 @@ import java.io.File;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
+
+import static java.lang.Thread.sleep;
 
 public class PSMDataViewer {
 
@@ -32,10 +37,14 @@ public class PSMDataViewer {
     private Button playButton;
     private Button loopButton;
     private Label playTime;
-    private RangeSlider rangeSlider;
+    private Label lowValText;
+    private Label highValText;
+    private CustomRangeSlider customRangeSlider;
     private Scene scene;
     private CustomSlider customSlider = new CustomSlider();
     private boolean programmaticSliderValueChange = false;
+    private boolean locked = false;
+
 
     private final static String LOOP_STATUS_ON = "Loop:On";
     private final static String LOOP_STATUS_OFF = "Loop:Off";
@@ -48,28 +57,30 @@ public class PSMDataViewer {
     private int[] frameIndex;
     private double psmFrameRatePerSec = 18;
 
-    public PSMDataViewer(File psmFile) {
+    public PSMDataViewer(File psmFile, SliderAndButtonPackage sliderAndButtonPackage) {
+        this.timeSlider = sliderAndButtonPackage.getTimeSlider();
+        this.playButton = sliderAndButtonPackage.getPlayButton();
+        this.customRangeSlider = sliderAndButtonPackage.getCustomRangeSlider();
+        this.loopButton = sliderAndButtonPackage.getLoopButton();
         xsensorASCIIParser = new XsensorASCIIParser(psmFile);
     }
 
 
-    public void openWithControls(Canvas canvas, Slider timeSlider, Button playButton, Label playTime, RangeSlider rangeSlider, Button loopButton, Scene scene) {
+    public void openWithControls(Canvas canvas, Label playTime, Scene scene,Label lowValText,Label highValText,List<VideoDataViewer> listOfVideoDataViewers,List<PSMDataViewer> listOfPSMDataViewers) {
         this.canvas = canvas;
-        this.timeSlider = timeSlider;
-        this.playButton = playButton;
         this.playTime = playTime;
-        this.rangeSlider = rangeSlider;
-        this.loopButton = loopButton;
         this.scene = scene;
+        this.lowValText =lowValText;
+        this.highValText = highValText;
 
         double psmFrameRatePerSec = 18; //TODO: How to get this from the PSM file?
         int totalNumberOfFrames = xsensorASCIIParser.parseForLastFrameNumber();
-        customSlider.sliderLimit(timeSlider, rangeSlider);
+        customSlider.sliderLimit(timeSlider, customRangeSlider.getRangeSlider());
         Duration totalRecordingTime = Duration.seconds(totalNumberOfFrames / psmFrameRatePerSec);
         timeSlider.setMax(totalRecordingTime.toSeconds() * 10); //slider value is tenth of a second
-        rangeSlider.setMax(totalRecordingTime.toSeconds() * 10);
-        rangeSlider.setLowValue(0);
-        rangeSlider.setHighValue(rangeSlider.getMax());
+        customRangeSlider.getRangeSlider().setMax(totalRecordingTime.toSeconds() * 10);
+        customRangeSlider.getRangeSlider().setLowValue(0);
+        customRangeSlider.getRangeSlider().setHighValue(customRangeSlider.getRangeSlider().getMax());
         psmRecording = xsensorASCIIParser.parse();
 
         int[] frameIndex = new int[]{0};
@@ -100,13 +111,13 @@ public class PSMDataViewer {
                 double seekDurationValueSeconds = timeSlider.getValue() / 10;
                 frameIndex[0] = (int) (seekDurationValueSeconds * psmFrameRatePerSec);
             }
-            if (customSlider.shouldStopAtEnd(timeSlider, rangeSlider, loopRequested)) {
+            if (customSlider.shouldStopAtEnd(timeSlider, customRangeSlider.getRangeSlider(), loopRequested)) {
                 timeline.pause();
             }
-            if (customSlider.shouldLoopAtEnd(timeSlider, rangeSlider, loopRequested)) {
-                double seekDurationValueSeconds = rangeSlider.getLowValue() / 10;
+            if (customSlider.shouldLoopAtEnd(timeSlider, customRangeSlider.getRangeSlider(), loopRequested)) {
+                double seekDurationValueSeconds = customRangeSlider.getRangeSlider().getLowValue() / 10;
                 frameIndex[0] = (int) (seekDurationValueSeconds * psmFrameRatePerSec);
-                timeSlider.adjustValue(rangeSlider.getLowValue());
+                timeSlider.adjustValue(customRangeSlider.getRangeSlider().getLowValue());
                 timeline.play();
             }
         });
@@ -118,7 +129,7 @@ public class PSMDataViewer {
                     timeLineStatus == Animation.Status.STOPPED) {
                 timeline.play();
                 playButton.setText("Pause");
-            } else if (timeSlider.getValue() == rangeSlider.getHighValue()) {
+            } else if (timeSlider.getValue() == customRangeSlider.getRangeSlider().getHighValue()) {
 
                 return;
 
@@ -127,10 +138,10 @@ public class PSMDataViewer {
                 playButton.setText("Play");
             }
 
-            if (customSlider.isPositionOutOfBounds(timeSlider, rangeSlider)) {
+            if (customSlider.isPositionOutOfBounds(timeSlider, customRangeSlider.getRangeSlider())) {
                 programmaticSliderValueChange = true;
-                timeSlider.setValue(rangeSlider.getLowValue());
-                double seekDurationValueSeconds = rangeSlider.getLowValue() / 10;
+                timeSlider.setValue(customRangeSlider.getRangeSlider().getLowValue());
+                double seekDurationValueSeconds = customRangeSlider.getRangeSlider().getLowValue() / 10;
                 frameIndex[0] = (int) (seekDurationValueSeconds * psmFrameRatePerSec);
                 programmaticSliderValueChange = false;
             }
@@ -140,7 +151,7 @@ public class PSMDataViewer {
             if (!loopRequested) {
                 loopRequested = true;
                 loopButton.setText(LOOP_STATUS_ON);
-                customSlider.loopIfStoppedAtEndPSM(rangeSlider, timeSlider, frameIndex, psmFrameRatePerSec);
+                customSlider.loopIfStoppedAtEndPSM(customRangeSlider.getRangeSlider(), timeSlider, frameIndex, psmFrameRatePerSec);
 
             } else {
                 loopRequested = false;
@@ -149,11 +160,11 @@ public class PSMDataViewer {
 
         });
 
-        rangeSlider.setOnMouseDragged(drag -> {
+        customRangeSlider.getRangeSlider().setOnMouseDragged(drag -> {
             timeline.pause();
             playButton.setText("Play");
         });
-        rangeSlider.setOnMouseClicked(click -> {
+        customRangeSlider.getRangeSlider().setOnMouseClicked(click -> {
             timeline.pause();
             playButton.setText("Play");
 
@@ -177,6 +188,18 @@ public class PSMDataViewer {
         if (frameIndex[0] < psmRecording.frameCount()) {
             drawFrame(psmRecording.getFrameData(frameIndex[0]), canvas);
             frameIndex[0]++;
+        }
+        while (!psmRecording.isParsingComplete()) {
+            try {
+                sleep(50);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        if (psmRecording.isParsingComplete()) {
+            setCustomRangeSliderStartAndEndDates();
+            updateLowHighLabels();
+            adjustOtherInstanceRangeSliders(customRangeSlider, listOfVideoDataViewers, listOfPSMDataViewers);
         }
     }
 
@@ -217,6 +240,11 @@ public class PSMDataViewer {
         gc.fillText("Loading " + progressPercent + "% ...", 20, 20);
     }
 
+    private void setCustomRangeSliderStartAndEndDates() {
+        customRangeSlider.setAbsoluteStartDate(getAbsolutePSMStartDate());
+        customRangeSlider.setAbsoluteEndDate(getAbsolutePSMEndDate());
+    }
+
     public Date getAbsolutePSMStartDate() {
 
 
@@ -234,11 +262,19 @@ public class PSMDataViewer {
         }
         return fullDate;
     }
+
     public Date getAbsolutePSMEndDate() {
 
+        while (!psmRecording.isParsingComplete()) {
+            try {
+                sleep(50);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
 
-        String stringDate = psmRecording.getFrameHeader(frameIndex.length-1, "Date").stringValue();
-        String stringTime = psmRecording.getFrameHeader(frameIndex.length-1, "Time").stringValue();
+        String stringDate = psmRecording.getFrameHeader(psmRecording.frameCount() - 1, "Date").stringValue();
+        String stringTime = psmRecording.getFrameHeader(psmRecording.frameCount() - 1, "Time").stringValue();
         stringDate = stringDate.replaceAll("^\"|\"$", "");
         stringTime = stringTime.replaceAll("^\"|\"$", "");
         String fullDateString = stringDate.concat(" ").concat(stringTime);
@@ -258,6 +294,64 @@ public class PSMDataViewer {
 
     }
 
+    private void adjustOtherInstanceRangeSliders(CustomRangeSlider customRangeSlider, List<VideoDataViewer> videoDataViewers, List<PSMDataViewer> listOfPSMDataViewers) {
+
+        customRangeSlider.getRangeSlider().lowValueProperty().addListener((ov, old_val, new_val) -> {
+
+            setNewValuesForVideoInstances(videoDataViewers);
+            setNewValuesForPSMInstances(listOfPSMDataViewers);
+
+        });
+        customRangeSlider.getRangeSlider().highValueProperty().addListener((ov, old_val, new_val) -> {
+
+            setNewValuesForVideoInstances(videoDataViewers);
+            setNewValuesForPSMInstances(listOfPSMDataViewers);
+
+
+        });
+    }
+
+    private void updateLowHighLabels() {
+
+        RangeSlider rangeSlider = customRangeSlider.getRangeSlider();
+
+        rangeSlider.lowValueProperty().addListener((ov, old_val, new_val) -> {
+            lowValText.setText(TimeUtils.getFormattedTimeWithMillis(TimeUtils.addOffsetToTime(getAbsolutePSMStartDate(), rangeSlider.getLowValue() * 100)));
+        });
+
+        rangeSlider.highValueProperty().addListener((ov, old_val, new_val) -> {
+            highValText.setText(TimeUtils.getFormattedTimeWithMillis(TimeUtils.addOffsetToTime(getAbsolutePSMStartDate(), rangeSlider.getHighValue() * 100)));
+        });
+
+        timeSlider.valueProperty().addListener((ov, old_val, new_val) -> {
+            playTime.setText(TimeUtils.getFormattedTimeWithMillis(TimeUtils.addOffsetToTime(getAbsolutePSMStartDate(), timeSlider.getValue() * 100)));
+        });
+
+    }
+
+    private void setNewValuesForPSMInstances(List<PSMDataViewer> listOfPSMDataViewers) {
+
+        for (PSMDataViewer psmDataViewer : listOfPSMDataViewers) {
+
+            CustomRangeSlider customRangeSlider1 = psmDataViewer.getCustomRangeSlider();
+            Date absoluteStartDate = this.getAbsolutePSMStartDate();
+            customRangeSlider1.setLowValueUsingDate(this.customRangeSlider.getLowValueInDate(absoluteStartDate));
+            customRangeSlider1.setHighValueUsingDate(this.customRangeSlider.getHighValueInDate(absoluteStartDate));
+        }
+    }
+
+    private void setNewValuesForVideoInstances(List<VideoDataViewer> videoDataViewers) {
+
+        for (VideoDataViewer videoDataViewer2 : videoDataViewers) {     //TODO this is interfering with scaling
+
+            CustomRangeSlider customRangeSlider1 = videoDataViewer2.getCustomRangeSlider();
+            Date absoluteStartDate = this.getAbsolutePSMStartDate();
+            customRangeSlider1.setLowValueUsingDate(this.customRangeSlider.getLowValueInDate(absoluteStartDate));
+            customRangeSlider1.setHighValueUsingDate(this.customRangeSlider.getHighValueInDate(absoluteStartDate));
+        }
+
+    }
+
     public Canvas getCanvas() {
         return canvas;
     }
@@ -274,11 +368,15 @@ public class PSMDataViewer {
         return loopButton;
     }
 
-    public RangeSlider getRangeSlider() {
-        return rangeSlider;
+    public CustomRangeSlider getCustomRangeSlider() {
+        return customRangeSlider;
     }
 
     public Scene getScene() {
         return scene;
+    }
+
+    public boolean isLocked() {
+        return locked;
     }
 }

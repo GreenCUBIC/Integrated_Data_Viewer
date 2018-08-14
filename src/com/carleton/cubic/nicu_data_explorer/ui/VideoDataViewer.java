@@ -4,6 +4,7 @@ import com.carleton.cubic.nicu_data_explorer.util.TimeUtils;
 import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.media.Media;
@@ -21,11 +22,11 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class VideoDataViewer {
-    private  Label lowValText;
-    private  Label highValText;
+    private CheckBox sliderLockCheckBox;
     private MediaPlayer mediaPlayer;
     private File mediaFile;
     private boolean loopRequested = false;
@@ -34,11 +35,13 @@ public class VideoDataViewer {
     private Map<String, String> customMetaDataMap;
     private CustomSlider customSlider = new CustomSlider();
     private MediaView mediaView;
-    private RangeSlider rangeSlider;
+    private CustomRangeSlider customRangeSlider;
     private Slider timeSlider;
     private Button playButton;
     private Button loopButton;
     private Scene scene;
+    private boolean locked = false;
+    private Date absoluteEndDate;
 
     private final static String RECORDING_START_HEADER = "recordingStart";
     private final static String LEGACY_RECORDING_START_HEADER = "Recording Start";
@@ -57,18 +60,17 @@ public class VideoDataViewer {
         return mediaPlayer;
     }
 
-    public VideoDataViewer(File mediaFile, MediaView mediaView, Slider timeSlider, RangeSlider rangeSlider, Button loopButton, Button playButton, Scene scene,Label lowValText,Label highValText) {
+    public VideoDataViewer(File mediaFile, MediaView mediaView,SliderAndButtonPackage sliderAndButtonPackage, Scene scene) {
         this.mediaFile = mediaFile;
         this.mediaView = mediaView;
-        this.timeSlider = timeSlider;
-        this.rangeSlider = rangeSlider;
-        this.loopButton = loopButton;
-        this.playButton = playButton;
-        this.lowValText = lowValText;
-        this.highValText = highValText;
+        this.timeSlider = sliderAndButtonPackage.getTimeSlider();
+        this.customRangeSlider = sliderAndButtonPackage.getCustomRangeSlider();
+        this.loopButton = sliderAndButtonPackage.getLoopButton();
+        this.playButton = sliderAndButtonPackage.getPlayButton();
         this.scene = scene;
         try {
             customMetaDataMap = loadCustomVideoMetadata();
+            // This will add the video metadata recording header to the map if it doesn't exist in the video.
             customMetaDataMap.putIfAbsent(RECORDING_START_HEADER, customMetaDataMap.getOrDefault(LEGACY_RECORDING_START_HEADER, DEFAULT_RECODRING_START_TIME));
 
         } catch (IOException e) {
@@ -85,7 +87,7 @@ public class VideoDataViewer {
             Platform.runLater(() -> {
 
                 Duration currentTime = mediaPlayer.getCurrentTime();
-                playTime.setText(TimeUtils.formattedDurationForDisplay(currentTime));
+               // playTime.setText(TimeUtils.formattedDurationForDisplay(currentTime));
                 timeSlider.setDisable(duration.isUnknown());
                 if (!timeSlider.isDisabled()
                         && duration.greaterThan(Duration.ZERO)
@@ -98,10 +100,10 @@ public class VideoDataViewer {
         }
     }
 
-    public void openWithControls(Button playButton, Slider timeSlider, MediaView mediaView, Label playTime,
-                                 RangeSlider rangeSlider, Button loopButton, Label lowValText, Label highValText) {
+    public void openWithControls(MediaView mediaView, Label playTime, Label lowValText, Label highValText, List<VideoDataViewer> listOfVideoDataViewers,List<PSMDataViewer> listOfPSMDataViewers) {
 
 
+        RangeSlider rangeSlider = customRangeSlider.getRangeSlider();
         mediaView.setMediaPlayer(mediaPlayer);
         Date absoluteRecordingTime = getAbsoluteRecordingStartTime();
         mediaPlayer.currentTimeProperty().addListener(observable -> updateValues(playTime, timeSlider));
@@ -120,6 +122,11 @@ public class VideoDataViewer {
             rangeSlider.setLowValue(0);
             rangeSlider.setHighValue(rangeSlider.getMax());
             updateValues(playTime, timeSlider);
+            customRangeSlider.setAbsoluteStartDate(getAbsoluteRecordingStartTime());
+            customRangeSlider.setAbsoluteEndDate(calculateAbsoluteEndDate());
+            setCustomRangeSliderStartAndEndDates();
+            adjustOtherInstanceRangeSliders(customRangeSlider,listOfVideoDataViewers,listOfPSMDataViewers);
+
         });
 
         mediaPlayer.setCycleCount(1);
@@ -220,7 +227,57 @@ public class VideoDataViewer {
         rangeSlider.highValueProperty().addListener((ov, old_val, new_val) -> {
             highValText.setText(TimeUtils.getFormattedTimeWithMillis(TimeUtils.addOffsetToTime(absoluteRecordingTime, rangeSlider.getHighValue() * 100)));
         });
+        timeSlider.valueProperty().addListener((ov, old_val, new_val) -> {
+            playTime.setText(TimeUtils.getFormattedTimeWithMillis(TimeUtils.addOffsetToTime(absoluteRecordingTime, timeSlider.getValue() * 100)));
+        });
 
+    }
+
+    private void setCustomRangeSliderStartAndEndDates() {
+
+            customRangeSlider.setAbsoluteStartDate(getAbsoluteRecordingStartTime());
+            Long absoluteEndInMillis = getAbsoluteRecordingStartTime().getTime()+(long)mediaPlayer.getTotalDuration().toMillis();
+            Date absoluteEndinDate = new Date(absoluteEndInMillis);
+            customRangeSlider.setAbsoluteEndDate(absoluteEndinDate);
+    }
+
+    private void adjustOtherInstanceRangeSliders(CustomRangeSlider customRangeSlider, List<VideoDataViewer> videoDataViewers, List<PSMDataViewer> listOfPSMDataViewers) {
+
+        customRangeSlider.getRangeSlider().lowValueProperty().addListener((ov, old_val, new_val) -> {
+
+            setNewValuesForVideoInstances(videoDataViewers);
+            setNewValuesForPSMInstances(listOfPSMDataViewers);
+
+        });
+        customRangeSlider.getRangeSlider().highValueProperty().addListener((ov, old_val, new_val) -> {
+
+            setNewValuesForVideoInstances(videoDataViewers);
+            setNewValuesForPSMInstances(listOfPSMDataViewers);
+
+
+        });
+    }
+
+    private void setNewValuesForPSMInstances(List<PSMDataViewer> listOfPSMDataViewers) {
+
+        for (PSMDataViewer psmDataViewer : listOfPSMDataViewers) {
+
+            CustomRangeSlider customRangeSlider1 = psmDataViewer.getCustomRangeSlider();
+            Date absoluteStartDate = this.getAbsoluteRecordingStartTime();
+            customRangeSlider1.setLowValueUsingDate(this.customRangeSlider.getLowValueInDate(absoluteStartDate));
+            customRangeSlider1.setHighValueUsingDate(this.customRangeSlider.getHighValueInDate(absoluteStartDate));
+        }
+    }
+
+    private void setNewValuesForVideoInstances(List<VideoDataViewer> videoDataViewers) {
+
+        for (VideoDataViewer videoDataViewer2 : videoDataViewers) {
+
+            CustomRangeSlider customRangeSlider1 = videoDataViewer2.getCustomRangeSlider();
+            Date absoluteStartDate = this.getAbsoluteRecordingStartTime();
+            customRangeSlider1.setLowValueUsingDate(this.customRangeSlider.getLowValueInDate(absoluteStartDate));
+            customRangeSlider1.setHighValueUsingDate(this.customRangeSlider.getHighValueInDate(absoluteStartDate));
+        }
     }
 
     public Date getAbsoluteRecordingStartTime() {
@@ -241,6 +298,13 @@ public class VideoDataViewer {
         return new Date();
     }
 
+    public Date calculateAbsoluteEndDate() {
+
+        Long durationInSliderTime = ((long) (mediaPlayer.getTotalDuration().toMillis()));
+        absoluteEndDate = new Date(getAbsoluteRecordingStartTime().getTime() + durationInSliderTime);
+        return absoluteEndDate;
+    }
+
     public Map<String, String> loadCustomVideoMetadata() throws IOException {
         MetadataEditor mediaMeta = MetadataEditor.createFrom(mediaFile);
         Map<String, MetaValue> keyedMeta = mediaMeta.getKeyedMeta();
@@ -254,20 +318,12 @@ public class VideoDataViewer {
         return customMetaDataMap;
     }
 
-    /*public void addCustomVideoMetadata(String key, String value, File mediaFile) throws IOException
-    {
-        MetadataEditor mediaMeta = MetadataEditor.createFrom(mediaFile);
-        Map<String, MetaValue> keyedMeta = mediaMeta.getKeyedMeta();
-        keyedMeta.put(key, MetaValue.createString(value));
-        mediaMeta.save(true);
-    }*/
-
     public MediaView getMediaView() {
         return mediaView;
     }
 
-    public RangeSlider getRangeSlider() {
-        return rangeSlider;
+    public CustomRangeSlider getCustomRangeSlider() {
+        return customRangeSlider;
     }
 
     public Slider getTimeSlider() {
@@ -284,5 +340,17 @@ public class VideoDataViewer {
 
     public Scene getScene() {
         return scene;
+    }
+
+    public boolean isLocked() {
+        return locked;
+    }
+
+    public Date getAbsoluteEndDate() {
+        return absoluteEndDate;
+    }
+
+    public void setAbsoluteEndDate(Date absoluteEndDate) {
+        this.absoluteEndDate = absoluteEndDate;
     }
 }
