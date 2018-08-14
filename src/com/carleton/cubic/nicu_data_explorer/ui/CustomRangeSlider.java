@@ -26,16 +26,32 @@ public class CustomRangeSlider{
 
     public void setLowValueUsingDate(Date newDate) {
         if(absoluteStartDate.getTime()<newDate.getTime()&&newDate.getTime()<absoluteEndDate.getTime()) {
-            long startInSliderUnits = (newDate.getTime() - absoluteStartDate.getTime()) / 100;
-            rangeSlider.setLowValue(startInSliderUnits);
+            long lowInSliderUnits = (newDate.getTime() - absoluteStartDate.getTime()) / 100;
+            rangeSlider.setLowValue(lowInSliderUnits);
         }
 
     }
 
+    public void setMinUsingDate(Date newDate) {
+
+        long minInSliderUnits = (newDate.getTime() - absoluteStartDate.getTime()) / 100;
+        rangeSlider.setMin(minInSliderUnits);
+
+
+    }
+    public void setMaxUsingDate(Date newDate) {
+
+        long maxInSliderUnits = (newDate.getTime() - absoluteStartDate.getTime()) / 100;
+        rangeSlider.setMax(maxInSliderUnits);
+
+
+    }
+
+
     public void setHighValueUsingDate(Date newDate) {
         if(absoluteStartDate.getTime()<newDate.getTime()&&newDate.getTime()<absoluteEndDate.getTime()) {
-            long startInSliderUnits = (newDate.getTime() - absoluteStartDate.getTime()) / 100;
-            rangeSlider.setHighValue(startInSliderUnits);
+            long highInSliderUnits = (newDate.getTime() - absoluteStartDate.getTime()) / 100;
+            rangeSlider.setHighValue(highInSliderUnits);
         }
 
     }
@@ -58,6 +74,13 @@ public class CustomRangeSlider{
         return date;
     }
 
+    public void returnToDefault() {
+
+        this.setMinUsingDate(absoluteStartDate);
+        this.setMaxUsingDate(absoluteEndDate);
+
+    }
+
     public Date getAbsoluteEndDate() {
         return absoluteEndDate;
     }
@@ -73,4 +96,6 @@ public class CustomRangeSlider{
     public void setRangeSlider(RangeSlider rangeSlider) {
         this.rangeSlider = rangeSlider;
     }
+
+
 }

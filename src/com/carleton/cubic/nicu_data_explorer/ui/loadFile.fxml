@@ -10,7 +10,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1">
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.carleton.cubic.nicu_data_explorer.ui.Controller">
     <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
         <Label text="NICU DATA EXPLORER">
             <font>
@@ -39,7 +39,15 @@
          <TextField fx:id="scaleTextField" prefHeight="25.0" prefWidth="94.0" promptText="Scale Factor" />
          <CheckBox fx:id="scaleCheckBox" mnemonicParsing="false" text="Scale">
          <HBox.margin>
-            <Insets left="10.0" />
+            <Insets left="20.0" />
          </HBox.margin></CheckBox>
+         <Button fx:id="zoomInButton" disable="true" mnemonicParsing="false" text="Zoom In">
+         <HBox.margin>
+            <Insets left="50.0" />
+         </HBox.margin></Button>
+         <Button fx:id="zoomOutButton" disable="true" mnemonicParsing="false" text="Zoom Out">
+         <HBox.margin>
+            <Insets left="10.0" />
+         </HBox.margin></Button>
     </HBox>
 </VBox>

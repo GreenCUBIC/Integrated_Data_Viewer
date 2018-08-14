@@ -1,13 +1,7 @@
 package com.carleton.cubic.nicu_data_explorer.ui;
 
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.Slider;
-import javafx.scene.control.TextField;
-import javafx.scene.media.MediaPlayer;
-import javafx.util.Duration;
-import org.controlsfx.control.RangeSlider;
-
 import java.util.Date;
+import java.util.List;
 
 
 public class SlideScaler {
@@ -22,17 +16,6 @@ public class SlideScaler {
     public SlideScaler() {
 
 
-
-
-
-
-
-
-
-
-
-
-
     }
     public void calculateRelativeScalingDates(CustomRangeSlider customRangeSlider,Annotation annotation){
 
@@ -40,17 +23,50 @@ public class SlideScaler {
         absoluteEndDate = customRangeSlider.getAbsoluteEndDate();
         Date annotationStartDate = new Date(Long.parseLong(annotation.getStart_time()));
         Date annotationEndDate = new Date(Long.parseLong(annotation.getEnd_time()));
-        Long annotationRangeInSeconds = (annotationEndDate.getTime()-annotationStartDate.getTime())/1000;
+        Long annotationRangeInMillis = (annotationEndDate.getTime()-annotationStartDate.getTime());
+
+        if(annotationRangeInMillis<1000){
 
 
-        Long relativeStartTime = annotationStartDate.getTime() - ((scalingFactor * annotationRangeInSeconds) * 10);
-        Long relativeEndTime = (annotationEndDate.getTime() + ((scalingFactor * annotationRangeInSeconds)) * 10);
+            annotationRangeInMillis=(long)1000;
+        }
+
+        long relativeStartTime = annotationStartDate.getTime() - ((scalingFactor * annotationRangeInMillis));
+        long relativeEndTime = (annotationEndDate.getTime() + ((scalingFactor * annotationRangeInMillis)));
 
         relativeStartDate = new Date(relativeStartTime);
         relativeEndDate = new Date(relativeEndTime);
     }
 
 
+    public void scaleInstance(CustomRangeSlider customRangeSlider, Annotation annotation) {
+
+
+            calculateRelativeScalingDates(customRangeSlider,annotation);
+            setRelativeMinMaxOfSlider(customRangeSlider);
+
+    }
+
+    public void setRelativeMinMaxOfSlider(CustomRangeSlider customRangeSlider) {
+
+       if(isActive) {
+           checkIfWithinAbsoluteBounds();
+           customRangeSlider.setMinUsingDate(relativeStartDate);
+           customRangeSlider.setMaxUsingDate(relativeEndDate);
+
+       }
+    }
+
+    private void checkIfWithinAbsoluteBounds() {
+
+        if(relativeStartDate.getTime()<absoluteStartDate.getTime()){
+            relativeStartDate=absoluteStartDate;
+        }
+        if(relativeEndDate.getTime()>absoluteEndDate.getTime()){
+            relativeEndDate=absoluteEndDate;
+        }
+
+    }
 
     public Long getScalingFactor() {
         return scalingFactor;
@@ -76,4 +92,9 @@ public class SlideScaler {
         return relativeEndDate;
     }
 
+
+    public boolean relativeStartDateWithinBounds(CustomRangeSlider customRangeSlider) {
+
+        return customRangeSlider.getAbsoluteStartDate().getTime()<=relativeStartDate.getTime() && relativeStartDate.getTime()<=absoluteEndDate.getTime();
+    }
 }

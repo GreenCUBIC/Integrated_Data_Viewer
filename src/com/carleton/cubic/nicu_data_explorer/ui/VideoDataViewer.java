@@ -87,7 +87,7 @@ public class VideoDataViewer {
             Platform.runLater(() -> {
 
                 Duration currentTime = mediaPlayer.getCurrentTime();
-                playTime.setText(TimeUtils.formattedDurationForDisplay(currentTime));
+               // playTime.setText(TimeUtils.formattedDurationForDisplay(currentTime));
                 timeSlider.setDisable(duration.isUnknown());
                 if (!timeSlider.isDisabled()
                         && duration.greaterThan(Duration.ZERO)
@@ -226,6 +226,9 @@ public class VideoDataViewer {
         });
         rangeSlider.highValueProperty().addListener((ov, old_val, new_val) -> {
             highValText.setText(TimeUtils.getFormattedTimeWithMillis(TimeUtils.addOffsetToTime(absoluteRecordingTime, rangeSlider.getHighValue() * 100)));
+        });
+        timeSlider.valueProperty().addListener((ov, old_val, new_val) -> {
+            playTime.setText(TimeUtils.getFormattedTimeWithMillis(TimeUtils.addOffsetToTime(absoluteRecordingTime, timeSlider.getValue() * 100)));
         });
 
     }

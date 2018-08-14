@@ -29,12 +29,7 @@ import java.util.List;
 public class Controller {
 
 
-    @FXML
-    private Label playTime;
-    @FXML
-    private Label lowValText;
-    @FXML
-    private Label highValText;
+
     @FXML
     private ChoiceBox<String> dataChoiceBox;
     @FXML
@@ -43,7 +38,6 @@ public class Controller {
     private TextField scaleTextField;
     @FXML
     private CheckBox scaleCheckBox;
-
     private AnnotationTableHandler annotationTableHandler;
     private VideoDataViewer videoDataViewerInstance;
     private List<VideoDataViewer> listOfVideoDataViewers = new ArrayList<>();
@@ -64,9 +58,7 @@ public class Controller {
     @FXML
     public void initialize() {
 
-
-        loadFile();
-
+        retrieveScalingFactorAndScalingActive();
         dataChoiceBox.setItems(FXCollections.observableArrayList(
                 VIDEO_SELECTOR_LABEL, PSM_SELECTOR_LABEL, ANNOTATION_SELECTOR_LABEL)
         );
@@ -102,10 +94,73 @@ public class Controller {
 
     }
 
+    private void loadVideoInstance(File file) {
+
+
+        Stage stage = new Stage();
+        Parent root = null;
+        try {
+            root = FXMLLoader.load(getClass().getResource("VideoInstance.fxml"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        Scene scene = new Scene(root);
+        stage.setScene(scene);
+
+        MediaView mediaViewInstance = (MediaView) scene.lookup("#mediaView");
+        Slider sliderInstance = (Slider) scene.lookup("#mainSlider");
+        RangeSlider rangeSliderInstance = (RangeSlider) scene.lookup("#rangeSlider");
+        CustomRangeSlider customRangeSliderInstance = new CustomRangeSlider(rangeSliderInstance);
+        Button loopButtonInstance = (Button) scene.lookup("#loopButton");
+        Button playButtonInstance = (Button) scene.lookup("#playButton");
+        Label lowValText = (Label) scene.lookup("#lowValText");
+        Label highValText = (Label) scene.lookup("#highValText");
+        Label timeLineText = (Label) scene.lookup("#timeLineText");
+        SliderAndButtonPackage sliderAndButtonPackage = new SliderAndButtonPackage(playButtonInstance,loopButtonInstance,sliderInstance,customRangeSliderInstance);
+        stage.show();
+
+        videoDataViewerInstance = new VideoDataViewer(file, mediaViewInstance, sliderAndButtonPackage, scene);
+        videoDataViewerInstance.openWithControls(mediaViewInstance, timeLineText, lowValText, highValText, listOfVideoDataViewers,listOfPSMDataViewers);
+
+        listOfVideoDataViewers.add(videoDataViewerInstance);
+
+    }
+
+    private void loadPSMInstance(File file) {
+
+
+        Stage stage = new Stage();
+        Parent root = null;
+        try {
+            root = FXMLLoader.load(getClass().getResource("PSMInstance.fxml"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        Scene scene = new Scene(root);
+        stage.setScene(scene);
+
+        Canvas canvasInstance = (Canvas) scene.lookup("#canvas");
+        Slider sliderInstance = (Slider) scene.lookup("#mainSlider");
+        RangeSlider rangeSliderInstance = (RangeSlider) scene.lookup("#rangeSlider");
+        CustomRangeSlider customRangeSliderInstance = new CustomRangeSlider(rangeSliderInstance);
+        Button loopButtonInstance = (Button) scene.lookup("#loopButton");
+        Button playButtonInstance = (Button) scene.lookup("#playButton");
+        Label lowValText = (Label) scene.lookup("#lowValText");
+        Label highValText = (Label) scene.lookup("#highValText");
+        Label timeLineText = (Label) scene.lookup("#timeLineText");
+        SliderAndButtonPackage sliderAndButtonPackage = new SliderAndButtonPackage(playButtonInstance,loopButtonInstance,sliderInstance,customRangeSliderInstance);
+        stage.show();
+
+
+        psmDataViewerInstance = new PSMDataViewer(file,sliderAndButtonPackage);
+        psmDataViewerInstance.openWithControls(canvasInstance, timeLineText  , scene,lowValText,highValText,listOfVideoDataViewers,listOfPSMDataViewers);
+
+        listOfPSMDataViewers.add(psmDataViewerInstance);
+    }
+
     private void createAnnotationInstance(File file) {
 
         try {
-            retrieveScalingFactorAndScalingActive();
             createAnnotationTable(file);
             SetAnnotationsOnInstances();
             if (videoDataViewerInstance != null) {
@@ -159,11 +214,9 @@ public class Controller {
 
             if (event.getClickCount() > 1) {
                 if (videoDataViewerInstance != null) {
-                    slideScaler.calculateRelativeScalingDates(videoDataViewerInstance.getCustomRangeSlider(),annotationTableHandler.getSelectedAnnotation());
                     annotationTableHandler.SetAnnotationsPerVideo(listOfVideoDataViewers, slideScaler, annotationTableHandler);
                 }
                 if (psmDataViewerInstance != null) {
-                    slideScaler.calculateRelativeScalingDates(videoDataViewerInstance.getCustomRangeSlider(),annotationTableHandler.getSelectedAnnotation());
                     annotationTableHandler.SetAnnotationsPerPSM(listOfPSMDataViewers, slideScaler, annotationTableHandler);
                 }
 
@@ -173,63 +226,7 @@ public class Controller {
     }
 
 
-    private void loadVideoInstance(File file) {
 
-
-        Stage stage = new Stage();
-        Parent root = null;
-        try {
-            root = FXMLLoader.load(getClass().getResource("VideoInstance.fxml"));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        Scene scene = new Scene(root);
-        stage.setScene(scene);
-
-        MediaView mediaViewInstance = (MediaView) scene.lookup("#mediaView");
-        Slider sliderInstance = (Slider) scene.lookup("#mainSlider");
-        RangeSlider rangeSliderInstance = (RangeSlider) scene.lookup("#rangeSlider");
-        CustomRangeSlider customRangeSliderInstance = new CustomRangeSlider(rangeSliderInstance);
-        Button loopButtonInstance = (Button) scene.lookup("#loopButton");
-        Button playButtonInstance = (Button) scene.lookup("#playButton");
-        SliderAndButtonPackage sliderAndButtonPackage = new SliderAndButtonPackage(playButtonInstance,loopButtonInstance,sliderInstance,customRangeSliderInstance);
-        stage.show();
-
-        videoDataViewerInstance = new VideoDataViewer(file, mediaViewInstance, sliderAndButtonPackage, scene);
-        videoDataViewerInstance.openWithControls(mediaViewInstance, playTime, lowValText, highValText, listOfVideoDataViewers,listOfPSMDataViewers);
-
-        listOfVideoDataViewers.add(videoDataViewerInstance);
-
-    }
-
-    private void loadPSMInstance(File file) {
-
-
-        Stage stage = new Stage();
-        Parent root = null;
-        try {
-            root = FXMLLoader.load(getClass().getResource("PSMInstance.fxml"));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        Scene scene = new Scene(root);
-        stage.setScene(scene);
-
-        Canvas canvasInstance = (Canvas) scene.lookup("#canvas");
-        Slider sliderInstance = (Slider) scene.lookup("#mainSlider");
-        RangeSlider rangeSliderInstance = (RangeSlider) scene.lookup("#rangeSlider");
-        CustomRangeSlider customRangeSliderInstance = new CustomRangeSlider(rangeSliderInstance);
-        Button loopButtonInstance = (Button) scene.lookup("#loopButton");
-        Button playButtonInstance = (Button) scene.lookup("#playButton");
-        SliderAndButtonPackage sliderAndButtonPackage = new SliderAndButtonPackage(playButtonInstance,loopButtonInstance,sliderInstance,customRangeSliderInstance);
-        stage.show();
-
-
-        psmDataViewerInstance = new PSMDataViewer(file,sliderAndButtonPackage);
-        psmDataViewerInstance.openWithControls(canvasInstance, playTime  , scene, listOfVideoDataViewers,listOfPSMDataViewers);
-
-        listOfPSMDataViewers.add(psmDataViewerInstance);
-    }
 
 
     private void createAnnotationTable(File file) throws IOException {
@@ -245,30 +242,6 @@ public class Controller {
         annotationTableHandler.setAnnotationData(file);
 
     }
-
-
-    private void loadFile() {
-
-
-        Stage stage = new Stage();
-        Parent root = null;
-        try {
-            root = FXMLLoader.load(getClass().getResource("loadFile.fxml"));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        Scene scene = new Scene(root);
-        stage.setScene(scene);
-
-        dataChoiceBox = (ChoiceBox<String>) scene.lookup("#dataChoiceBox");
-        fileLoadButton = (Button) scene.lookup("#fileLoadButton");
-        scaleCheckBox = (CheckBox) scene.lookup("#scaleCheckBox");
-        scaleTextField = (TextField) scene.lookup("#scaleTextField");
-        stage.show();
-
-    }
-
-
 
     private RangeSlider getSelectedRangeSlider() {
 
@@ -331,24 +304,26 @@ public class Controller {
 
     public void retrieveScalingFactorAndScalingActive(){
 
-        scaleCheckBox.selectedProperty().addListener(new ChangeListener<Boolean>() {
-            @Override
-            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+        scaleCheckBox.selectedProperty().addListener((observable, oldValue, newValue) -> slideScaler.setActive(newValue));
 
-                slideScaler.setActive(newValue);
+        scaleTextField.textProperty().addListener((observable, oldValue, newValue) -> {
+            if(newValue.equals("")){
 
+                slideScaler.setScalingFactor((long)0);
+            }
+            else {
+                slideScaler.setScalingFactor(Long.parseLong(newValue));
             }
         });
 
-        scaleTextField.textProperty().addListener((observable, oldValue, newValue) -> {
 
-            slideScaler.setScalingFactor(Long.parseLong(newValue));
-        });
     }
-    public void someRandoMethod(){
+    public void retrieveZoomInAndOutChanges(){
+
 
 
 
     }
+
 
 }

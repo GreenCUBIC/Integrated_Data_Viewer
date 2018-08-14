@@ -3,6 +3,8 @@ package com.carleton.cubic.nicu_data_explorer.ui;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
@@ -15,6 +17,7 @@ import com.carleton.cubic.nicu_data_explorer.util.ColorMap;
 import com.carleton.cubic.nicu_data_explorer.util.PSMRecording;
 import com.carleton.cubic.nicu_data_explorer.util.TimeUtils;
 import com.carleton.cubic.nicu_data_explorer.util.XsensorASCIIParser;
+import org.controlsfx.control.RangeSlider;
 
 import java.io.File;
 import java.text.ParseException;
@@ -34,6 +37,8 @@ public class PSMDataViewer {
     private Button playButton;
     private Button loopButton;
     private Label playTime;
+    private Label lowValText;
+    private Label highValText;
     private CustomRangeSlider customRangeSlider;
     private Scene scene;
     private CustomSlider customSlider = new CustomSlider();
@@ -52,7 +57,7 @@ public class PSMDataViewer {
     private int[] frameIndex;
     private double psmFrameRatePerSec = 18;
 
-    public PSMDataViewer(File psmFile,SliderAndButtonPackage sliderAndButtonPackage) {
+    public PSMDataViewer(File psmFile, SliderAndButtonPackage sliderAndButtonPackage) {
         this.timeSlider = sliderAndButtonPackage.getTimeSlider();
         this.playButton = sliderAndButtonPackage.getPlayButton();
         this.customRangeSlider = sliderAndButtonPackage.getCustomRangeSlider();
@@ -61,19 +66,21 @@ public class PSMDataViewer {
     }
 
 
-    public void openWithControls(Canvas canvas, Label playTime, Scene scene, List<VideoDataViewer> listOfVideoDataViewers, List<PSMDataViewer> listOfPSMDataViewers) {
+    public void openWithControls(Canvas canvas, Label playTime, Scene scene,Label lowValText,Label highValText,List<VideoDataViewer> listOfVideoDataViewers,List<PSMDataViewer> listOfPSMDataViewers) {
         this.canvas = canvas;
         this.playTime = playTime;
         this.scene = scene;
+        this.lowValText =lowValText;
+        this.highValText = highValText;
 
         double psmFrameRatePerSec = 18; //TODO: How to get this from the PSM file?
         int totalNumberOfFrames = xsensorASCIIParser.parseForLastFrameNumber();
-        customSlider.sliderLimit(timeSlider,  customRangeSlider.getRangeSlider());
+        customSlider.sliderLimit(timeSlider, customRangeSlider.getRangeSlider());
         Duration totalRecordingTime = Duration.seconds(totalNumberOfFrames / psmFrameRatePerSec);
         timeSlider.setMax(totalRecordingTime.toSeconds() * 10); //slider value is tenth of a second
         customRangeSlider.getRangeSlider().setMax(totalRecordingTime.toSeconds() * 10);
         customRangeSlider.getRangeSlider().setLowValue(0);
-        customRangeSlider.getRangeSlider().setHighValue( customRangeSlider.getRangeSlider().getMax());
+        customRangeSlider.getRangeSlider().setHighValue(customRangeSlider.getRangeSlider().getMax());
         psmRecording = xsensorASCIIParser.parse();
 
         int[] frameIndex = new int[]{0};
@@ -104,13 +111,13 @@ public class PSMDataViewer {
                 double seekDurationValueSeconds = timeSlider.getValue() / 10;
                 frameIndex[0] = (int) (seekDurationValueSeconds * psmFrameRatePerSec);
             }
-            if (customSlider.shouldStopAtEnd(timeSlider,  customRangeSlider.getRangeSlider(), loopRequested)) {
+            if (customSlider.shouldStopAtEnd(timeSlider, customRangeSlider.getRangeSlider(), loopRequested)) {
                 timeline.pause();
             }
-            if (customSlider.shouldLoopAtEnd(timeSlider,  customRangeSlider.getRangeSlider(), loopRequested)) {
-                double seekDurationValueSeconds =  customRangeSlider.getRangeSlider().getLowValue() / 10;
+            if (customSlider.shouldLoopAtEnd(timeSlider, customRangeSlider.getRangeSlider(), loopRequested)) {
+                double seekDurationValueSeconds = customRangeSlider.getRangeSlider().getLowValue() / 10;
                 frameIndex[0] = (int) (seekDurationValueSeconds * psmFrameRatePerSec);
-                timeSlider.adjustValue( customRangeSlider.getRangeSlider().getLowValue());
+                timeSlider.adjustValue(customRangeSlider.getRangeSlider().getLowValue());
                 timeline.play();
             }
         });
@@ -122,7 +129,7 @@ public class PSMDataViewer {
                     timeLineStatus == Animation.Status.STOPPED) {
                 timeline.play();
                 playButton.setText("Pause");
-            } else if (timeSlider.getValue() ==  customRangeSlider.getRangeSlider().getHighValue()) {
+            } else if (timeSlider.getValue() == customRangeSlider.getRangeSlider().getHighValue()) {
 
                 return;
 
@@ -131,10 +138,10 @@ public class PSMDataViewer {
                 playButton.setText("Play");
             }
 
-            if (customSlider.isPositionOutOfBounds(timeSlider,  customRangeSlider.getRangeSlider())) {
+            if (customSlider.isPositionOutOfBounds(timeSlider, customRangeSlider.getRangeSlider())) {
                 programmaticSliderValueChange = true;
-                timeSlider.setValue( customRangeSlider.getRangeSlider().getLowValue());
-                double seekDurationValueSeconds =  customRangeSlider.getRangeSlider().getLowValue() / 10;
+                timeSlider.setValue(customRangeSlider.getRangeSlider().getLowValue());
+                double seekDurationValueSeconds = customRangeSlider.getRangeSlider().getLowValue() / 10;
                 frameIndex[0] = (int) (seekDurationValueSeconds * psmFrameRatePerSec);
                 programmaticSliderValueChange = false;
             }
@@ -144,7 +151,7 @@ public class PSMDataViewer {
             if (!loopRequested) {
                 loopRequested = true;
                 loopButton.setText(LOOP_STATUS_ON);
-                customSlider.loopIfStoppedAtEndPSM( customRangeSlider.getRangeSlider(), timeSlider, frameIndex, psmFrameRatePerSec);
+                customSlider.loopIfStoppedAtEndPSM(customRangeSlider.getRangeSlider(), timeSlider, frameIndex, psmFrameRatePerSec);
 
             } else {
                 loopRequested = false;
@@ -182,16 +189,17 @@ public class PSMDataViewer {
             drawFrame(psmRecording.getFrameData(frameIndex[0]), canvas);
             frameIndex[0]++;
         }
-        while(!psmRecording.isParsingComplete()){
+        while (!psmRecording.isParsingComplete()) {
             try {
                 sleep(50);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         }
-        if(psmRecording.isParsingComplete()){
+        if (psmRecording.isParsingComplete()) {
             setCustomRangeSliderStartAndEndDates();
-            adjustOtherVideoInstanceRangeSliders(customRangeSlider,listOfVideoDataViewers,listOfPSMDataViewers);
+            updateLowHighLabels();
+            adjustOtherInstanceRangeSliders(customRangeSlider, listOfVideoDataViewers, listOfPSMDataViewers);
         }
     }
 
@@ -257,14 +265,13 @@ public class PSMDataViewer {
 
     public Date getAbsolutePSMEndDate() {
 
-        while(!psmRecording.isParsingComplete()){
+        while (!psmRecording.isParsingComplete()) {
             try {
                 sleep(50);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         }
-
 
         String stringDate = psmRecording.getFrameHeader(psmRecording.frameCount() - 1, "Date").stringValue();
         String stringTime = psmRecording.getFrameHeader(psmRecording.frameCount() - 1, "Time").stringValue();
@@ -287,7 +294,7 @@ public class PSMDataViewer {
 
     }
 
-    private void adjustOtherVideoInstanceRangeSliders(CustomRangeSlider customRangeSlider, List<VideoDataViewer> videoDataViewers,List<PSMDataViewer> listOfPSMDataViewers) {
+    private void adjustOtherInstanceRangeSliders(CustomRangeSlider customRangeSlider, List<VideoDataViewer> videoDataViewers, List<PSMDataViewer> listOfPSMDataViewers) {
 
         customRangeSlider.getRangeSlider().lowValueProperty().addListener((ov, old_val, new_val) -> {
 
@@ -303,6 +310,25 @@ public class PSMDataViewer {
 
         });
     }
+
+    private void updateLowHighLabels() {
+
+        RangeSlider rangeSlider = customRangeSlider.getRangeSlider();
+
+        rangeSlider.lowValueProperty().addListener((ov, old_val, new_val) -> {
+            lowValText.setText(TimeUtils.getFormattedTimeWithMillis(TimeUtils.addOffsetToTime(getAbsolutePSMStartDate(), rangeSlider.getLowValue() * 100)));
+        });
+
+        rangeSlider.highValueProperty().addListener((ov, old_val, new_val) -> {
+            highValText.setText(TimeUtils.getFormattedTimeWithMillis(TimeUtils.addOffsetToTime(getAbsolutePSMStartDate(), rangeSlider.getHighValue() * 100)));
+        });
+
+        timeSlider.valueProperty().addListener((ov, old_val, new_val) -> {
+            playTime.setText(TimeUtils.getFormattedTimeWithMillis(TimeUtils.addOffsetToTime(getAbsolutePSMStartDate(), timeSlider.getValue() * 100)));
+        });
+
+    }
+
     private void setNewValuesForPSMInstances(List<PSMDataViewer> listOfPSMDataViewers) {
 
         for (PSMDataViewer psmDataViewer : listOfPSMDataViewers) {
@@ -316,13 +342,14 @@ public class PSMDataViewer {
 
     private void setNewValuesForVideoInstances(List<VideoDataViewer> videoDataViewers) {
 
-        for (VideoDataViewer videoDataViewer2 : videoDataViewers) {
+        for (VideoDataViewer videoDataViewer2 : videoDataViewers) {     //TODO this is interfering with scaling
 
             CustomRangeSlider customRangeSlider1 = videoDataViewer2.getCustomRangeSlider();
             Date absoluteStartDate = this.getAbsolutePSMStartDate();
             customRangeSlider1.setLowValueUsingDate(this.customRangeSlider.getLowValueInDate(absoluteStartDate));
             customRangeSlider1.setHighValueUsingDate(this.customRangeSlider.getHighValueInDate(absoluteStartDate));
         }
+
     }
 
     public Canvas getCanvas() {
