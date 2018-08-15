@@ -1,7 +1,5 @@
 package com.carleton.cubic.nicu_data_explorer.ui;
 
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -10,9 +8,6 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.*;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
 import javafx.scene.media.MediaView;
@@ -44,6 +39,8 @@ public class Controller {
     private List<PSMDataViewer> listOfPSMDataViewers = new ArrayList<>();
     private PSMDataViewer psmDataViewerInstance;
     private SlideScaler slideScaler = new SlideScaler();
+    private String selectedType = "default";
+    private RangeSlider selectedRangeSlider = new RangeSlider();
 
 
     public Controller() {
@@ -116,13 +113,24 @@ public class Controller {
         Label lowValText = (Label) scene.lookup("#lowValText");
         Label highValText = (Label) scene.lookup("#highValText");
         Label timeLineText = (Label) scene.lookup("#timeLineText");
+        VBox vboxInstance = (VBox) scene.lookup("#vBox");
         SliderAndButtonPackage sliderAndButtonPackage = new SliderAndButtonPackage(playButtonInstance,loopButtonInstance,sliderInstance,customRangeSliderInstance);
         stage.show();
 
         videoDataViewerInstance = new VideoDataViewer(file, mediaViewInstance, sliderAndButtonPackage, scene);
         videoDataViewerInstance.openWithControls(mediaViewInstance, timeLineText, lowValText, highValText, listOfVideoDataViewers,listOfPSMDataViewers);
-
         listOfVideoDataViewers.add(videoDataViewerInstance);
+
+        scene.getWindow().focusedProperty().addListener((observable, oldValue, newValue) -> {
+
+            if(newValue){
+                selectedType = "Video";
+                selectedRangeSlider= videoDataViewerInstance.getCustomRangeSlider().getRangeSlider();
+                annotationTableHandler.SaveAndUpdateButtonHandler(customRangeSliderInstance);
+
+
+            }
+        });
 
     }
 
@@ -148,14 +156,23 @@ public class Controller {
         Label lowValText = (Label) scene.lookup("#lowValText");
         Label highValText = (Label) scene.lookup("#highValText");
         Label timeLineText = (Label) scene.lookup("#timeLineText");
+        VBox vboxInstance = (VBox) scene.lookup("#vBox");
         SliderAndButtonPackage sliderAndButtonPackage = new SliderAndButtonPackage(playButtonInstance,loopButtonInstance,sliderInstance,customRangeSliderInstance);
         stage.show();
 
 
         psmDataViewerInstance = new PSMDataViewer(file,sliderAndButtonPackage);
         psmDataViewerInstance.openWithControls(canvasInstance, timeLineText  , scene,lowValText,highValText,listOfVideoDataViewers,listOfPSMDataViewers);
-
         listOfPSMDataViewers.add(psmDataViewerInstance);
+
+        scene.getWindow().focusedProperty().addListener((observable, oldValue, newValue) -> {
+
+            if(newValue){
+                selectedType = "PSM";
+                selectedRangeSlider= psmDataViewerInstance.getCustomRangeSlider().getRangeSlider();
+                annotationTableHandler.SaveAndUpdateButtonHandler(customRangeSliderInstance);
+            }
+        });
     }
 
     private void createAnnotationInstance(File file) {
@@ -163,20 +180,6 @@ public class Controller {
         try {
             createAnnotationTable(file);
             SetAnnotationsOnInstances();
-            if (videoDataViewerInstance != null) {
-                for (VideoDataViewer videoDataViewer : listOfVideoDataViewers) {
-                    videoDataViewer.getScene().setOnMouseClicked(event -> {
-                        annotationTableHandler.SaveAndUpdateButtonHandler(getSelectedInstanceType(),getSelectedRangeSlider());
-                    });
-                }
-            }
-            if (psmDataViewerInstance != null) {
-                for (PSMDataViewer psmDataViewer : listOfPSMDataViewers) {
-                    psmDataViewer.getScene().setOnMouseClicked(event -> {
-                        annotationTableHandler.SaveAndUpdateButtonHandler(getSelectedInstanceType(),getSelectedRangeSlider());
-                    });
-                }
-            }
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -243,65 +246,10 @@ public class Controller {
 
     }
 
-    private RangeSlider getSelectedRangeSlider() {
-
-        Scene selectedScene = null;
-
-        for (PSMDataViewer psmDataViewer : listOfPSMDataViewers) {
 
 
-            if (psmDataViewer.getScene().getWindow().isFocused()) {
-
-                selectedScene = psmDataViewer.getScene();
-
-            }
-        }
-        for (VideoDataViewer videoDataViewer : listOfVideoDataViewers) {
-
-            if (videoDataViewer.getScene().getWindow().isFocused()) {
-
-                selectedScene = videoDataViewer.getScene();
-
-            }
-        }
-        RangeSlider rangeSlider = new RangeSlider();
-        if (selectedScene != null) {
-            rangeSlider = (RangeSlider) selectedScene.lookup("#rangeSlider");
-        }
-        return rangeSlider;
-    }
 
 
-    private String getSelectedInstanceType() {
-
-        Scene selectedScene = null;
-
-        for (PSMDataViewer psmDataViewer : listOfPSMDataViewers) {
-
-            if (psmDataViewer.getScene().getWindow().isFocused()) {
-
-                selectedScene = psmDataViewer.getScene();
-
-            }
-        }
-        for (VideoDataViewer videoDataViewer : listOfVideoDataViewers) {
-
-            if (videoDataViewer.getScene().getWindow().isFocused()) {
-
-                selectedScene = videoDataViewer.getScene();
-
-            }
-        }
-        String type = "";
-        if (selectedScene != null) {
-            if ((VBox) selectedScene.lookup("#video") != null) {
-                type = "Video";
-            } else {
-                type = "PSM";
-            }
-        }
-        return type;
-    }
 
     public void retrieveScalingFactorAndScalingActive(){
 

@@ -1,10 +1,12 @@
 package com.carleton.cubic.nicu_data_explorer.ui;
 
+import com.carleton.cubic.nicu_data_explorer.util.ColorMap;
+import com.carleton.cubic.nicu_data_explorer.util.PSMRecording;
+import com.carleton.cubic.nicu_data_explorer.util.TimeUtils;
+import com.carleton.cubic.nicu_data_explorer.util.XsensorASCIIParser;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
@@ -13,10 +15,6 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.paint.Color;
 import javafx.util.Duration;
-import com.carleton.cubic.nicu_data_explorer.util.ColorMap;
-import com.carleton.cubic.nicu_data_explorer.util.PSMRecording;
-import com.carleton.cubic.nicu_data_explorer.util.TimeUtils;
-import com.carleton.cubic.nicu_data_explorer.util.XsensorASCIIParser;
 import org.controlsfx.control.RangeSlider;
 
 import java.io.File;

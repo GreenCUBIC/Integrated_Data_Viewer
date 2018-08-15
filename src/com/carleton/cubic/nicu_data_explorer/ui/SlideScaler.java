@@ -1,7 +1,6 @@
 package com.carleton.cubic.nicu_data_explorer.ui;
 
 import java.util.Date;
-import java.util.List;
 
 
 public class SlideScaler {
