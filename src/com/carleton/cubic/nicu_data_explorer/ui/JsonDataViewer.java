@@ -1,15 +1,13 @@
 package com.carleton.cubic.nicu_data_explorer.ui;
 
+import com.carleton.cubic.nicu_data_explorer.util.Annotation;
+import com.carleton.cubic.nicu_data_explorer.util.Session;
 import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
-import org.controlsfx.control.RangeSlider;
 
 import java.io.*;
 import java.lang.reflect.Type;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 
 public class JsonDataViewer {

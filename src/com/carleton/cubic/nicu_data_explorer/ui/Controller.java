@@ -1,5 +1,6 @@
 package com.carleton.cubic.nicu_data_explorer.ui;
 
+import com.carleton.cubic.nicu_data_explorer.util.SliderAndButtonPackage;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -39,8 +40,6 @@ public class Controller {
     private List<PSMDataViewer> listOfPSMDataViewers = new ArrayList<>();
     private PSMDataViewer psmDataViewerInstance;
     private SlideScaler slideScaler = new SlideScaler();
-    private String selectedType = "default";
-    private RangeSlider selectedRangeSlider = new RangeSlider();
 
 
     public Controller() {
@@ -124,9 +123,9 @@ public class Controller {
         scene.getWindow().focusedProperty().addListener((observable, oldValue, newValue) -> {
 
             if(newValue){
-                selectedType = "Video";
-                selectedRangeSlider= videoDataViewerInstance.getCustomRangeSlider().getRangeSlider();
-                annotationTableHandler.SaveAndUpdateButtonHandler(customRangeSliderInstance);
+                if(annotationTableHandler!=null) {
+                    annotationTableHandler.SaveAndUpdateButtonHandler(customRangeSliderInstance);
+                }
 
 
             }
@@ -168,9 +167,9 @@ public class Controller {
         scene.getWindow().focusedProperty().addListener((observable, oldValue, newValue) -> {
 
             if(newValue){
-                selectedType = "PSM";
-                selectedRangeSlider= psmDataViewerInstance.getCustomRangeSlider().getRangeSlider();
-                annotationTableHandler.SaveAndUpdateButtonHandler(customRangeSliderInstance);
+                if(annotationTableHandler!=null) {
+                    annotationTableHandler.SaveAndUpdateButtonHandler(customRangeSliderInstance);
+                }
             }
         });
     }
@@ -180,6 +179,7 @@ public class Controller {
         try {
             createAnnotationTable(file);
             SetAnnotationsOnInstances();
+            annotationTableHandler.setPlayAllButtonAction(listOfVideoDataViewers,listOfPSMDataViewers);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -267,12 +267,6 @@ public class Controller {
 
 
     }
-    public void retrieveZoomInAndOutChanges(){
-
-
-
-
-    }
-
+   
 
 }

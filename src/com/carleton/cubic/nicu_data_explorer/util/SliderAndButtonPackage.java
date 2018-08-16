@@ -1,5 +1,6 @@
-package com.carleton.cubic.nicu_data_explorer.ui;
+package com.carleton.cubic.nicu_data_explorer.util;
 
+import com.carleton.cubic.nicu_data_explorer.ui.CustomRangeSlider;
 import javafx.scene.control.Button;
 import javafx.scene.control.Slider;
 import org.controlsfx.control.RangeSlider;

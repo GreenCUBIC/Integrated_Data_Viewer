@@ -1,5 +1,6 @@
 package com.carleton.cubic.nicu_data_explorer.ui;
 
+import com.carleton.cubic.nicu_data_explorer.util.SliderAndButtonPackage;
 import com.carleton.cubic.nicu_data_explorer.util.TimeUtils;
 import javafx.application.Platform;
 import javafx.scene.Scene;
@@ -60,7 +61,7 @@ public class VideoDataViewer {
         return mediaPlayer;
     }
 
-    public VideoDataViewer(File mediaFile, MediaView mediaView,SliderAndButtonPackage sliderAndButtonPackage, Scene scene) {
+    public VideoDataViewer(File mediaFile, MediaView mediaView, SliderAndButtonPackage sliderAndButtonPackage, Scene scene) {
         this.mediaFile = mediaFile;
         this.mediaView = mediaView;
         this.timeSlider = sliderAndButtonPackage.getTimeSlider();

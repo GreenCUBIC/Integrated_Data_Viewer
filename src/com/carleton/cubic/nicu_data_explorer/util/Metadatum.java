@@ -1,4 +1,4 @@
-package com.carleton.cubic.nicu_data_explorer.ui;
+package com.carleton.cubic.nicu_data_explorer.util;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;

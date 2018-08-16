@@ -1,5 +1,7 @@
 package com.carleton.cubic.nicu_data_explorer.ui;
 
+import com.carleton.cubic.nicu_data_explorer.util.Annotation;
+
 import java.util.Date;
 
 
@@ -16,7 +18,7 @@ public class SlideScaler {
 
 
     }
-    public void calculateRelativeScalingDates(CustomRangeSlider customRangeSlider,Annotation annotation){
+    public void calculateRelativeScalingDates(CustomRangeSlider customRangeSlider, Annotation annotation){
 
         absoluteStartDate = customRangeSlider.getAbsoluteStartDate();
         absoluteEndDate = customRangeSlider.getAbsoluteEndDate();

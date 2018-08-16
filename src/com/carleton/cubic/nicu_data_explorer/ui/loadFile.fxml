@@ -34,7 +34,10 @@
         </ChoiceBox>
         <Button fx:id="fileLoadButton" mnemonicParsing="false" text="Load" />
     </HBox>
-   <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" />
+   <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
+      <children>
+         <Label text="v1.0" />
+      </children></HBox>
     <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
          <TextField fx:id="scaleTextField" prefHeight="25.0" prefWidth="94.0" promptText="Scale Factor" />
          <CheckBox fx:id="scaleCheckBox" mnemonicParsing="false" text="Scale">

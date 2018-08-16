@@ -1,14 +1,18 @@
 package com.carleton.cubic.nicu_data_explorer.ui;
 
 
+import com.carleton.cubic.nicu_data_explorer.util.Annotation;
+import com.carleton.cubic.nicu_data_explorer.util.Session;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.input.ScrollEvent;
 import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -27,6 +31,7 @@ public class AnnotationTableHandler {
     private Button saveSessionButton;
     private Button saveUpdatesButton;
     private Button addAnnotationButton;
+    private Button playAllButton;
     private static final String SIMPLE_DATE_FORMAT = "HH:mm:ss.SSS";
     private static final String HIGHLIGHTED_CELL_FORMAT = "-fx-background-color: yellow";
     private JsonDataViewer jsonDataViewer;
@@ -53,6 +58,16 @@ public class AnnotationTableHandler {
         saveSessionButton = (Button) scene.lookup("#saveSessionButton");
         saveUpdatesButton = (Button) scene.lookup("#saveUpdatesButton");
         addAnnotationButton = (Button) scene.lookup("#addAnnotationButton");
+        playAllButton = (Button) scene.lookup("#playAllButton");
+    }
+
+    public void AnnotationLogScrollHandler(){
+
+     annotationTable.setOnScroll(event -> {
+
+         highlightColumnChanges();
+         updateTable();
+     });
     }
 
     public void setAnnotationData(File jsonFile) throws FileNotFoundException {
@@ -82,8 +97,28 @@ public class AnnotationTableHandler {
 
             openNewAnnotationDialogue();
         });
+
+        AnnotationLogScrollHandler();
     }
 
+    public void setPlayAllButtonAction(List<VideoDataViewer> listOfVideoDataViewers,List<PSMDataViewer> listOFPSMViewers){
+
+        playAllButton.setOnAction(event -> {
+
+            for (VideoDataViewer videoDataViewer : listOfVideoDataViewers) {
+
+                videoDataViewer.getPlayButton().fire();
+
+            }
+            for (PSMDataViewer psmDataViewer : listOFPSMViewers) {
+
+                psmDataViewer.getPlayButton().fire();
+
+            }
+
+        });
+
+    }
 
     private void updateTable() {
         for (int i = 0; i < annotationTable.getColumns().size(); i++) {
@@ -331,13 +366,15 @@ public class AnnotationTableHandler {
 
                         super.updateItem(item, empty);
                         String style = getStyle();
-                        setText(item);
-                        setStyle(style);
+
 
                         if (annotation.isUpdated()) {
                             setStyle("");
                             annotation.setIsUpdated(false);
 
+                        }else{
+                            setText(item);
+                            setStyle(style);
                         }
                     }
 
