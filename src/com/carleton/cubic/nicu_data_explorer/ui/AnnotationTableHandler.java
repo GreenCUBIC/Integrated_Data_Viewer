@@ -137,7 +137,7 @@ public class AnnotationTableHandler {
         if (sessionStartDate.getTime() < videoStartDate.getTime()) {
             return;
         } else {
-            if (slideScaler.getActive() && slideScaler.relativeStartDateWithinBounds(customRangeSlider)) {
+            if (slideScaler.getScalingFactor()>0 && slideScaler.relativeStartDateWithinBounds(customRangeSlider)) {
                 relativeStartDate = slideScaler.getRelativeStartDate();
             } else {
                 relativeStartDate = videoStartDate;
@@ -172,7 +172,7 @@ public class AnnotationTableHandler {
             return;
         } else {
 
-            if (slideScaler.getActive() && slideScaler.relativeStartDateWithinBounds(customRangeSlider)) {
+            if (slideScaler.getScalingFactor()>0 && slideScaler.relativeStartDateWithinBounds(customRangeSlider)) {
                 relativeStartDate = slideScaler.getRelativeStartDate();
             } else {
                 relativeStartDate = psmStartDate;

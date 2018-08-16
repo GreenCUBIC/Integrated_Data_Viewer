@@ -50,7 +50,7 @@ public class SlideScaler {
 
     public void setRelativeMinMaxOfSlider(CustomRangeSlider customRangeSlider) {
 
-       if(isActive) {
+       if(scalingFactor>0) {
            checkIfWithinAbsoluteBounds();
            customRangeSlider.setMinUsingDate(relativeStartDate);
            customRangeSlider.setMaxUsingDate(relativeEndDate);

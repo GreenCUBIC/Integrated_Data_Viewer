@@ -31,15 +31,18 @@ public class Controller {
     @FXML
     private Button fileLoadButton;
     @FXML
-    private TextField scaleTextField;
+    private Button zoomOutButton;
     @FXML
-    private CheckBox scaleCheckBox;
+    private Button zoomInButton;
+    @FXML
+    private TextField scaleTextField;
     private AnnotationTableHandler annotationTableHandler;
     private VideoDataViewer videoDataViewerInstance;
     private List<VideoDataViewer> listOfVideoDataViewers = new ArrayList<>();
     private List<PSMDataViewer> listOfPSMDataViewers = new ArrayList<>();
     private PSMDataViewer psmDataViewerInstance;
     private SlideScaler slideScaler = new SlideScaler();
+    private Integer currentScalingFactor = 0;
 
 
     public Controller() {
@@ -54,7 +57,7 @@ public class Controller {
     @FXML
     public void initialize() {
 
-        retrieveScalingFactorAndScalingActive();
+        zoomInOutHandler();
         dataChoiceBox.setItems(FXCollections.observableArrayList(
                 VIDEO_SELECTOR_LABEL, PSM_SELECTOR_LABEL, ANNOTATION_SELECTOR_LABEL)
         );
@@ -251,22 +254,26 @@ public class Controller {
 
 
 
-    public void retrieveScalingFactorAndScalingActive(){
+    public void zoomInOutHandler(){
 
-        scaleCheckBox.selectedProperty().addListener((observable, oldValue, newValue) -> slideScaler.setActive(newValue));
 
-        scaleTextField.textProperty().addListener((observable, oldValue, newValue) -> {
-            if(newValue.equals("")){
+        zoomInButton.setOnAction(event -> {
+            currentScalingFactor++;
+            scaleTextField.setText(currentScalingFactor.toString());
+            slideScaler.setScalingFactor((long)currentScalingFactor);
+        });
+        zoomOutButton.setOnAction(event -> {
 
-                slideScaler.setScalingFactor((long)0);
-            }
-            else {
-                slideScaler.setScalingFactor(Long.parseLong(newValue));
+            if(currentScalingFactor>0) {
+                currentScalingFactor--;
+                scaleTextField.setText(currentScalingFactor.toString());
+                slideScaler.setScalingFactor((long)currentScalingFactor);
             }
         });
 
 
+
     }
-   
+
 
 }
