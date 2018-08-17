@@ -4,7 +4,7 @@
 
 #### Version 1.0
 
-#### Description: This application is an integrated data exploration tool for Patient Monitoring in NICU study.
+#### Description: This project is an integrated data exploration tool for Patient Monitoring in NICU study.
 
 ### Installation
 
@@ -31,6 +31,8 @@ the file on your computer and select it.
 
 4. The scaling mechanic allows for easy viewing and editing of small snippets of the session, specifically the annotations. Simply press zoom in or zoom out to change the factor you would like the annotation to scale by (Most editing can be done with scaling factor 1).Now any annotations that are double clicked from the annotation log will be scaled in on the annotation slider. The time slider that keeps track of the main timeline of the session remains the same.
 
+![image not found](https://github.com/amente/nicu_data_explorer/blob/master/Documentation/Main%20Menu.jpg "Main Menu")
+
 ### Video/PSM
 
 Play - Plays the video from wherever the current position of the timeslider is. If the main timeline is at the end of the annotatation, it will either loop or stop.
@@ -42,6 +44,8 @@ Time Slider - Represents the timeline of the video.
 Annotation Range Slider - Represents the range of the annotation. When the range slider is not scaled, it shows the annotation respective to the timeline, however when the range slider is scaled the annotation duration is centered and widened according to the scale factor. The larger the scale factor, the wider the possible range of the annotation.
 
 The three labels simply show the time that the slider thumbs represent. This makes adding annotations based of hand written notes easier and is just an important feature in general.
+
+![image not found](https://github.com/amente/nicu_data_explorer/blob/master/Documentation/Video%20or%20PSM.jpg "Video/PSM")
 
 ### Annotation Log
 
@@ -57,8 +61,7 @@ Delete Annotation - You can delete an annotation by selecting it and pressing th
 
 Save File - Saves the edited file after you provide a file name and location.
 
-
-This project is an integrated data exploration tool for Patient Monitoring in NICU study.
+![image not found](https://github.com/amente/nicu_data_explorer/blob/master/Documentation/Annotation%20Log.jpg "Annotation Log")
 
 ## Development Requirements
 
