@@ -1,22 +1,26 @@
 # NICU Data Explorer
 
-##User Guide To NICU_DATA_EXPLORER
+## User Guide To NICU_DATA_EXPLORER
 
-Version 1.0
+#### Version 1.0
 
-Description: This application is an integrated data exploration tool for Patient Monitoring in NICU study.
+#### Description: This application is an integrated data exploration tool for Patient Monitoring in NICU study.
 
-Installation
-
-Step 1. Download and Install Java SE Development Kit 8u181 from this link, http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html    Pick The Version Meant For Your Computer
-Step 2. Delete all other versions of java (jre and jdk) above version 8, such as 9,10 or 11. You can do this from control panel-> Uninstall Program
-Step 3. Download the jar release from github. (repository name is amente/nicu_data_explorer)
+### Installation
 
 
+1. Download and Install Java SE Development Kit 8u181 from this [link](http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html)
+, Pick The Version Meant For Your Computer
 
-Features: Can load up Video streams, Pressure Sensitive Mat (PSM) Data and an Annotation log
+2. Delete all other versions of java (jre and jdk) above version 8, such as 9,10 or 11. You can do this from control panel-> Uninstall Program
 
-Instructions On How To Use This Application
+3. Download the jar release from github. (repository name is amente/nicu_data_explorer)
+
+
+
+### Features: Can load up Video streams, Pressure Sensitive Mat (PSM) Data and an Annotation log
+
+### Instructions On How To Use This Application
 
 1. Run the jar file.
 
@@ -27,7 +31,7 @@ the file on your computer and select it.
 
 4. The scaling mechanic allows for easy viewing and editing of small snippets of the session, specifically the annotations. Simply press zoom in or zoom out to change the factor you would like the annotation to scale by (Most editing can be done with scaling factor 1).Now any annotations that are double clicked from the annotation log will be scaled in on the annotation slider. The time slider that keeps track of the main timeline of the session remains the same.
 
-Video/PSM
+### Video/PSM
 
 Play - Plays the video from wherever the current position of the timeslider is. If the main timeline is at the end of the annotatation, it will either loop or stop.
 
@@ -39,7 +43,7 @@ Annotation Range Slider - Represents the range of the annotation. When the range
 
 The three labels simply show the time that the slider thumbs represent. This makes adding annotations based of hand written notes easier and is just an important feature in general.
 
-Annotation Log
+### Annotation Log
 
 The annotation log keeps track of all the annotations found in the session, by double clicking an annotation, the annotation will set itself to each slider.
 
