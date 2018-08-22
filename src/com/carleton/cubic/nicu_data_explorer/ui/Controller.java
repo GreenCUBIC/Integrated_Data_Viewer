@@ -10,7 +10,6 @@ import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.VBox;
 import javafx.scene.media.MediaView;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -18,6 +17,7 @@ import org.controlsfx.control.RangeSlider;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,7 +42,7 @@ public class Controller {
     private List<PSMDataViewer> listOfPSMDataViewers = new ArrayList<>();
     private PSMDataViewer psmDataViewerInstance;
     private SlideScaler slideScaler = new SlideScaler();
-    private Integer currentScalingFactor = 0;
+    private double currentScalingFactor = 1;
 
 
     public Controller() {
@@ -115,7 +115,6 @@ public class Controller {
         Label lowValText = (Label) scene.lookup("#lowValText");
         Label highValText = (Label) scene.lookup("#highValText");
         Label timeLineText = (Label) scene.lookup("#timeLineText");
-        VBox vboxInstance = (VBox) scene.lookup("#vBox");
         SliderAndButtonPackage sliderAndButtonPackage = new SliderAndButtonPackage(playButtonInstance,loopButtonInstance,sliderInstance,customRangeSliderInstance);
         stage.show();
 
@@ -158,7 +157,6 @@ public class Controller {
         Label lowValText = (Label) scene.lookup("#lowValText");
         Label highValText = (Label) scene.lookup("#highValText");
         Label timeLineText = (Label) scene.lookup("#timeLineText");
-        VBox vboxInstance = (VBox) scene.lookup("#vBox");
         SliderAndButtonPackage sliderAndButtonPackage = new SliderAndButtonPackage(playButtonInstance,loopButtonInstance,sliderInstance,customRangeSliderInstance);
         stage.show();
 
@@ -250,25 +248,27 @@ public class Controller {
     }
 
 
-
-
-
-
     public void zoomInOutHandler(){
 
 
         zoomInButton.setOnAction(event -> {
-            currentScalingFactor++;
-            scaleTextField.setText(currentScalingFactor.toString());
-            slideScaler.setScalingFactor((long)currentScalingFactor);
+
+           if(currentScalingFactor>0){
+
+                currentScalingFactor= currentScalingFactor-0.1;
+                currentScalingFactor = (double)Math.round(currentScalingFactor * 10d) / 10d;
+            }
+            scaleTextField.setText(String.valueOf(currentScalingFactor));
+            slideScaler.setScalingFactor(currentScalingFactor);
         });
         zoomOutButton.setOnAction(event -> {
 
-            if(currentScalingFactor>0) {
-                currentScalingFactor--;
-                scaleTextField.setText(currentScalingFactor.toString());
-                slideScaler.setScalingFactor((long)currentScalingFactor);
+            if(currentScalingFactor>=0) {
+                    currentScalingFactor= currentScalingFactor+0.1;
+                    currentScalingFactor = (double)Math.round(currentScalingFactor * 10d) / 10d;
             }
+            scaleTextField.setText(String.valueOf(currentScalingFactor));
+            slideScaler.setScalingFactor(currentScalingFactor);
         });
 
 

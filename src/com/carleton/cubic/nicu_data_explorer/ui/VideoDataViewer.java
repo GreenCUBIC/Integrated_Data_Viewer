@@ -5,7 +5,6 @@ import com.carleton.cubic.nicu_data_explorer.util.TimeUtils;
 import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.media.Media;
@@ -27,7 +26,6 @@ import java.util.List;
 import java.util.Map;
 
 public class VideoDataViewer {
-    private CheckBox sliderLockCheckBox;
     private MediaPlayer mediaPlayer;
     private File mediaFile;
     private boolean loopRequested = false;
@@ -52,9 +50,6 @@ public class VideoDataViewer {
     private final static String PLAY_BUTTON_STATUS_PAUSE = "Pause";
     private final static String LONG_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss.SSS";
     private final static String DEFAULT_RECODRING_START_TIME = "2016-10-20 08:22:32.644";
-
-
-    //TODO: sync up the annotation log w/ all videos
 
 
     public MediaPlayer getMediaPlayer() {
@@ -88,7 +83,6 @@ public class VideoDataViewer {
             Platform.runLater(() -> {
 
                 Duration currentTime = mediaPlayer.getCurrentTime();
-               // playTime.setText(TimeUtils.formattedDurationForDisplay(currentTime));
                 timeSlider.setDisable(duration.isUnknown());
                 if (!timeSlider.isDisabled()
                         && duration.greaterThan(Duration.ZERO)

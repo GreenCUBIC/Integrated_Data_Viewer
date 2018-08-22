@@ -10,7 +10,7 @@ public class SlideScaler {
     private Date relativeEndDate;
     private Date absoluteStartDate;
     private Date absoluteEndDate;
-    private Long scalingFactor = (long)0;
+    private double scalingFactor = 1;
     private Boolean isActive = false;
 
 
@@ -32,11 +32,12 @@ public class SlideScaler {
             annotationRangeInMillis=(long)1000;
         }
 
-        long relativeStartTime = annotationStartDate.getTime() - ((scalingFactor * annotationRangeInMillis));
-        long relativeEndTime = (annotationEndDate.getTime() + ((scalingFactor * annotationRangeInMillis)));
+        long relativeStartTime = annotationStartDate.getTime() - Math.round((scalingFactor * annotationRangeInMillis));
+        long relativeEndTime = (annotationEndDate.getTime() + Math.round((scalingFactor * annotationRangeInMillis)));
 
         relativeStartDate = new Date(relativeStartTime);
         relativeEndDate = new Date(relativeEndTime);
+
     }
 
 
@@ -69,11 +70,11 @@ public class SlideScaler {
 
     }
 
-    public Long getScalingFactor() {
+    public double getScalingFactor() {
         return scalingFactor;
     }
 
-    public void setScalingFactor(Long scalingFactor) {
+    public void setScalingFactor(double scalingFactor) {
         this.scalingFactor = scalingFactor;
     }
 

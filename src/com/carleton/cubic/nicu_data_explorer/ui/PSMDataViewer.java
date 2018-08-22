@@ -34,6 +34,7 @@ public class PSMDataViewer {
     private Label playTime;
     private Label lowValText;
     private Label highValText;
+    private Duration totalRecordingTime;
     private CustomRangeSlider customRangeSlider;
     private Scene scene;
     private CustomSlider customSlider = new CustomSlider();
@@ -71,7 +72,7 @@ public class PSMDataViewer {
         double psmFrameRatePerSec = 18; //TODO: How to get this from the PSM file?
         int totalNumberOfFrames = xsensorASCIIParser.parseForLastFrameNumber();
         customSlider.sliderLimit(timeSlider, customRangeSlider.getRangeSlider());
-        Duration totalRecordingTime = Duration.seconds(totalNumberOfFrames / psmFrameRatePerSec);
+        totalRecordingTime = Duration.seconds(totalNumberOfFrames / psmFrameRatePerSec);
         timeSlider.setMax(totalRecordingTime.toSeconds() * 10); //slider value is tenth of a second
         customRangeSlider.getRangeSlider().setMax(totalRecordingTime.toSeconds() * 10);
         customRangeSlider.getRangeSlider().setLowValue(0);
@@ -267,20 +268,11 @@ public class PSMDataViewer {
                 e.printStackTrace();
             }
         }
+            absoluteStartDate = getAbsolutePSMStartDate();
+         Date absoluteEndDate = new Date(absoluteStartDate.getTime()+(long)totalRecordingTime.toMillis());
+        
 
-        String stringDate = psmRecording.getFrameHeader(psmRecording.frameCount() - 1, "Date").stringValue();
-        String stringTime = psmRecording.getFrameHeader(psmRecording.frameCount() - 1, "Time").stringValue();
-        stringDate = stringDate.replaceAll("^\"|\"$", "");
-        stringTime = stringTime.replaceAll("^\"|\"$", "");
-        String fullDateString = stringDate.concat(" ").concat(stringTime);
-        SimpleDateFormat format = new SimpleDateFormat(LONG_TIME_FORMAT);
-        Date fullDate = new Date();
-        try {
-            fullDate = format.parse(fullDateString);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        return fullDate;
+        return absoluteEndDate;
     }
 
 
