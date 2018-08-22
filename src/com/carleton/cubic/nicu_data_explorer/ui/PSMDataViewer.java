@@ -193,7 +193,6 @@ public class PSMDataViewer {
             }
         }
         if (psmRecording.isParsingComplete()) {
-            System.out.println(getAbsolutePSMEndDate());
             setCustomRangeSliderStartAndEndDates();
             updateLowHighLabels();
             adjustOtherInstanceRangeSliders(customRangeSlider, listOfVideoDataViewers, listOfPSMDataViewers);
