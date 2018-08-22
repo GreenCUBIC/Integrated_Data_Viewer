@@ -132,6 +132,7 @@ public class AnnotationTableHandler {
             if(selectedAnnotation == IteratingAnnotation){
 
                 annotationTable.getItems().remove(i);
+                updateTable();
             }
 
         }

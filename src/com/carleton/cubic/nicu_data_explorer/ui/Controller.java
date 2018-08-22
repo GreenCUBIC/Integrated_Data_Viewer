@@ -115,7 +115,8 @@ public class Controller {
         Label lowValText = (Label) scene.lookup("#lowValText");
         Label highValText = (Label) scene.lookup("#highValText");
         Label timeLineText = (Label) scene.lookup("#timeLineText");
-        SliderAndButtonPackage sliderAndButtonPackage = new SliderAndButtonPackage(playButtonInstance,loopButtonInstance,sliderInstance,customRangeSliderInstance);
+        ChoiceBox playbackChoiceBox = (ChoiceBox) scene.lookup("#playbackChoiceBox");
+        SliderAndButtonPackage sliderAndButtonPackage = new SliderAndButtonPackage(playButtonInstance,loopButtonInstance,sliderInstance,customRangeSliderInstance,playbackChoiceBox);
         stage.show();
 
         videoDataViewerInstance = new VideoDataViewer(file, mediaViewInstance, sliderAndButtonPackage, scene);
@@ -157,7 +158,8 @@ public class Controller {
         Label lowValText = (Label) scene.lookup("#lowValText");
         Label highValText = (Label) scene.lookup("#highValText");
         Label timeLineText = (Label) scene.lookup("#timeLineText");
-        SliderAndButtonPackage sliderAndButtonPackage = new SliderAndButtonPackage(playButtonInstance,loopButtonInstance,sliderInstance,customRangeSliderInstance);
+        ChoiceBox playbackChoiceBox = (ChoiceBox) scene.lookup("#playbackChoiceBox");
+        SliderAndButtonPackage sliderAndButtonPackage = new SliderAndButtonPackage(playButtonInstance,loopButtonInstance,sliderInstance,customRangeSliderInstance,playbackChoiceBox);
         stage.show();
 
 
