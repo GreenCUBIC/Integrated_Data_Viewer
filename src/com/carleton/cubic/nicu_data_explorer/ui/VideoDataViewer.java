@@ -134,7 +134,6 @@ public class VideoDataViewer {
         Date absoluteRecordingTime = getAbsoluteRecordingStartTime();
         mediaPlayer.currentTimeProperty().addListener(observable -> updateValues(playTime, timeSlider));
         mediaPlayer.setOnPlaying(() -> {
-            customSlider.sliderLimit(timeSlider, rangeSlider);
             playButton.setText(PLAY_BUTTON_STATUS_PAUSE);
         });
 
@@ -148,6 +147,7 @@ public class VideoDataViewer {
             rangeSlider.setLowValue(0);
             rangeSlider.setHighValue(rangeSlider.getMax());
             updateValues(playTime, timeSlider);
+            customSlider.sliderLimit(timeSlider, rangeSlider);
             customRangeSlider.setAbsoluteStartDate(getAbsoluteRecordingStartTime());
             customRangeSlider.setAbsoluteEndDate(calculateAbsoluteEndDate());
             setCustomRangeSliderStartAndEndDates();
