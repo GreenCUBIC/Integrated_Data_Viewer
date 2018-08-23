@@ -3,8 +3,10 @@ package com.carleton.cubic.nicu_data_explorer.ui;
 import com.carleton.cubic.nicu_data_explorer.util.SliderAndButtonPackage;
 import com.carleton.cubic.nicu_data_explorer.util.TimeUtils;
 import javafx.application.Platform;
+import javafx.collections.FXCollections;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.media.Media;
@@ -41,6 +43,7 @@ public class VideoDataViewer {
     private Scene scene;
     private boolean locked = false;
     private Date absoluteEndDate;
+    private ChoiceBox<String> playbackChoiceBox;
 
     private final static String RECORDING_START_HEADER = "recordingStart";
     private final static String LEGACY_RECORDING_START_HEADER = "Recording Start";
@@ -50,6 +53,7 @@ public class VideoDataViewer {
     private final static String PLAY_BUTTON_STATUS_PAUSE = "Pause";
     private final static String LONG_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss.SSS";
     private final static String DEFAULT_RECODRING_START_TIME = "2016-10-20 08:22:32.644";
+
 
 
     public MediaPlayer getMediaPlayer() {
@@ -63,7 +67,13 @@ public class VideoDataViewer {
         this.customRangeSlider = sliderAndButtonPackage.getCustomRangeSlider();
         this.loopButton = sliderAndButtonPackage.getLoopButton();
         this.playButton = sliderAndButtonPackage.getPlayButton();
+        this.playbackChoiceBox = sliderAndButtonPackage.getPlaybackChoiceBox();
         this.scene = scene;
+        playbackChoiceBox.setItems(FXCollections.observableArrayList(
+                "0.5","1.0","2.0","4.0","8.0")
+        );
+        playbackChoiceBox.getSelectionModel().select(1);
+        speedHandler();
         try {
             customMetaDataMap = loadCustomVideoMetadata();
             // This will add the video metadata recording header to the map if it doesn't exist in the video.
@@ -76,6 +86,27 @@ public class VideoDataViewer {
         Media media = new Media(this.mediaFile.toURI().toString());
         mediaPlayer = new MediaPlayer(media);
 
+    }
+
+    private void speedHandler() {
+
+        playbackChoiceBox.setOnAction(event->{
+            String dataSelectionValue = playbackChoiceBox.getValue();
+            if (dataSelectionValue.equalsIgnoreCase("0.5")) {
+                mediaPlayer.setRate(0.5);
+            }else if(dataSelectionValue.equalsIgnoreCase("1.0")){
+                mediaPlayer.setRate(1);
+            }
+            else if(dataSelectionValue.equalsIgnoreCase("2.0")){
+                mediaPlayer.setRate(2);
+            }
+            else if(dataSelectionValue.equalsIgnoreCase("4.0")){
+                mediaPlayer.setRate(4);
+            }
+            else if(dataSelectionValue.equalsIgnoreCase("8.0")){
+                mediaPlayer.setRate(8);
+            }
+        });
     }
 
     protected void updateValues(Label playTime, Slider timeSlider) {

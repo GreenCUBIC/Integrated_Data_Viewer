@@ -2,6 +2,7 @@ package com.carleton.cubic.nicu_data_explorer.util;
 
 import com.carleton.cubic.nicu_data_explorer.ui.CustomRangeSlider;
 import javafx.scene.control.Button;
+import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Slider;
 import org.controlsfx.control.RangeSlider;
 
@@ -12,13 +13,22 @@ public class SliderAndButtonPackage {
     private Button loopButton;
     private Slider timeSlider;
     private CustomRangeSlider customRangeSlider;
+    private ChoiceBox playbackChoiceBox;
 
+    public ChoiceBox getPlaybackChoiceBox() {
+        return playbackChoiceBox;
+    }
 
-    public SliderAndButtonPackage(Button playButton, Button loopButton, Slider timeSlider, CustomRangeSlider customRangeSlider) {
+    public void setPlaybackChoiceBox(ChoiceBox playbackChoiceBox) {
+        this.playbackChoiceBox = playbackChoiceBox;
+    }
+
+    public SliderAndButtonPackage(Button playButton, Button loopButton, Slider timeSlider, CustomRangeSlider customRangeSlider, ChoiceBox playbackChoiceBox) {
         this.playButton = playButton;
         this.loopButton = loopButton;
         this.timeSlider = timeSlider;
         this.customRangeSlider = customRangeSlider;
+        this.playbackChoiceBox = playbackChoiceBox;
     }
 
     public Button getPlayButton() {

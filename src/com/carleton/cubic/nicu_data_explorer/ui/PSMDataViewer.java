@@ -4,10 +4,12 @@ import com.carleton.cubic.nicu_data_explorer.util.*;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
+import javafx.collections.FXCollections;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
+import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.paint.Color;
@@ -37,9 +39,11 @@ public class PSMDataViewer {
     private Duration totalRecordingTime;
     private CustomRangeSlider customRangeSlider;
     private Scene scene;
+    private Timeline timeLine;
     private CustomSlider customSlider = new CustomSlider();
     private boolean programmaticSliderValueChange = false;
     private boolean locked = false;
+    private ChoiceBox<String> playbackChoiceBox;
 
 
     private final static String LOOP_STATUS_ON = "Loop:On";
@@ -58,7 +62,13 @@ public class PSMDataViewer {
         this.playButton = sliderAndButtonPackage.getPlayButton();
         this.customRangeSlider = sliderAndButtonPackage.getCustomRangeSlider();
         this.loopButton = sliderAndButtonPackage.getLoopButton();
+        this.playbackChoiceBox = sliderAndButtonPackage.getPlaybackChoiceBox();
         xsensorASCIIParser = new XsensorASCIIParser(psmFile);
+
+        playbackChoiceBox.setItems(FXCollections.observableArrayList(
+                "0.5","1.0","2.0","4.0","8.0")
+        );
+        playbackChoiceBox.getSelectionModel().select(1);
     }
 
 
@@ -101,7 +111,8 @@ public class PSMDataViewer {
                 )
         );
         timeline.setCycleCount(Animation.INDEFINITE);
-
+        this.timeLine = timeline;
+        speedHandler();
         timeSlider.valueProperty().addListener(ov -> {
             if (!programmaticSliderValueChange) {
                 double seekDurationValueSeconds = timeSlider.getValue() / 10;
@@ -337,6 +348,26 @@ public class PSMDataViewer {
             customRangeSlider1.setHighValueUsingDate(this.customRangeSlider.getHighValueInDate(absoluteStartDate));
         }
 
+    }
+    private void speedHandler() {
+
+        playbackChoiceBox.setOnAction(event->{
+            String dataSelectionValue = playbackChoiceBox.getValue();
+            if (dataSelectionValue.equalsIgnoreCase("0.5")) {
+                timeLine.setRate(0.5);
+            }else if(dataSelectionValue.equalsIgnoreCase("1.0")){
+                timeLine.setRate(1);
+            }
+            else if(dataSelectionValue.equalsIgnoreCase("2.0")){
+                timeLine.setRate(2);
+            }
+            else if(dataSelectionValue.equalsIgnoreCase("4.0")){
+                timeLine.setRate(4);
+            }
+            else if(dataSelectionValue.equalsIgnoreCase("8.0")){
+                timeLine.setRate(8);
+            }
+        });
     }
 
     public Canvas getCanvas() {
