@@ -17,7 +17,6 @@ import org.controlsfx.control.RangeSlider;
 
 import java.io.File;
 import java.io.IOException;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -220,10 +219,10 @@ public class Controller {
 
             if (event.getClickCount() > 1) {
                 if (videoDataViewerInstance != null) {
-                    annotationTableHandler.SetAnnotationsPerVideo(listOfVideoDataViewers, slideScaler, annotationTableHandler);
+                    annotationTableHandler.setAnnotationsPerVideo(listOfVideoDataViewers, slideScaler, annotationTableHandler);
                 }
                 if (psmDataViewerInstance != null) {
-                    annotationTableHandler.SetAnnotationsPerPSM(listOfPSMDataViewers, slideScaler, annotationTableHandler);
+                    annotationTableHandler.setAnnotationsPerPSM(listOfPSMDataViewers, slideScaler, annotationTableHandler);
                 }
 
 
@@ -262,6 +261,8 @@ public class Controller {
             }
             scaleTextField.setText(String.valueOf(currentScalingFactor));
             slideScaler.setScalingFactor(currentScalingFactor);
+
+            adjustToNewBounds();
         });
         zoomOutButton.setOnAction(event -> {
 
@@ -271,9 +272,22 @@ public class Controller {
             }
             scaleTextField.setText(String.valueOf(currentScalingFactor));
             slideScaler.setScalingFactor(currentScalingFactor);
+
+            adjustToNewBounds();
         });
 
 
+
+    }
+
+    private void adjustToNewBounds() {
+
+        if(annotationTableHandler!=null&&annotationTableHandler.getSelectedAnnotation()!=null){
+
+            annotationTableHandler.setAnnotationsPerVideo(listOfVideoDataViewers,slideScaler,annotationTableHandler);
+            annotationTableHandler.setAnnotationsPerPSM(listOfPSMDataViewers,slideScaler,annotationTableHandler);
+
+        }
 
     }
 

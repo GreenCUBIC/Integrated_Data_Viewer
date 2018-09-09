@@ -307,6 +307,15 @@ public class PSMDataViewer {
 
 
         });
+        timeSlider.valueProperty().addListener((ov, old_val, new_val) -> {
+
+            if(timeLine.getStatus() != Animation.Status.RUNNING && !customSlider.pausedAtRangeSliderLimit(customRangeSlider.getRangeSlider(),timeSlider)) {
+                setNewValuesForVideoInstances(videoDataViewers);
+                setNewValuesForPSMInstances(listOfPSMDataViewers);
+            }
+
+
+        });
     }
 
     private void updateLowHighLabels() {
@@ -335,20 +344,39 @@ public class PSMDataViewer {
             Date absoluteStartDate = this.getAbsolutePSMStartDate();
             customRangeSlider1.setLowValueUsingDate(this.customRangeSlider.getLowValueInDate(absoluteStartDate));
             customRangeSlider1.setHighValueUsingDate(this.customRangeSlider.getHighValueInDate(absoluteStartDate));
+            Date sliderValueAsDate = this.convertTimeSliderValueToDate();
+            psmDataViewer.setTimeSliderValueUsingDate(sliderValueAsDate);
         }
     }
 
     private void setNewValuesForVideoInstances(List<VideoDataViewer> videoDataViewers) {
 
-        for (VideoDataViewer videoDataViewer2 : videoDataViewers) {     //TODO this is interfering with scaling
+        for (VideoDataViewer videoDataViewer : videoDataViewers) {
 
-            CustomRangeSlider customRangeSlider1 = videoDataViewer2.getCustomRangeSlider();
+            CustomRangeSlider customRangeSlider1 = videoDataViewer.getCustomRangeSlider();
             Date absoluteStartDate = this.getAbsolutePSMStartDate();
             customRangeSlider1.setLowValueUsingDate(this.customRangeSlider.getLowValueInDate(absoluteStartDate));
             customRangeSlider1.setHighValueUsingDate(this.customRangeSlider.getHighValueInDate(absoluteStartDate));
+            Date sliderValueAsDate = this.convertTimeSliderValueToDate();
+            videoDataViewer.setTimeSliderValueUsingDate(sliderValueAsDate);
         }
 
     }
+
+    public Date convertTimeSliderValueToDate() {
+
+        Long currentSliderValue = (long)this.timeSlider.getValue();
+        return new Date(absoluteStartDate.getTime()+currentSliderValue*100);
+
+    }
+    public void setTimeSliderValueUsingDate(Date newDate){
+
+        if(absoluteStartDate.getTime()<newDate.getTime()&&newDate.getTime()<getAbsolutePSMEndDate().getTime()) {
+            long dateInSliderUnits = (newDate.getTime() - absoluteStartDate.getTime()) / 100;
+            timeSlider.setValue(dateInSliderUnits);
+        }
+    }
+
     private void speedHandler() {
 
         playbackChoiceBox.setOnAction(event->{

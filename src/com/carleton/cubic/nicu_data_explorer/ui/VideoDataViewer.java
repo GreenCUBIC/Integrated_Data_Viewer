@@ -282,6 +282,13 @@ public class VideoDataViewer {
 
 
         });
+        timeSlider.valueProperty().addListener((ov, old_val, new_val) -> {
+            if(mediaPlayer.getStatus() != MediaPlayer.Status.PLAYING && !customSlider.pausedAtRangeSliderLimit(customRangeSlider.getRangeSlider(),timeSlider)) {
+                setNewValuesForVideoInstances(videoDataViewers);
+                setNewValuesForPSMInstances(listOfPSMDataViewers);
+            }
+
+        });
     }
 
     private void setNewValuesForPSMInstances(List<PSMDataViewer> listOfPSMDataViewers) {
@@ -292,18 +299,39 @@ public class VideoDataViewer {
             Date absoluteStartDate = this.getAbsoluteRecordingStartTime();
             customRangeSlider1.setLowValueUsingDate(this.customRangeSlider.getLowValueInDate(absoluteStartDate));
             customRangeSlider1.setHighValueUsingDate(this.customRangeSlider.getHighValueInDate(absoluteStartDate));
+            Date sliderValueAsDate = this.convertTimeSliderValueToDate();
+            psmDataViewer.setTimeSliderValueUsingDate(sliderValueAsDate);
+
         }
     }
 
     private void setNewValuesForVideoInstances(List<VideoDataViewer> videoDataViewers) {
 
-        for (VideoDataViewer videoDataViewer2 : videoDataViewers) {
+        for (VideoDataViewer videoDataViewer : videoDataViewers) {
 
-            CustomRangeSlider customRangeSlider1 = videoDataViewer2.getCustomRangeSlider();
+            CustomRangeSlider customRangeSlider1 = videoDataViewer.getCustomRangeSlider();
             Date absoluteStartDate = this.getAbsoluteRecordingStartTime();
             customRangeSlider1.setLowValueUsingDate(this.customRangeSlider.getLowValueInDate(absoluteStartDate));
             customRangeSlider1.setHighValueUsingDate(this.customRangeSlider.getHighValueInDate(absoluteStartDate));
+            Date sliderValueAsDate = this.convertTimeSliderValueToDate();
+            videoDataViewer.setTimeSliderValueUsingDate(sliderValueAsDate);
+
         }
+    }
+
+    public Date convertTimeSliderValueToDate() {
+
+       Long currentSliderValue = (long)this.timeSlider.getValue();
+       return new Date(getAbsoluteRecordingStartTime().getTime()+currentSliderValue*100);
+
+    }
+    public void setTimeSliderValueUsingDate(Date newDate){
+
+        if(getAbsoluteRecordingStartTime().getTime()<newDate.getTime()&&newDate.getTime()<absoluteEndDate.getTime()) {
+            long dateInSliderUnits = (newDate.getTime() - this.getAbsoluteRecordingStartTime().getTime()) / 100;
+            timeSlider.setValue(dateInSliderUnits);
+        }
+
     }
 
     public Date getAbsoluteRecordingStartTime() {

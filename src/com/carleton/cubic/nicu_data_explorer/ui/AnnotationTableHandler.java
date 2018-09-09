@@ -423,7 +423,7 @@ public class AnnotationTableHandler {
     }
 
 
-    public void SetAnnotationsPerVideo(List<VideoDataViewer> list, SlideScaler slideScaler, AnnotationTableHandler annotationTableHandler) {
+    public void setAnnotationsPerVideo(List<VideoDataViewer> list, SlideScaler slideScaler, AnnotationTableHandler annotationTableHandler) {
 
         for (VideoDataViewer videoDataViewer : list) {
 
@@ -436,7 +436,7 @@ public class AnnotationTableHandler {
     }
 
 
-    public void SetAnnotationsPerPSM(List<PSMDataViewer> listOfPSMDataViewers, SlideScaler slideScaler, AnnotationTableHandler annotationTableHandler) {
+    public void setAnnotationsPerPSM(List<PSMDataViewer> listOfPSMDataViewers, SlideScaler slideScaler, AnnotationTableHandler annotationTableHandler) {
 
         for (PSMDataViewer psmDataViewer : listOfPSMDataViewers) {
             if (checkIfAnnotationWithinBounds(annotationTableHandler.getSelectedAnnotation(), psmDataViewer.getCustomRangeSlider())) {

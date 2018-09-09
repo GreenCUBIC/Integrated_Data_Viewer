@@ -71,4 +71,15 @@ public class CustomSlider
             double seekDurationValueSeconds = rangeSlider.getLowValue() / 10;
             frameIndex[0]=(int) (seekDurationValueSeconds*psmFrameRatePerSec);        }
     }
+
+    public boolean pausedAtRangeSliderLimit(RangeSlider rangeSlider, Slider timeSlider) {
+
+        if(rangeSlider.getLowValue() == timeSlider.getValue() ||rangeSlider.getHighValue() == timeSlider.getValue()){
+
+            return true;
+        }
+
+
+        return false;
+    }
 }
