@@ -17,8 +17,11 @@ import javafx.util.StringConverter;
 import org.controlsfx.control.RangeSlider;
 import org.jcodec.containers.mp4.boxes.MetaValue;
 import org.jcodec.movtool.MetadataEditor;
+import org.apache.commons.io.FilenameUtils;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -332,6 +335,7 @@ public class VideoDataViewer {
     }
 
     public Map<String, String> loadCustomVideoMetadata() throws IOException {
+        // Keyed metadata added to MP4 file itself
         MetadataEditor mediaMeta = MetadataEditor.createFrom(mediaFile);
         Map<String, MetaValue> keyedMeta = mediaMeta.getKeyedMeta();
 
@@ -339,6 +343,19 @@ public class VideoDataViewer {
         for (String key : keyedMeta.keySet()) {
             MetaValue value = keyedMeta.get(key);
             customMetaDataMap.put(key, value.getString());
+        }
+
+        // Metadata from text file associated with MP4
+        BufferedReader reader = new BufferedReader(new FileReader(FilenameUtils.removeExtension(mediaFile.getAbsolutePath()) + ".txt"));
+        String line = reader.readLine();
+        while (line != null)
+        {
+            String[] keyVal = line.split("=");
+            if (keyVal.length > 1) {
+                customMetaDataMap.put(keyVal[0], keyVal[1]);
+            }
+
+            line = reader.readLine();
         }
 
         return customMetaDataMap;
