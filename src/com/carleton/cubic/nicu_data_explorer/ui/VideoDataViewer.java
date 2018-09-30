@@ -133,6 +133,7 @@ public class VideoDataViewer {
         mediaView.setMediaPlayer(mediaPlayer);
         Date absoluteRecordingTime = getAbsoluteRecordingStartTime();
         mediaPlayer.currentTimeProperty().addListener(observable -> updateValues(playTime, timeSlider));
+        mediaPlayer.setVolume(0);
         mediaPlayer.setOnPlaying(() -> {
             playButton.setText(PLAY_BUTTON_STATUS_PAUSE);
         });

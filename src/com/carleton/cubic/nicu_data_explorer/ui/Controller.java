@@ -41,6 +41,7 @@ public class Controller {
     private List<PSMDataViewer> listOfPSMDataViewers = new ArrayList<>();
     private PSMDataViewer psmDataViewerInstance;
     private SlideScaler slideScaler = new SlideScaler();
+    private PMDIParser pmdiParser = new PMDIParser();
     private double currentScalingFactor = 1;
 
 
@@ -51,6 +52,8 @@ public class Controller {
     private static final String VIDEO_SELECTOR_LABEL = "Video";
     private static final String PSM_SELECTOR_LABEL = "PSM";
     private static final String ANNOTATION_SELECTOR_LABEL = "Annotation";
+    private static final String PMDI_SELECTOR_LABEL = "PMDI";
+
 
 
     @FXML
@@ -58,7 +61,7 @@ public class Controller {
 
         zoomInOutHandler();
         dataChoiceBox.setItems(FXCollections.observableArrayList(
-                VIDEO_SELECTOR_LABEL, PSM_SELECTOR_LABEL, ANNOTATION_SELECTOR_LABEL)
+                VIDEO_SELECTOR_LABEL, PSM_SELECTOR_LABEL, ANNOTATION_SELECTOR_LABEL,PMDI_SELECTOR_LABEL)
         );
 
         dataChoiceBox.getSelectionModel().selectFirst();
@@ -87,13 +90,23 @@ public class Controller {
 
 
             }
+            else if (dataSelectionValue.equalsIgnoreCase(PMDI_SELECTOR_LABEL)) {
+
+
+                try {
+                    pmdiParser.parseCsvIntoList(file);
+                    LiveAreaChartApp.launch();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+            }
         });
 
 
     }
 
     private void loadVideoInstance(File file) {
-
 
         Stage stage = new Stage();
         Parent root = null;
@@ -207,6 +220,10 @@ public class Controller {
                 extFilter = new FileChooser.ExtensionFilter("JSON files (*.json)", "*.json");
                 fileChooser.getExtensionFilters().add(extFilter);
                 break;
+            case 4:
+                extFilter = new FileChooser.ExtensionFilter("CSV files (*.csv)", "*.csv");
+                fileChooser.getExtensionFilters().add(extFilter);
+
 
 
         }
