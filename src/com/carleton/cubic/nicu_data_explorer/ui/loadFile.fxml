@@ -38,7 +38,7 @@
          <Label text="v1.0" />
       </children></HBox>
     <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
-         <TextField fx:id="scaleTextField" disable="true" prefHeight="25.0" prefWidth="94.0" promptText="Scale Factor" text="1" />
+         <TextField fx:id="scaleTextField" prefHeight="25.0" prefWidth="94.0" promptText="Scale Factor" text="1" />
          <Button fx:id="zoomInButton" mnemonicParsing="false" text="Zoom In">
          <HBox.margin>
             <Insets left="30.0" />

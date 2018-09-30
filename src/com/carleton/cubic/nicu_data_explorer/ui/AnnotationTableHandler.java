@@ -191,7 +191,9 @@ public class AnnotationTableHandler {
                 return;
             } else {
                 setNewRangeSliderBounds(rangeSlider, startInSliderUnits, endInSliderUnits);
-                videoDataViewer.getMediaPlayer().seek(Duration.seconds((startInSliderUnits / (float) 10) + videoDataViewer.getMediaPlayer().getStartTime().toSeconds()));
+                videoDataViewer.getMediaPlayer().pause();
+                videoDataViewer.getMediaPlayer().seek(Duration.seconds(rangeSlider.getLowValue()/10.0));
+                System.out.println(videoDataViewer.getMediaPlayer().getCurrentTime());
             }
         }
 
@@ -226,7 +228,7 @@ public class AnnotationTableHandler {
             } else {
                 setNewRangeSliderBounds(rangeSlider, startInSliderUnits, endInSliderUnits);
                 double seekDurationValueSeconds = rangeSlider.getLowValue() / 10;
-                psmDataViewer.seek(seekDurationValueSeconds);
+                psmDataViewer.seek(rangeSlider.getLowValue()/10.0);
             }
 
         }
@@ -423,7 +425,7 @@ public class AnnotationTableHandler {
     }
 
 
-    public void SetAnnotationsPerVideo(List<VideoDataViewer> list, SlideScaler slideScaler, AnnotationTableHandler annotationTableHandler) {
+    public void setAnnotationsPerVideo(List<VideoDataViewer> list, SlideScaler slideScaler, AnnotationTableHandler annotationTableHandler) {
 
         for (VideoDataViewer videoDataViewer : list) {
 
@@ -436,7 +438,7 @@ public class AnnotationTableHandler {
     }
 
 
-    public void SetAnnotationsPerPSM(List<PSMDataViewer> listOfPSMDataViewers, SlideScaler slideScaler, AnnotationTableHandler annotationTableHandler) {
+    public void setAnnotationsPerPSM(List<PSMDataViewer> listOfPSMDataViewers, SlideScaler slideScaler, AnnotationTableHandler annotationTableHandler) {
 
         for (PSMDataViewer psmDataViewer : listOfPSMDataViewers) {
             if (checkIfAnnotationWithinBounds(annotationTableHandler.getSelectedAnnotation(), psmDataViewer.getCustomRangeSlider())) {

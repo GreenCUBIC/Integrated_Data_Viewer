@@ -22,20 +22,6 @@
          <children>
             <HBox alignment="CENTER_LEFT" prefHeight="49.0" prefWidth="600.0">
                <children>
-                  <Label text="Name:">
-                     <HBox.margin>
-                        <Insets left="20.0" />
-                     </HBox.margin>
-                  </Label>
-                  <TextField fx:id="nameTextField" promptText="Enter Name">
-                     <HBox.margin>
-                        <Insets left="30.0" />
-                     </HBox.margin>
-                  </TextField>
-               </children>
-            </HBox>
-            <HBox alignment="CENTER_LEFT" prefHeight="49.0" prefWidth="600.0">
-               <children>
                   <Label text="Category:">
                      <HBox.margin>
                         <Insets left="20.0" />
@@ -48,7 +34,21 @@
                   </TextField>
                </children>
             </HBox>
-            <HBox prefHeight="100.0" prefWidth="200.0">
+            <HBox alignment="CENTER_LEFT" prefHeight="49.0" prefWidth="600.0">
+               <children>
+                  <Label text="Name:">
+                     <HBox.margin>
+                        <Insets left="20.0" />
+                     </HBox.margin>
+                  </Label>
+                  <TextField fx:id="nameTextField" promptText="Enter Name">
+                     <HBox.margin>
+                        <Insets left="30.0" />
+                     </HBox.margin>
+                  </TextField>
+               </children>
+            </HBox>
+            <HBox prefHeight="38.0" prefWidth="300.0">
                <children>
                   <Button fx:id="saveNewAnnotationButton" mnemonicParsing="false" text="Save" />
                </children>
