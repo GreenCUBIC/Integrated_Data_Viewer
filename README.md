@@ -9,22 +9,22 @@
 ### Installation
 
 
-1. Download and Install Java SE Development Kit 8u181 from this [link](http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html)
+1. Download and Install Java SE Development Kit 8u201 from this [link](http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html)
 , Pick The Version Meant For Your Computer
 
 2. Delete all other versions of java (jre and jdk) above version 8, such as 9,10 or 11. You can do this from control panel-> Uninstall Program
 
-3. Download the jar release from github. (repository name is amente/nicu_data_explorer)
+3. Download the jar release from github. (repository name is GreenCUBIC/Integrated_Data_Viewer)
 
 
 
-### Features: Can load up Video streams, Pressure Sensitive Mat (PSM) Data and an Annotation log
+### Features: Can load up Video streams, Pressure Sensitive Mat (PSM) Data, PMDI Data, and an Annotation log
 
 ### Instructions On How To Use This Application
 
 1. Run the jar file.
 
-2. Upon Running this program, you will be greeted by a small window with a dropdown containing three choices, Video, PSM, Annotations. Pick whichever type of file you would like to load and press load. You can then find
+2. Upon Running this program, you will be greeted by a small window with a dropdown containing four choices, Video, PSM, Annotations, and PMDI. Pick whichever type of file you would like to load and press load. You can then find
 the file on your computer and select it.
 
 3. Once you have loaded in your files, please refer to the specific guide on how to use the sliders and buttons corresponding to each data stream.
