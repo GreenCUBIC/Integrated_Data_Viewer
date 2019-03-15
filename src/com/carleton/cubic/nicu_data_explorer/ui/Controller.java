@@ -1,12 +1,13 @@
 package com.carleton.cubic.nicu_data_explorer.ui;
 
-import com.carleton.cubic.nicu_data_explorer.util.SliderAndButtonPackage;
+import com.carleton.cubic.nicu_data_explorer.util.DefaultInstancePackage;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.SubScene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
@@ -24,7 +25,6 @@ import java.util.List;
 public class Controller {
 
 
-
     @FXML
     private ChoiceBox<String> dataChoiceBox;
     @FXML
@@ -40,9 +40,10 @@ public class Controller {
     private List<VideoDataViewer> listOfVideoDataViewers = new ArrayList<>();
     private List<PSMDataViewer> listOfPSMDataViewers = new ArrayList<>();
     private PSMDataViewer psmDataViewerInstance;
+    private PmdiDataViewer pmdiDataViewerInstance;
     private SlideScaler slideScaler = new SlideScaler();
-    private PMDIParser pmdiParser = new PMDIParser();
     private double currentScalingFactor = 1;
+    private List<PmdiDataViewer> listOfPmdiDataViewers = new ArrayList<>();
 
 
     public Controller() {
@@ -55,13 +56,12 @@ public class Controller {
     private static final String PMDI_SELECTOR_LABEL = "PMDI";
 
 
-
     @FXML
     public void initialize() {
 
         zoomInOutHandler();
         dataChoiceBox.setItems(FXCollections.observableArrayList(
-                VIDEO_SELECTOR_LABEL, PSM_SELECTOR_LABEL, ANNOTATION_SELECTOR_LABEL,PMDI_SELECTOR_LABEL)
+                VIDEO_SELECTOR_LABEL, PSM_SELECTOR_LABEL, ANNOTATION_SELECTOR_LABEL, PMDI_SELECTOR_LABEL)
         );
 
         dataChoiceBox.getSelectionModel().selectFirst();
@@ -89,22 +89,45 @@ public class Controller {
                 createAnnotationInstance(file);
 
 
-            }
-            else if (dataSelectionValue.equalsIgnoreCase(PMDI_SELECTOR_LABEL)) {
-
-
-                try {
-                    pmdiParser.parseCsvIntoList(file);
-                    LiveAreaChartApp.launch();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
+            } else if (dataSelectionValue.equalsIgnoreCase(PMDI_SELECTOR_LABEL)) {
+                loadPMDIInstance(file);
             }
         });
 
 
     }
+
+
+    private void loadPMDIInstance(File file) {
+
+
+        Stage stage = new Stage();
+        Parent root = null;
+        try {
+            root = FXMLLoader.load(getClass().getResource("PmdiInstance.fxml"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        Scene scene = new Scene(root);
+        stage.setScene(scene);
+        DefaultInstancePackage defaultInstancePackage = assignInstanceControls(scene);
+        SubScene subScene = (SubScene) scene.lookup("#subScene");
+        Button increaseSampleSizeButton = (Button) scene.lookup("#increaseSampleSizeButton");
+        Button decreaseSampleSizeButton = (Button) scene.lookup("#decreaseSampleSizeButton");
+        Button autoScaleYAxisButton = (Button) scene.lookup("#autoScaleYAxisButton");
+        Button removeBubblesButton = (Button) scene.lookup("#removeBubblesButton");
+
+        ButtonPackage pmdiButtonPackage = new ButtonPackage(increaseSampleSizeButton, decreaseSampleSizeButton, autoScaleYAxisButton, removeBubblesButton);
+
+
+        pmdiDataViewerInstance = new PmdiDataViewer(subScene, file, stage, defaultInstancePackage, pmdiButtonPackage);
+        listOfPmdiDataViewers.add(pmdiDataViewerInstance);
+        AnnotationUpdateFocusListener(scene, defaultInstancePackage);
+
+
+    }
+
+
 
     private void loadVideoInstance(File file) {
 
@@ -119,34 +142,17 @@ public class Controller {
         stage.setScene(scene);
 
         MediaView mediaViewInstance = (MediaView) scene.lookup("#mediaView");
-        Slider sliderInstance = (Slider) scene.lookup("#mainSlider");
-        RangeSlider rangeSliderInstance = (RangeSlider) scene.lookup("#rangeSlider");
-        CustomRangeSlider customRangeSliderInstance = new CustomRangeSlider(rangeSliderInstance);
-        Button loopButtonInstance = (Button) scene.lookup("#loopButton");
-        Button playButtonInstance = (Button) scene.lookup("#playButton");
-        Label lowValText = (Label) scene.lookup("#lowValText");
-        Label highValText = (Label) scene.lookup("#highValText");
-        Label timeLineText = (Label) scene.lookup("#timeLineText");
-        ChoiceBox playbackChoiceBox = (ChoiceBox) scene.lookup("#playbackChoiceBox");
-        SliderAndButtonPackage sliderAndButtonPackage = new SliderAndButtonPackage(playButtonInstance,loopButtonInstance,sliderInstance,customRangeSliderInstance,playbackChoiceBox);
+        DefaultInstancePackage defaultInstancePackage = assignInstanceControls(scene);
         stage.show();
 
-        videoDataViewerInstance = new VideoDataViewer(file, mediaViewInstance, sliderAndButtonPackage, scene);
-        videoDataViewerInstance.openWithControls(mediaViewInstance, timeLineText, lowValText, highValText, listOfVideoDataViewers,listOfPSMDataViewers);
+        videoDataViewerInstance = new VideoDataViewer(file, mediaViewInstance, defaultInstancePackage, scene);
+        videoDataViewerInstance.openWithControls(mediaViewInstance, listOfVideoDataViewers, listOfPSMDataViewers);
         listOfVideoDataViewers.add(videoDataViewerInstance);
 
-        scene.getWindow().focusedProperty().addListener((observable, oldValue, newValue) -> {
-
-            if(newValue){
-                if(annotationTableHandler!=null) {
-                    annotationTableHandler.SaveAndUpdateButtonHandler(customRangeSliderInstance);
-                }
-
-
-            }
-        });
+        AnnotationUpdateFocusListener(scene, defaultInstancePackage);
 
     }
+
 
     private void loadPSMInstance(File file) {
 
@@ -162,31 +168,15 @@ public class Controller {
         stage.setScene(scene);
 
         Canvas canvasInstance = (Canvas) scene.lookup("#canvas");
-        Slider sliderInstance = (Slider) scene.lookup("#mainSlider");
-        RangeSlider rangeSliderInstance = (RangeSlider) scene.lookup("#rangeSlider");
-        CustomRangeSlider customRangeSliderInstance = new CustomRangeSlider(rangeSliderInstance);
-        Button loopButtonInstance = (Button) scene.lookup("#loopButton");
-        Button playButtonInstance = (Button) scene.lookup("#playButton");
-        Label lowValText = (Label) scene.lookup("#lowValText");
-        Label highValText = (Label) scene.lookup("#highValText");
-        Label timeLineText = (Label) scene.lookup("#timeLineText");
-        ChoiceBox playbackChoiceBox = (ChoiceBox) scene.lookup("#playbackChoiceBox");
-        SliderAndButtonPackage sliderAndButtonPackage = new SliderAndButtonPackage(playButtonInstance,loopButtonInstance,sliderInstance,customRangeSliderInstance,playbackChoiceBox);
+        DefaultInstancePackage defaultInstancePackage = assignInstanceControls(scene);
         stage.show();
 
 
-        psmDataViewerInstance = new PSMDataViewer(file,sliderAndButtonPackage);
-        psmDataViewerInstance.openWithControls(canvasInstance, timeLineText  , scene,lowValText,highValText,listOfVideoDataViewers,listOfPSMDataViewers);
+        psmDataViewerInstance = new PSMDataViewer(file, defaultInstancePackage);
+        psmDataViewerInstance.openWithControls(canvasInstance, scene, listOfVideoDataViewers, listOfPSMDataViewers);
         listOfPSMDataViewers.add(psmDataViewerInstance);
 
-        scene.getWindow().focusedProperty().addListener((observable, oldValue, newValue) -> {
-
-            if(newValue){
-                if(annotationTableHandler!=null) {
-                    annotationTableHandler.SaveAndUpdateButtonHandler(customRangeSliderInstance);
-                }
-            }
-        });
+        AnnotationUpdateFocusListener(scene, defaultInstancePackage);
     }
 
     private void createAnnotationInstance(File file) {
@@ -194,7 +184,7 @@ public class Controller {
         try {
             createAnnotationTable(file);
             SetAnnotationsOnInstances();
-            annotationTableHandler.setPlayAllButtonAction(listOfVideoDataViewers,listOfPSMDataViewers);
+            annotationTableHandler.setPlayAllButtonAction(listOfVideoDataViewers, listOfPSMDataViewers, listOfPmdiDataViewers);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -225,7 +215,6 @@ public class Controller {
                 fileChooser.getExtensionFilters().add(extFilter);
 
 
-
         }
 
 
@@ -241,14 +230,14 @@ public class Controller {
                 if (psmDataViewerInstance != null) {
                     annotationTableHandler.setAnnotationsPerPSM(listOfPSMDataViewers, slideScaler, annotationTableHandler);
                 }
+                if (pmdiDataViewerInstance != null) {
+                    annotationTableHandler.setAnnotationsPerPmdi(listOfPmdiDataViewers, slideScaler, annotationTableHandler);
+                }
 
 
             }
         });
     }
-
-
-
 
 
     private void createAnnotationTable(File file) throws IOException {
@@ -266,15 +255,15 @@ public class Controller {
     }
 
 
-    public void zoomInOutHandler(){
+    public void zoomInOutHandler() {
 
 
         zoomInButton.setOnAction(event -> {
 
-           if(currentScalingFactor>0){
+            if (currentScalingFactor > 0) {
 
-                currentScalingFactor= currentScalingFactor-0.1;
-                currentScalingFactor = (double)Math.round(currentScalingFactor * 10d) / 10d;
+                currentScalingFactor = currentScalingFactor - 0.1;
+                currentScalingFactor = (double) Math.round(currentScalingFactor * 10d) / 10d;
             }
             scaleTextField.setText(String.valueOf(currentScalingFactor));
             slideScaler.setScalingFactor(currentScalingFactor);
@@ -283,9 +272,9 @@ public class Controller {
         });
         zoomOutButton.setOnAction(event -> {
 
-            if(currentScalingFactor>=0) {
-                    currentScalingFactor= currentScalingFactor+0.1;
-                    currentScalingFactor = (double)Math.round(currentScalingFactor * 10d) / 10d;
+            if (currentScalingFactor >= 0) {
+                currentScalingFactor = currentScalingFactor + 0.1;
+                currentScalingFactor = (double) Math.round(currentScalingFactor * 10d) / 10d;
             }
             scaleTextField.setText(String.valueOf(currentScalingFactor));
             slideScaler.setScalingFactor(currentScalingFactor);
@@ -294,18 +283,43 @@ public class Controller {
         });
 
 
-
     }
 
     private void adjustToNewBounds() {
 
-        if(annotationTableHandler!=null&&annotationTableHandler.getSelectedAnnotation()!=null){
+        if (annotationTableHandler != null && annotationTableHandler.getSelectedAnnotation() != null) {
 
-            annotationTableHandler.setAnnotationsPerVideo(listOfVideoDataViewers,slideScaler,annotationTableHandler);
-            annotationTableHandler.setAnnotationsPerPSM(listOfPSMDataViewers,slideScaler,annotationTableHandler);
+            annotationTableHandler.setAnnotationsPerVideo(listOfVideoDataViewers, slideScaler, annotationTableHandler);
+            annotationTableHandler.setAnnotationsPerPSM(listOfPSMDataViewers, slideScaler, annotationTableHandler);
+            annotationTableHandler.setAnnotationsPerPmdi(listOfPmdiDataViewers, slideScaler, annotationTableHandler);
 
         }
 
+    }
+
+    private void AnnotationUpdateFocusListener(Scene scene, DefaultInstancePackage defaultInstancePackage) {
+
+        scene.getWindow().focusedProperty().addListener((observable, oldValue, newValue) -> {
+
+            if (newValue) {
+                if (annotationTableHandler != null) {
+                    annotationTableHandler.SaveAndUpdateButtonHandler(defaultInstancePackage.getCustomRangeSlider());
+                }
+            }
+        });
+    }
+
+    private DefaultInstancePackage assignInstanceControls(Scene scene) {
+        Slider sliderInstance = (Slider) scene.lookup("#mainSlider");
+        RangeSlider rangeSliderInstance = (RangeSlider) scene.lookup("#rangeSlider");
+        CustomRangeSlider customRangeSliderInstance = new CustomRangeSlider(rangeSliderInstance);
+        Button loopButtonInstance = (Button) scene.lookup("#loopButton");
+        Button playButtonInstance = (Button) scene.lookup("#playButton");
+        Label lowValText = (Label) scene.lookup("#lowValText");
+        Label highValText = (Label) scene.lookup("#highValText");
+        Label timeLineText = (Label) scene.lookup("#timeLineText");
+        ChoiceBox playbackChoiceBoxInstance = (ChoiceBox) scene.lookup("#playbackChoiceBox");
+        return new DefaultInstancePackage(playButtonInstance, loopButtonInstance, sliderInstance, customRangeSliderInstance, playbackChoiceBoxInstance, lowValText, highValText, timeLineText);
     }
 
 

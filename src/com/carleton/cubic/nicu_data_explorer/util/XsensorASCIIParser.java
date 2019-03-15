@@ -14,6 +14,7 @@ public class XsensorASCIIParser
 {
 
     private File asciiFile;
+    Thread parserThread;
 
     public XsensorASCIIParser(File asciiFile)
     {
@@ -22,7 +23,7 @@ public class XsensorASCIIParser
 
     public int parseForLastFrameNumber()
     {
-        ReversedLinesFileReader reversedReader = null;
+        ReversedLinesFileReader reversedReader;
         try
         {
             reversedReader = new ReversedLinesFileReader(asciiFile, Charset.defaultCharset());
@@ -46,7 +47,7 @@ public class XsensorASCIIParser
         return -1;
     }
 
-    public PSMRecording parse()
+    public PSMRecording parse() throws IndexOutOfBoundsException
     {
         PSMRecording psmRecording = new PSMRecording();
 
@@ -62,6 +63,7 @@ public class XsensorASCIIParser
                         break;
                     }
                     String[] headerKeyValue = headerLine.split(Pattern.quote(":,"));
+
                     psmRecording.putFileHeader(headerKeyValue[0], headerKeyValue[1]);
                 }
 
@@ -120,4 +122,9 @@ public class XsensorASCIIParser
         return psmRecording;
     }
 
+    public int parseForFirstFrameNumber() {
+
+        return -1;
+
+    }
 }

@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.SubScene?>
+<?import javafx.scene.text.*?>
+<?import org.controlsfx.control.RangeSlider?>
+<VBox xmlns:fx="http://javafx.com/fxml/1" fx:id="vBox" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
+      minWidth="-Infinity" prefHeight="550.0" prefWidth="550.0" xmlns="http://javafx.com/javafx/8.0.121">
+    <VBox prefHeight="200.0" prefWidth="100.0">
+      <children>
+          <SubScene fx:id="subScene" height="400.0" width="550.0">
+           <root>
+             <Region />
+           </root>
+         </SubScene>
+      </children>
+    </VBox>
+    <VBox alignment="CENTER" minHeight="-Infinity" prefHeight="100.0" prefWidth="100.0">
+        <Slider fx:id="mainSlider" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="14.0" prefWidth="514.0" />
+        <RangeSlider fx:id="rangeSlider" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="14.0" prefWidth="514.0">
+            <padding>
+                <Insets top="10.0" />
+            </padding>
+            <VBox.margin>
+                <Insets top="10.0" />
+            </VBox.margin>
+        </RangeSlider>
+      <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0">
+         <children>
+            <Button fx:id="playButton" mnemonicParsing="false" prefHeight="25.0" prefWidth="58.0" text="Play">
+               <HBox.margin>
+                  <Insets left="5.0" />
+               </HBox.margin></Button>
+            <Button fx:id="loopButton" mnemonicParsing="false" prefHeight="25.0" prefWidth="58.0" text="Loop">
+               <HBox.margin>
+                  <Insets left="8.0" />
+               </HBox.margin>
+            </Button>
+            <VBox prefHeight="58.0" prefWidth="116.0">
+               <children>
+                  <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
+                     <children>
+                        <Label prefHeight="15.0" prefWidth="39.0" text="low Val: ">
+                           <font>
+                              <Font size="10.0" />
+                           </font>
+                        </Label>
+                        <Label fx:id="lowValText" text="Label" />
+                     </children>
+                  </HBox>
+                  <HBox alignment="CENTER" prefHeight="100.0" prefWidth="116.0">
+                     <children>
+                        <Label text="high Val: ">
+                           <HBox.margin>
+                              <Insets />
+                           </HBox.margin>
+                           <font>
+                              <Font size="10.0" />
+                           </font>
+                        </Label>
+                        <Label fx:id="highValText" text="Label" />
+                     </children>
+                  </HBox>
+               </children>
+               <HBox.margin>
+                  <Insets top="4.0" />
+               </HBox.margin>
+            </VBox>
+            <Label text="Timeline: ">
+               <HBox.margin>
+                  <Insets left="35.0" />
+               </HBox.margin>
+               <font>
+                  <Font size="10.0" />
+               </font>
+            </Label>
+            <Label fx:id="timeLineText" text="Label" />
+            <VBox alignment="CENTER" prefHeight="58.0" prefWidth="100.0">
+               <children>
+                  <Label text="Playback Speed" />
+                  <ChoiceBox fx:id="playbackChoiceBox" prefHeight="25.0" prefWidth="76.0" />
+               </children>
+               <HBox.margin>
+                  <Insets left="45.0" />
+               </HBox.margin>
+            </VBox>
+         </children>
+      </HBox>
+    </VBox>
+    <VBox prefHeight="200.0" prefWidth="100.0">
+        <children>
+            <HBox prefHeight="50.0" prefWidth="200.0">
+                <children>
+                    <Label text="Sample Size: ">
+                        <font>
+                            <Font size="18.0"/>
+                        </font>
+                    </Label>
+                    <Button fx:id="decreaseSampleSizeButton" mnemonicParsing="false" text="-"/>
+                    <Button fx:id="increaseSampleSizeButton" mnemonicParsing="false" text="+"/>
+                    <Label text="Auto Scale Y: ">
+                        <font>
+                            <Font size="18.0"/>
+                        </font>
+                    </Label>
+                    <Button fx:id="autoScaleYAxisButton" mnemonicParsing="false" text="Enable"/>
+                    <Label text="Remove Bubbles: ">
+                        <font>
+                            <Font size="18.0"/>
+                        </font>
+                    </Label>
+                    <Button fx:id="removeBubblesButton" mnemonicParsing="false" text="Enable"/>
+                </children>
+            </HBox>
+        </children>
+    </VBox>
+</VBox>

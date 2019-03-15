@@ -1,5 +1,6 @@
 package com.carleton.cubic.nicu_data_explorer.ui;
 
+import javafx.scene.control.Alert;
 import org.controlsfx.control.RangeSlider;
 
 import java.util.Date;
@@ -93,9 +94,6 @@ public class CustomRangeSlider{
         return rangeSlider;
     }
 
-    public void setRangeSlider(RangeSlider rangeSlider) {
-        this.rangeSlider = rangeSlider;
-    }
 
 
 }
