@@ -14,7 +14,6 @@ import java.util.List;
 public class PMDIParser {
 
     private List<String[]> content;
-    private Date startDate;
     private int counter;
     private XYChart.Series hrSeries;
     private XYChart.Series rrSeries;
@@ -26,10 +25,10 @@ public class PMDIParser {
 
         try {
             parseCsvIntoList(file);
-            hrSeries = extractSeriesFromList(1);
-            rrSeries = extractSeriesFromList(2);
-            spO2Series = extractSeriesFromList(3);
-            plsSeries = extractSeriesFromList(4);
+            hrSeries = extractSeriesFromList(2);
+            rrSeries = extractSeriesFromList(4);
+            spO2Series = extractSeriesFromList(6);
+            plsSeries = extractSeriesFromList(3);
             counter = 0;
         } catch (IOException e) {
             e.printStackTrace();
@@ -39,13 +38,13 @@ public class PMDIParser {
         XYChart.Data<Number, Number> point;
         XYChart.Series selectedSeries = new XYChart.Series();
         switch (columnNumber){
-            case 1:  selectedSeries = hrSeries;
+            case 2:  selectedSeries = hrSeries;
             break;
-            case 2:  selectedSeries = rrSeries;
+            case 4:  selectedSeries = rrSeries;
             break;
-            case 3:  selectedSeries = spO2Series;
+            case 6:  selectedSeries = spO2Series;
             break;
-            case 4:  selectedSeries = plsSeries;
+            case 3:  selectedSeries = plsSeries;
             break;
         }
         point =  (XYChart.Data<Number, Number>)selectedSeries.getData().get(counter);
@@ -60,7 +59,22 @@ public class PMDIParser {
         for (int i = 1; i<content.size();i++) {
             String[] line = content.get(i);
             Long epochInMillis = parseDate(line[0]).toInstant().toEpochMilli();
-            extractedSeries.getData().add(new AreaChart.Data<>((epochInMillis-getStartDate().toInstant().toEpochMilli())/100, Double.parseDouble(line[columnNumber])));
+            if((line.length>columnNumber)) {
+
+                if(line[columnNumber].equals("^^")){
+                    extractedSeries.getData().add(new AreaChart.Data<>(i*10, 0));
+
+                }else if(line[columnNumber].equals("")){
+                    extractedSeries.getData().add(new AreaChart.Data<>(i*10, 0));
+
+                }else if(line[columnNumber].equals("N/A")){
+                    extractedSeries.getData().add(new AreaChart.Data<>(i*10, 0));
+
+                }else{
+                    extractedSeries.getData().add(new AreaChart.Data<>(i*10, Double.parseDouble(line[columnNumber])));
+
+                }
+            }
         }
         return extractedSeries;
     }
@@ -173,11 +187,22 @@ public class PMDIParser {
         counter++;
     }
 
-    public boolean isNextPoint() {
-        if(counter  >= hrSeries.getData().size()){
+    public boolean isNextPoint(int columnNumber) {
+        XYChart.Series selectedSeries = new XYChart.Series();
+        switch (columnNumber){
+            case 2:  selectedSeries = hrSeries;
+                break;
+            case 4:  selectedSeries = rrSeries;
+                break;
+            case 6:  selectedSeries = spO2Series;
+                break;
+            case 3:  selectedSeries = plsSeries;
+                break;
+        }
+        if(counter  >= selectedSeries.getData().size()){
             return false;
         }
-      return hrSeries.getData().get(counter) != null;
+      return selectedSeries.getData().get(counter) != null;
 
     }
     }

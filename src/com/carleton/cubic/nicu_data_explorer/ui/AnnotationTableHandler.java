@@ -231,7 +231,9 @@ public class AnnotationTableHandler {
         if (startInSliderUnits >= 0 && endInSliderUnits >= 0) {
             setNewRangeSliderBounds(rangeSlider, startInSliderUnits, endInSliderUnits);
             pmdiDataViewer.stop();
-            pmdiDataViewer.clearGraphAndSeekSeconds(rangeSlider.getLowValue() / 10.0);
+            long seekValueSeconds = Math.round(rangeSlider.getLowValue() / 10);
+
+            pmdiDataViewer.clearGraphAndSeekSeconds(seekValueSeconds);
             pmdiDataViewer.getTimeSlider().setValue(rangeSlider.getLowValue());
         }
     }

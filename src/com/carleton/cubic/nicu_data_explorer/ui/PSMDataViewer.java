@@ -52,7 +52,13 @@ public class PSMDataViewer extends IntegratedDataViewerInstance {
         this.scene = scene;
 
         double psmFrameRatePerSec = 18; //TODO: How to get this from the PSM file?
-        int totalNumberOfFrames = xsensorASCIIParser.parseForLastFrameNumber();
+        int totalNumberOfFrames = -1;
+        if(xsensorASCIIParser.isFirstFrameZero()){
+            totalNumberOfFrames = xsensorASCIIParser.parseForLastFrameNumber();
+        }else{
+            totalNumberOfFrames = xsensorASCIIParser.parseForLastFrameNumber()-xsensorASCIIParser.parseForFirstFrameNumber();
+        }
+
         customSlider.sliderLimit(timeSlider, customRangeSlider.getRangeSlider());
         totalRecordingTime = Duration.seconds(totalNumberOfFrames / psmFrameRatePerSec);
         timeSlider.setMax(totalRecordingTime.toSeconds() * 10); //slider value is tenth of a second
@@ -179,7 +185,7 @@ public class PSMDataViewer extends IntegratedDataViewerInstance {
 
         setCustomRangeSliderStartAndEndDates();
         updateLowHighLabels();
-        adjustOtherInstanceRangeSliders(customRangeSlider, listOfVideoDataViewers, listOfPSMDataViewers);
+       // adjustOtherInstanceRangeSliders(customRangeSlider, listOfVideoDataViewers, listOfPSMDataViewers);
 
     }
 

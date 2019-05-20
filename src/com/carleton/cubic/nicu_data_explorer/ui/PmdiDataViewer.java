@@ -66,6 +66,7 @@ public class PmdiDataViewer extends IntegratedDataViewerInstance {
     private Button decreaseSampleSizeButton;
     private Button autoScaleYAxisButton;
     private Button removeBubblesButton;
+    private Timeline timeline;
 
 
     public PmdiDataViewer(SubScene subScene, File file, Stage stage, DefaultInstancePackage defaultInstancePackage, ButtonPackage pmdiButtonPackage) {
@@ -96,9 +97,7 @@ public class PmdiDataViewer extends IntegratedDataViewerInstance {
         customSlider.sliderLimit(timeSlider, customRangeSlider.getRangeSlider());
         setRangeSliderMinAndMax(seconds);
         timeSlider.setMax(seconds * 10); //slider value is tenth of a second
-
-
-        Timeline timeline = new Timeline();
+        timeline = new Timeline();
         timeline.getKeyFrames().add(new KeyFrame(Duration.millis(UPDATE_INTERVAL_MS), actionEvent -> {
 
             incrementCounterAndShiftPoints();
@@ -133,31 +132,54 @@ public class PmdiDataViewer extends IntegratedDataViewerInstance {
 
                 programmaticSliderValueChange = true;
                 timeSlider.setValue(rangeSlider.getLowValue());
-                Double seekValueSeconds = rangeSlider.getLowValue() / 10;
+                long seekValueSeconds = Math.round(rangeSlider.getLowValue() / 10);
+
+                animation.pause();
+
                 clearGraphAndSeekSeconds(seekValueSeconds);
                 programmaticSliderValueChange = false;
 
             }
         });
 
+        loopButton.setOnAction(e -> {
 
-        timeSlider.valueChangingProperty().addListener((obs, oldVal, newVal) -> {
-            if ((!newVal) && !programmaticSliderValueChange) {
-                double seekValueSeconds = timeSlider.getValue() / 10;
-                clearGraphAndSeekSeconds(seekValueSeconds);
+            if (!loopRequested) {
+                loopRequested = true;
+                loopButton.setText(LOOP_STATUS_ON);
 
+                if(Math.abs(rangeSlider.getHighValue()-timeSlider.getValue())<5){
 
+                    timeSlider.setValue(rangeSlider.getLowValue());
+                    long seekValueSeconds = Math.round(timeSlider.getValue() / 10);
+                    clearGraphAndSeekSeconds(seekValueSeconds);
+                }
+
+            } else {
+                loopRequested = false;
+                loopButton.setText(LOOP_STATUS_OFF);
             }
+
+        });
+
+        timeSlider.setOnMouseReleased(event -> {
+
+            long seekValueSeconds = Math.round(timeSlider.getValue() / 10);
+            clearGraphAndSeekSeconds(seekValueSeconds);
+        });
+
+        timeSlider.valueProperty().addListener(ov -> {
+
             if (customSlider.shouldStopAtEnd(timeSlider, customRangeSlider.getRangeSlider(), loopRequested)) {
-                timeline.pause();
+                animation.pause();
             }
             if (customSlider.shouldLoopAtEnd(timeSlider, customRangeSlider.getRangeSlider(), loopRequested)) {
-                double seekValueSeconds = customRangeSlider.getRangeSlider().getLowValue() / 10;
+                long seekValueSeconds = Math.round(customRangeSlider.getRangeSlider().getLowValue() / 10);
 
                 clearGraphAndSeekSeconds(seekValueSeconds);
 
                 timeSlider.adjustValue(customRangeSlider.getRangeSlider().getLowValue());
-                timeline.play();
+                animation.play();
             }
         });
 
@@ -249,26 +271,14 @@ public class PmdiDataViewer extends IntegratedDataViewerInstance {
         customRangeSlider.setAbsoluteEndDate(absoluteEndDate);
     }
 
-    public void clearGraphAndSeekSeconds(double seekValueSeconds) {
+    public void clearGraphAndSeekSeconds(long seekValueSeconds) {
+
 
         animation.pause();
-        playButton.setText("Play");
-
         clearAllSeries();
-        if (seekValueSeconds > sampleSize) {
-            pmdiParser.setCounter((int) seekValueSeconds - sampleSize);
+        pmdiParser.setCounter((int) seekValueSeconds);
+        System.out.println("Counter: " + pmdiParser.getCounter());
 
-            for (int i = 0; i < sampleSize; i++) {
-
-                getSetOfPointsAndIncrementCounter();
-                addPoints(nextHRPoint, nextRRPoint, nextSPO2Point, nextPLsPoint);
-
-            }
-
-        } else {
-            pmdiParser.setCounter((int) seekValueSeconds);
-
-        }
     }
 
     private void clearAllSeries() {
@@ -352,31 +362,45 @@ public class PmdiDataViewer extends IntegratedDataViewerInstance {
     }
 
     private void getSetOfPointsAndIncrementCounter() {
-        if (pmdiParser.isNextPoint()) {
-            nextHRPoint = pmdiParser.getNextPoint(1);
+
+        if (pmdiParser.isNextPoint(2)) {
+            nextHRPoint = pmdiParser.getNextPoint(2);
+            int seriesNumber = 1;
             if (series1.getNode().isVisible() && bubblesActive) {
-                nextHRPoint.setNode(new HoveredThresholdNode(nextHRPoint.getYValue().intValue()));
+                nextHRPoint.setNode(new HoveredThresholdNode(nextHRPoint.getYValue().intValue(), seriesNumber));
+                System.out.println("counter: " + pmdiParser.getCounter());
+                System.out.println("Time Slider Value: " + timeSlider.getValue());
+                System.out.println("Time in seconds: " + timeSlider.getValue()/10);
+
             }
         }
-        if (pmdiParser.isNextPoint()) {
-            nextRRPoint = pmdiParser.getNextPoint(2);
+        if (pmdiParser.isNextPoint(4)) {
+            nextRRPoint = pmdiParser.getNextPoint(4);
+            int seriesNumber = 2;
+
             if (series2.getNode().isVisible() && bubblesActive) {
-                nextRRPoint.setNode(new HoveredThresholdNode(nextRRPoint.getYValue().intValue()));
+                nextRRPoint.setNode(new HoveredThresholdNode(nextRRPoint.getYValue().intValue(), seriesNumber));
             }
         }
-        if (pmdiParser.isNextPoint()) {
-            nextSPO2Point = pmdiParser.getNextPoint(3);
+        if (pmdiParser.isNextPoint(6)) {
+            nextSPO2Point = pmdiParser.getNextPoint(6);
+            System.out.println("nextSPO2Point X value: " + nextSPO2Point.getXValue());
+            System.out.println("nextSPO2Point Y value: " + nextSPO2Point.getYValue());
+            int seriesNumber = 3;
+
             if (series3.getNode().isVisible() && bubblesActive) {
-                nextSPO2Point.setNode(new HoveredThresholdNode(nextSPO2Point.getYValue().intValue()));
+                nextSPO2Point.setNode(new HoveredThresholdNode(nextSPO2Point.getYValue().intValue(), seriesNumber));
             }
         }
-        if (pmdiParser.isNextPoint()) {
-            nextPLsPoint = pmdiParser.getNextPoint(4);
+        if (pmdiParser.isNextPoint(3)) {
+            nextPLsPoint = pmdiParser.getNextPoint(3);
+            int seriesNumber = 4;
+
             if (series4.getNode().isVisible() && bubblesActive) {
-                nextPLsPoint.setNode(new HoveredThresholdNode(nextPLsPoint.getYValue().intValue()));
+                nextPLsPoint.setNode(new HoveredThresholdNode(nextPLsPoint.getYValue().intValue(), seriesNumber));
             }
         }
-        if (!pmdiParser.isNextPoint()) {
+        if (!pmdiParser.isNextPoint(2)) {
             animation.pause();
         }
 
@@ -385,11 +409,18 @@ public class PmdiDataViewer extends IntegratedDataViewerInstance {
 
 
     private void removePointsOverMaxNumber() {
-        if (series1.getData().size() > sampleSize) {
-            series1.getData().remove(0);
-            series2.getData().remove(0);
-            series3.getData().remove(0);
-            series4.getData().remove(0);
+
+        removeSeriesPointOverMax(series1);
+        removeSeriesPointOverMax(series2);
+        removeSeriesPointOverMax(series3);
+        removeSeriesPointOverMax(series4);
+
+    }
+
+    private void removeSeriesPointOverMax(XYChart.Series<Number, Number> series) {
+
+        if (series.getData().size() > sampleSize) {
+            series.getData().remove(0);
         }
     }
 
@@ -433,7 +464,7 @@ public class PmdiDataViewer extends IntegratedDataViewerInstance {
         yAxis.setAutoRanging(false);
         yAxis.setLowerBound(0);
         yAxis.setUpperBound(150);
-        yAxis.setLabel("Some unit");
+        yAxis.setLabel("Arbitrary Unit");
 
         lineChart = new MLineChart<>(xAxis, yAxis);
         lineChart.setAnimated(true);
@@ -477,10 +508,9 @@ public class PmdiDataViewer extends IntegratedDataViewerInstance {
     }
 
     class HoveredThresholdNode extends StackPane {
-        HoveredThresholdNode(int value) {
+        HoveredThresholdNode(int value, int color) {
             setPrefSize(15, 15);
-
-            final Label label = createDataThresholdLabel(value);
+            final Label label = createDataThresholdLabel(value, color);
 
             setOnMouseEntered(mouseEvent -> {
                 getChildren().setAll(label);
@@ -493,11 +523,27 @@ public class PmdiDataViewer extends IntegratedDataViewerInstance {
             });
         }
 
-        private Label createDataThresholdLabel(int value) {
+        private Label createDataThresholdLabel(int value, int seriesNumber) {
             final Label label = new Label(value + "");
             label.getStyleClass().addAll("default-color0", "chart-line-symbol", "chart-series-line");
+            Color color = Color.DARKGRAY;
+            switch (seriesNumber) {
+                case 1:
+                    color = Color.RED;
+                    break;
+                case 2:
+                    color = Color.ORANGE;
+                    break;
+                case 3:
+                    color = Color.GREEN;
+                    break;
+                case 4:
+                    color = Color.BLUE;
+                    break;
+            }
+
             label.setStyle("-fx-font-size: 20; -fx-font-weight: bold;");
-            label.setTextFill(Color.DARKGRAY);
+            label.setTextFill(color);
             label.setMinSize(Label.USE_PREF_SIZE, Label.USE_PREF_SIZE);
             return label;
         }

@@ -2,6 +2,7 @@ package com.carleton.cubic.nicu_data_explorer.util;
 
 import org.apache.commons.io.input.ReversedLinesFileReader;
 
+import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -124,7 +125,33 @@ public class XsensorASCIIParser
 
     public int parseForFirstFrameNumber() {
 
+        BufferedReader br;
+        try
+        {
+            br = new BufferedReader(new FileReader(asciiFile));
+            String line;
+            line = br.readLine();
+            while (line != null)
+            {
+                if (line.startsWith("Frame:"))
+                {
+                    String[] frameNumberHeader = line.split(":,");
+                    return Integer.parseInt(frameNumberHeader[1]);
+                }
+                line = br.readLine();
+            }
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
+
         return -1;
 
+    }
+
+    public boolean isFirstFrameZero() {
+
+        return 0 == parseForFirstFrameNumber();
     }
 }

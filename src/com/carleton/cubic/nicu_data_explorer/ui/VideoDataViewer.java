@@ -16,10 +16,7 @@ import org.controlsfx.control.RangeSlider;
 import org.jcodec.containers.mp4.boxes.MetaValue;
 import org.jcodec.movtool.MetadataEditor;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -136,7 +133,7 @@ public class VideoDataViewer extends IntegratedDataViewerInstance {
             customRangeSlider.setAbsoluteStartDate(getAbsoluteRecordingStartTime());
             customRangeSlider.setAbsoluteEndDate(calculateAbsoluteEndDate());
             setCustomRangeSliderStartAndEndDates();
-            adjustOtherInstanceRangeSliders(customRangeSlider, listOfVideoDataViewers, listOfPSMDataViewers);
+          //  adjustOtherInstanceRangeSliders(customRangeSlider, listOfVideoDataViewers, listOfPSMDataViewers);
 
         });
 
@@ -259,19 +256,47 @@ public class VideoDataViewer extends IntegratedDataViewerInstance {
         alert.setHeaderText("Load a .txt File?");
         alert.setContentText("Would you like to load an alternate Start Date?");
 
+        ButtonType buttonTypeOne = new ButtonType("Load .txt File");
+        ButtonType buttonTypeTwo = new ButtonType("Enter Alternate Date");
+        ButtonType buttonTypeCancel = new ButtonType("Cancel");
+
+
+        alert.getButtonTypes().setAll(buttonTypeOne, buttonTypeTwo,  buttonTypeCancel);
+
         Optional<ButtonType> result = alert.showAndWait();
-        if (result.get() == ButtonType.OK) {
-            FileChooser fileChooser = new FileChooser();
-            fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Text Files", "*.txt"));
-            File file = fileChooser.showOpenDialog(scene.getWindow());
+        if (result.get() == buttonTypeOne){
+            pickFileDialog();
+        } else if (result.get() == buttonTypeTwo) {
+            showDateInputDialog();
+        } else {
+            alert.close();
+        }
 
+    }
 
-            FileReader fileReader = new FileReader(file);
+    private void pickFileDialog() {
+
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Text Files", "*.txt"));
+        File file = fileChooser.showOpenDialog(scene.getWindow());
+
+        if (file != null) {
+            FileReader fileReader = null;
+            try {
+                fileReader = new FileReader(file);
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
             BufferedReader bufferedReader = new BufferedReader(fileReader);
 
-            String headerLine;
+            String headerLine = null;
             String string1[] = new String[2];
-            while ((headerLine = bufferedReader.readLine()) != null) {
+            while (true) {
+                try {
+                    if ((headerLine = bufferedReader.readLine()) == null) break;
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
                 if (headerLine.contains("recordingStart")) {
                     string1 = headerLine.split("=");
                 }
@@ -279,62 +304,18 @@ public class VideoDataViewer extends IntegratedDataViewerInstance {
 
             customMetaDataMap.put(RECORDING_START_HEADER, string1[1]);
 
-        } else {
-            alert.close();
         }
     }
+    private void showDateInputDialog() {
 
-    private void adjustOtherInstanceRangeSliders(CustomRangeSlider customRangeSlider, List<VideoDataViewer> videoDataViewers, List<PSMDataViewer> listOfPSMDataViewers) {
-
-        customRangeSlider.getRangeSlider().lowValueProperty().addListener((ov, old_val, new_val) -> {
-
-            setNewValuesForVideoInstances(videoDataViewers);
-            setNewValuesForPSMInstances(listOfPSMDataViewers);
-
-        });
-        customRangeSlider.getRangeSlider().highValueProperty().addListener((ov, old_val, new_val) -> {
-
-            setNewValuesForVideoInstances(videoDataViewers);
-            setNewValuesForPSMInstances(listOfPSMDataViewers);
-
-
-        });
-        timeSlider.valueProperty().addListener((ov, old_val, new_val) -> {
-            if (mediaPlayer.getStatus() != MediaPlayer.Status.PLAYING && !customSlider.pausedAtRangeSliderLimit(customRangeSlider.getRangeSlider(), timeSlider)) {
-                setNewValuesForVideoInstances(videoDataViewers);
-                setNewValuesForPSMInstances(listOfPSMDataViewers);
-            }
-
-        });
+        TextInputDialog dialog = new TextInputDialog("YYYY-MM-DD HH:mm:ss.SSS");
+        dialog.setTitle("Enter Date Dialog");
+        dialog.setHeaderText("Please Enter The Recording Start Date");
+        dialog.setContentText("Recording Start Date:");
+        Optional<String> result = dialog.showAndWait();
+        result.ifPresent(date -> customMetaDataMap.put(RECORDING_START_HEADER, date));
     }
 
-    private void setNewValuesForPSMInstances(List<PSMDataViewer> listOfPSMDataViewers) {
-
-        for (PSMDataViewer psmDataViewer : listOfPSMDataViewers) {
-
-            CustomRangeSlider customRangeSlider1 = psmDataViewer.getCustomRangeSlider();
-            Date absoluteStartDate = this.getAbsoluteRecordingStartTime();
-            customRangeSlider1.setLowValueUsingDate(this.customRangeSlider.getLowValueInDate(absoluteStartDate));
-            customRangeSlider1.setHighValueUsingDate(this.customRangeSlider.getHighValueInDate(absoluteStartDate));
-            Date sliderValueAsDate = this.convertTimeSliderValueToDate();
-            psmDataViewer.setTimeSliderValueUsingDate(sliderValueAsDate);
-
-        }
-    }
-
-    private void setNewValuesForVideoInstances(List<VideoDataViewer> videoDataViewers) {
-
-        for (VideoDataViewer videoDataViewer : videoDataViewers) {
-
-            CustomRangeSlider customRangeSlider1 = videoDataViewer.getCustomRangeSlider();
-            Date absoluteStartDate = this.getAbsoluteRecordingStartTime();
-            customRangeSlider1.setLowValueUsingDate(this.customRangeSlider.getLowValueInDate(absoluteStartDate));
-            customRangeSlider1.setHighValueUsingDate(this.customRangeSlider.getHighValueInDate(absoluteStartDate));
-            Date sliderValueAsDate = this.convertTimeSliderValueToDate();
-            videoDataViewer.setTimeSliderValueUsingDate(sliderValueAsDate);
-
-        }
-    }
 
     public Date convertTimeSliderValueToDate() {
 
