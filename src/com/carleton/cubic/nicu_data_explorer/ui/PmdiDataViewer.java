@@ -41,7 +41,6 @@ public class PmdiDataViewer extends IntegratedDataViewerInstance {
     private int UPDATE_INTERVAL_MS = 1000;
     private Date absoluteStartDate;
     private Date absoluteEndDate;
-    private boolean programmaticSliderValueChange = false;
     private boolean bubblesActive = true;
 
 
@@ -104,9 +103,7 @@ public class PmdiDataViewer extends IntegratedDataViewerInstance {
 
             Date tickTime = TimeUtils.addOffsetToTime(absoluteStartDate, (long) pmdiParser.getCounter() * 1000);
             playTime.setText(TimeUtils.getFormattedTimeWithOutMillis(tickTime));
-            programmaticSliderValueChange = true;
             timeSlider.setValue(nextHRPoint.getXValue().doubleValue());
-            programmaticSliderValueChange = false;
 
 
             setNewXAxisBounds(xAxis, series1);            // update using series 1 as reference
@@ -130,14 +127,12 @@ public class PmdiDataViewer extends IntegratedDataViewerInstance {
 
             if (customSlider.isPositionOutOfBounds(timeSlider, rangeSlider)) {
 
-                programmaticSliderValueChange = true;
                 timeSlider.setValue(rangeSlider.getLowValue());
                 long seekValueSeconds = Math.round(rangeSlider.getLowValue() / 10);
 
                 animation.pause();
 
                 clearGraphAndSeekSeconds(seekValueSeconds);
-                programmaticSliderValueChange = false;
 
             }
         });
@@ -183,15 +178,9 @@ public class PmdiDataViewer extends IntegratedDataViewerInstance {
             }
         });
 
-        rangeSlider.lowValueProperty().addListener((ov, old_val, new_val) -> {
-            lowValText.setText(TimeUtils.getFormattedTimeWithMillis(TimeUtils.addOffsetToTime(absoluteStartDate, rangeSlider.getLowValue() * 100)));
-        });
-        rangeSlider.highValueProperty().addListener((ov, old_val, new_val) -> {
-            highValText.setText(TimeUtils.getFormattedTimeWithMillis(TimeUtils.addOffsetToTime(absoluteStartDate, rangeSlider.getHighValue() * 100)));
-        });
-        timeSlider.valueProperty().addListener((ov, old_val, new_val) -> {
-            playTime.setText(TimeUtils.getFormattedTimeWithMillis(TimeUtils.addOffsetToTime(absoluteStartDate, timeSlider.getValue() * 100)));
-        });
+        rangeSlider.lowValueProperty().addListener((ov, old_val, new_val) -> lowValText.setText(TimeUtils.getFormattedTimeWithMillis(TimeUtils.addOffsetToTime(absoluteStartDate, rangeSlider.getLowValue() * 100))));
+        rangeSlider.highValueProperty().addListener((ov, old_val, new_val) -> highValText.setText(TimeUtils.getFormattedTimeWithMillis(TimeUtils.addOffsetToTime(absoluteStartDate, rangeSlider.getHighValue() * 100))));
+        timeSlider.valueProperty().addListener((ov, old_val, new_val) -> playTime.setText(TimeUtils.getFormattedTimeWithMillis(TimeUtils.addOffsetToTime(absoluteStartDate, timeSlider.getValue() * 100))));
     }
 
 
@@ -368,10 +357,6 @@ public class PmdiDataViewer extends IntegratedDataViewerInstance {
             int seriesNumber = 1;
             if (series1.getNode().isVisible() && bubblesActive) {
                 nextHRPoint.setNode(new HoveredThresholdNode(nextHRPoint.getYValue().intValue(), seriesNumber));
-                System.out.println("counter: " + pmdiParser.getCounter());
-                System.out.println("Time Slider Value: " + timeSlider.getValue());
-                System.out.println("Time in seconds: " + timeSlider.getValue()/10);
-
             }
         }
         if (pmdiParser.isNextPoint(4)) {
@@ -384,8 +369,7 @@ public class PmdiDataViewer extends IntegratedDataViewerInstance {
         }
         if (pmdiParser.isNextPoint(6)) {
             nextSPO2Point = pmdiParser.getNextPoint(6);
-            System.out.println("nextSPO2Point X value: " + nextSPO2Point.getXValue());
-            System.out.println("nextSPO2Point Y value: " + nextSPO2Point.getYValue());
+
             int seriesNumber = 3;
 
             if (series3.getNode().isVisible() && bubblesActive) {

@@ -39,7 +39,7 @@ public class PMDIParser {
         XYChart.Series selectedSeries = new XYChart.Series();
         switch (columnNumber){
             case 2:  selectedSeries = hrSeries;
-            break;
+                break;
             case 4:  selectedSeries = rrSeries;
             break;
             case 6:  selectedSeries = spO2Series;
@@ -58,7 +58,6 @@ public class PMDIParser {
         XYChart.Series extractedSeries = new XYChart.Series();
         for (int i = 1; i<content.size();i++) {
             String[] line = content.get(i);
-            Long epochInMillis = parseDate(line[0]).toInstant().toEpochMilli();
             if((line.length>columnNumber)) {
 
                 if(line[columnNumber].equals("^^")){
@@ -67,13 +66,18 @@ public class PMDIParser {
                 }else if(line[columnNumber].equals("")){
                     extractedSeries.getData().add(new AreaChart.Data<>(i*10, 0));
 
+
                 }else if(line[columnNumber].equals("N/A")){
                     extractedSeries.getData().add(new AreaChart.Data<>(i*10, 0));
+
 
                 }else{
                     extractedSeries.getData().add(new AreaChart.Data<>(i*10, Double.parseDouble(line[columnNumber])));
 
                 }
+            }else{
+                extractedSeries.getData().add(new AreaChart.Data<>(i*10, 0));
+
             }
         }
         return extractedSeries;
@@ -97,7 +101,6 @@ public class PMDIParser {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        displayData(content);
         this.content = content;
         return content;
     }
@@ -157,6 +160,22 @@ public class PMDIParser {
             System.out.print("\n");
         }
 
+    }
+
+    public static boolean isInteger(String s) {
+        return isInteger(s,10);
+    }
+
+    public static boolean isInteger(String s, int radix) {
+        if(s.isEmpty()) return false;
+        for(int i = 0; i < s.length(); i++) {
+            if(i == 0 && s.charAt(i) == '-') {
+                if(s.length() == 1) return false;
+                else continue;
+            }
+            if(Character.digit(s.charAt(i),radix) < 0) return false;
+        }
+        return true;
     }
 
     public XYChart.Series getHrSeries() {
