@@ -141,6 +141,8 @@ public class AnnotationTableHandler {
             e.printStackTrace();
         }
         Scene scene = new Scene(root);
+        scene.getStylesheets().add("com/carleton/cubic/nicu_data_explorer/stylesheets/stylesheet.css");
+
         stage.setScene(scene);
         stage.show();
         Button saveNewAnnotationButton = (Button) scene.lookup("#saveNewAnnotationButton");
@@ -317,6 +319,7 @@ public class AnnotationTableHandler {
             e.printStackTrace();
         }
         Scene scene = new Scene(root);
+        scene.getStylesheets().add("com/carleton/cubic/nicu_data_explorer/stylesheets/stylesheet.css");
         stage.setScene(scene);
         stage.show();
         Button saveNewAnnotationButton = (Button) scene.lookup("#saveNewAnnotationButton");

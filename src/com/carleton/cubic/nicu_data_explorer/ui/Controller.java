@@ -109,6 +109,8 @@ public class Controller {
             e.printStackTrace();
         }
         Scene scene = new Scene(root);
+        scene.getStylesheets().add("com/carleton/cubic/nicu_data_explorer/stylesheets/stylesheet.css");
+
         stage.setScene(scene);
         DefaultInstancePackage defaultInstancePackage = assignInstanceControls(scene);
         SubScene subScene = (SubScene) scene.lookup("#subScene");
@@ -139,6 +141,8 @@ public class Controller {
             e.printStackTrace();
         }
         Scene scene = new Scene(root);
+        scene.getStylesheets().add("com/carleton/cubic/nicu_data_explorer/stylesheets/stylesheet.css");
+
         stage.setScene(scene);
 
         MediaView mediaViewInstance = (MediaView) scene.lookup("#mediaView");
@@ -165,6 +169,8 @@ public class Controller {
             e.printStackTrace();
         }
         Scene scene = new Scene(root);
+        scene.getStylesheets().add("com/carleton/cubic/nicu_data_explorer/stylesheets/stylesheet.css");
+
         stage.setScene(scene);
 
         Canvas canvasInstance = (Canvas) scene.lookup("#canvas");
@@ -203,6 +209,7 @@ public class Controller {
                 fileChooser.getExtensionFilters().add(extFilter);
                 break;
             case 2:
+            case 4:
                 extFilter = new FileChooser.ExtensionFilter("CSV files (*.csv)", "*.csv");
                 fileChooser.getExtensionFilters().add(extFilter);
                 break;
@@ -210,9 +217,6 @@ public class Controller {
                 extFilter = new FileChooser.ExtensionFilter("JSON files (*.json)", "*.json");
                 fileChooser.getExtensionFilters().add(extFilter);
                 break;
-            case 4:
-                extFilter = new FileChooser.ExtensionFilter("CSV files (*.csv)", "*.csv");
-                fileChooser.getExtensionFilters().add(extFilter);
 
 
         }
@@ -243,7 +247,9 @@ public class Controller {
     private void createAnnotationTable(File file) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader();
         fxmlLoader.setLocation(getClass().getResource("annotations.fxml"));
-        Scene scene = new Scene(fxmlLoader.load(), 600, 400);
+        Scene scene = new Scene(fxmlLoader.load(), 650, 650);
+        scene.getStylesheets().add("com/carleton/cubic/nicu_data_explorer/stylesheets/stylesheet.css");
+
         Stage stage = new Stage();
         stage.setTitle("Annotation Table");
         stage.setScene(scene);

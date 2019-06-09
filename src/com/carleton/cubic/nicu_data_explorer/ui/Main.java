@@ -15,7 +15,9 @@ public class Main extends Application
 
         Parent root = FXMLLoader.load(getClass().getResource("loadFile.fxml"));
         primaryStage.setTitle("Integrated Data Viewer");
-        primaryStage.setScene(new Scene(root, 600, 400));
+        Scene scene = new Scene(root, 600, 400);
+        scene.getStylesheets().add("com/carleton/cubic/nicu_data_explorer/stylesheets/stylesheet.css");
+        primaryStage.setScene(scene);
         primaryStage.show();
     }
 

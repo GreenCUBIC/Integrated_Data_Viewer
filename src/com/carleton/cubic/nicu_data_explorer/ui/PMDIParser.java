@@ -39,12 +39,10 @@ public class PMDIParser {
         XYChart.Series selectedSeries = new XYChart.Series();
         switch (columnNumber){
             case 2:  selectedSeries = hrSeries;
-                    System.out.println(counter);
                 break;
             case 4:  selectedSeries = rrSeries;
             break;
             case 6:  selectedSeries = spO2Series;
-                    System.out.println(counter);
             break;
             case 3:  selectedSeries = plsSeries;
             break;
@@ -64,16 +62,13 @@ public class PMDIParser {
 
                 if(line[columnNumber].equals("^^")){
                     extractedSeries.getData().add(new AreaChart.Data<>(i*10, 0));
-                    System.out.println("^^: "+columnNumber);
 
                 }else if(line[columnNumber].equals("")){
                     extractedSeries.getData().add(new AreaChart.Data<>(i*10, 0));
-                    System.out.println("blank: "+columnNumber);
 
 
                 }else if(line[columnNumber].equals("N/A")){
                     extractedSeries.getData().add(new AreaChart.Data<>(i*10, 0));
-                    System.out.println("N/A: "+columnNumber);
 
 
                 }else{
@@ -106,7 +101,6 @@ public class PMDIParser {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        displayData(content);
         this.content = content;
         return content;
     }
