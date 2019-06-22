@@ -24,9 +24,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 public class AnnotationTableHandler {
     private Button editAnnotationButton;
@@ -35,6 +33,8 @@ public class AnnotationTableHandler {
     private Button saveUpdatesButton;
     private Button addAnnotationButton;
     private Button deleteAnnotationButton;
+    private List<String> categoryList;
+    private List<String> eventNameList;
     private Button playAllButton;
     private static final String SIMPLE_DATE_FORMAT = "HH:mm:ss.SSS";
     private static final String HIGHLIGHTED_CELL_FORMAT = "-fx-background-color: yellow";
@@ -46,7 +46,7 @@ public class AnnotationTableHandler {
     }
 
     public AnnotationTableHandler(Scene scene) {
-        annotationTable = (TableView) scene.lookup("#annotationTable");
+        annotationTable = (TableView<Annotation>) scene.lookup("#annotationTable");
         saveSessionButton = (Button) scene.lookup("#saveSessionButton");
         saveUpdatesButton = (Button) scene.lookup("#saveUpdatesButton");
         addAnnotationButton = (Button) scene.lookup("#addAnnotationButton");
@@ -97,7 +97,18 @@ public class AnnotationTableHandler {
         editAnnotationButton.setOnAction(event -> editAnnotationDialogue());
         deleteAnnotationButton.setOnAction(event -> deleteAnnotationDialogue());
         AnnotationLogScrollHandler();
+        categoryList = new ArrayList<>();
+        eventNameList = new ArrayList<>();
+        for (Annotation item : annotationTable.getItems()) {
+
+            categoryList.add(item.getCategory());
+            eventNameList.add(item.getName());
+        }
+        categoryList = removeDuplicates(categoryList);
+        eventNameList = removeDuplicates(eventNameList);
+
     }
+
 
     private void deleteAnnotationDialogue() {
 
@@ -308,6 +319,24 @@ public class AnnotationTableHandler {
 
 
     }
+    public static <T> ArrayList<String> removeDuplicates(List<String> list)
+    {
+
+        // Create a new LinkedHashSet
+
+        // Add the elements to set
+        Set<String> set = new LinkedHashSet<>(list);
+
+        // Clear the list
+        list.clear();
+
+        // add the elements of set
+        // with no duplicates to the list
+        list.addAll(set);
+
+        // return the list
+        return new ArrayList<>(list);
+    }
 
     private void openNewAnnotationDialogue() {
 
@@ -323,9 +352,49 @@ public class AnnotationTableHandler {
         stage.setScene(scene);
         stage.show();
         Button saveNewAnnotationButton = (Button) scene.lookup("#saveNewAnnotationButton");
+        ChoiceBox nameChoiceField = (ChoiceBox) scene.lookup("#nameChoiceField");
+        ChoiceBox categoryChoiceField = (ChoiceBox) scene.lookup("#categoryChoiceField");
+        nameChoiceField.getItems().addAll(eventNameList);
+        categoryChoiceField.getItems().addAll(categoryList);
+        Button customAnnotation = (Button) scene.lookup("#customAnnotationButton");
+
+        customAnnotation.setOnAction(event -> {
+
+
+            openCustomAnnotationDialogue();
+            stage.close();
+        });
+
+        saveNewAnnotationButton.setOnAction(event -> {
+            Annotation annotation = new Annotation();
+            annotation.setName((String)nameChoiceField.getValue());
+            annotation.setCategory((String)categoryChoiceField.getValue());
+            annotation.setStart_time("0");
+            annotation.setEnd_time("10000000000000");
+            stage.close();
+            annotationTable.getItems().add(annotation);
+            annotationTable.refresh();
+        });
+
+
+    }
+
+    private void openCustomAnnotationDialogue() {
+
+        Stage stage = new Stage();
+        Parent root = null;
+        try {
+            root = FXMLLoader.load(getClass().getResource("customAnnotation.fxml"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        Scene scene = new Scene(root);
+        scene.getStylesheets().add("com/carleton/cubic/nicu_data_explorer/stylesheets/stylesheet.css");
+        stage.setScene(scene);
+        stage.show();
+        Button saveNewAnnotationButton = (Button) scene.lookup("#saveNewAnnotationButton");
         TextField nameTextField = (TextField) scene.lookup("#nameTextField");
         TextField categoryTextField = (TextField) scene.lookup("#categoryTextField");
-
         saveNewAnnotationButton.setOnAction(event -> {
             Annotation annotation = new Annotation();
             annotation.setName(nameTextField.getText());
@@ -336,8 +405,6 @@ public class AnnotationTableHandler {
             annotationTable.getItems().add(annotation);
             annotationTable.refresh();
         });
-
-
     }
 
     private void formatAndSetNewDisplayStartTime(SimpleDateFormat format, Date newStartDate, Annotation annotation) {
@@ -453,6 +520,13 @@ public class AnnotationTableHandler {
 
     }
 
+    public List<String> getCategoryList() {
+        return categoryList;
+    }
+
+    public List<String> getEventNameList() {
+        return eventNameList;
+    }
 
     public void setAnnotationsPerVideo(List<VideoDataViewer> list, SlideScaler slideScaler, AnnotationTableHandler annotationTableHandler) {
 
