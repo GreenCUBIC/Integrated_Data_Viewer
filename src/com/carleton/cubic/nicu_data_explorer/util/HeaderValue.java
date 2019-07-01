@@ -3,9 +3,9 @@ package com.carleton.cubic.nicu_data_explorer.util;
 public class HeaderValue
 {
 
-    private String stringValue;
+    private final String stringValue;
 
-    public HeaderValue(String value)
+    HeaderValue(String value)
     {
         this.stringValue = value;
     }
@@ -15,7 +15,7 @@ public class HeaderValue
         return stringValue;
     }
 
-    public int integerValue()
+    int integerValue()
     {
         return Integer.parseInt(stringValue);
     }

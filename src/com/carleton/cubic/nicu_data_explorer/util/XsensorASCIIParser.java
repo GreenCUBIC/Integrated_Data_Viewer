@@ -2,7 +2,6 @@ package com.carleton.cubic.nicu_data_explorer.util;
 
 import org.apache.commons.io.input.ReversedLinesFileReader;
 
-import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -14,8 +13,7 @@ import java.util.regex.Pattern;
 public class XsensorASCIIParser
 {
 
-    private File asciiFile;
-    Thread parserThread;
+    private final File asciiFile;
 
     public XsensorASCIIParser(File asciiFile)
     {
@@ -109,7 +107,6 @@ public class XsensorASCIIParser
                         senselLine = br.readLine();
                     }
                 }
-                psmRecording.setParsingComplete(true);
 
             }
             catch (IOException e)

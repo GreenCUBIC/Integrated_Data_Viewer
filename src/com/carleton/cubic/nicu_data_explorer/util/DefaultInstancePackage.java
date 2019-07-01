@@ -1,27 +1,25 @@
 package com.carleton.cubic.nicu_data_explorer.util;
 
 import com.carleton.cubic.nicu_data_explorer.ui.CustomRangeSlider;
-import com.carleton.cubic.nicu_data_explorer.ui.CustomSlider;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
-import org.controlsfx.control.RangeSlider;
 
 public class DefaultInstancePackage {
 
 
-    private Button playButton;
-    private Button loopButton;
-    private Slider timeSlider;
-    private CustomRangeSlider customRangeSlider;
-    private ChoiceBox playbackChoiceBox;
-    private Label lowValText;
-    private Label highValText;
-    private Label playTime;
+    private final Button playButton;
+    private final Button loopButton;
+    private final Slider timeSlider;
+    private final CustomRangeSlider customRangeSlider;
+    private final ChoiceBox<String> playbackChoiceBox;
+    private final Label lowValText;
+    private final Label highValText;
+    private final Label playTime;
 
 
-    public DefaultInstancePackage(Button playButton, Button loopButton, Slider timeSlider,CustomRangeSlider customRangeSlider, ChoiceBox playbackChoiceBox, Label lowValText, Label highValText, Label playTime) {
+    public DefaultInstancePackage(Button playButton, Button loopButton, Slider timeSlider,CustomRangeSlider customRangeSlider, ChoiceBox<String> playbackChoiceBox, Label lowValText, Label highValText, Label playTime) {
         this.playButton = playButton;
         this.loopButton = loopButton;
         this.timeSlider = timeSlider;
