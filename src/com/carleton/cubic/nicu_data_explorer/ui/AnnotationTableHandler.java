@@ -26,26 +26,26 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-public class AnnotationTableHandler {
-    private Button editAnnotationButton;
-    private TableView<Annotation> annotationTable;
-    private Button saveSessionButton;
-    private Button saveUpdatesButton;
-    private Button addAnnotationButton;
-    private Button deleteAnnotationButton;
+class AnnotationTableHandler {
+    private final Button editAnnotationButton;
+    private final TableView<Annotation> annotationTable;
+    private final Button saveSessionButton;
+    private final Button saveUpdatesButton;
+    private final Button addAnnotationButton;
+    private final Button deleteAnnotationButton;
     private List<String> categoryList;
     private List<String> eventNameList;
-    private Button playAllButton;
+    private final Button playAllButton;
     private static final String SIMPLE_DATE_FORMAT = "HH:mm:ss.SSS";
     private static final String HIGHLIGHTED_CELL_FORMAT = "-fx-background-color: yellow";
     private JsonDataViewer jsonDataViewer;
 
 
-    public TableView<Annotation> getAnnotationTable() {
+    TableView<Annotation> getAnnotationTable() {
         return annotationTable;
     }
 
-    public AnnotationTableHandler(Scene scene) {
+    AnnotationTableHandler(Scene scene) {
         annotationTable = (TableView<Annotation>) scene.lookup("#annotationTable");
         saveSessionButton = (Button) scene.lookup("#saveSessionButton");
         saveUpdatesButton = (Button) scene.lookup("#saveUpdatesButton");
@@ -55,7 +55,7 @@ public class AnnotationTableHandler {
         editAnnotationButton = (Button) scene.lookup("#editAnnotationButton");
     }
 
-    public void AnnotationLogScrollHandler() {
+    private void AnnotationLogScrollHandler() {
 
         annotationTable.addEventFilter(ScrollEvent.ANY, event -> {
                     highlightColumnChanges();
@@ -71,8 +71,8 @@ public class AnnotationTableHandler {
 
     }
 
-    public void setAnnotationData(File jsonFile) throws FileNotFoundException {
-        JsonDataViewer jsonDataViewer = new JsonDataViewer(jsonFile);
+    void setAnnotationData(File jsonFile) throws FileNotFoundException {
+        JsonDataViewer jsonDataViewer = new JsonDataViewer();
         Session session = jsonDataViewer.loadSession(jsonFile);
         ObservableList<Annotation> tableData = FXCollections.observableList(session.getAnnotations());
         annotationTable.setItems(tableData);
@@ -89,9 +89,8 @@ public class AnnotationTableHandler {
             annotation.setDisplayEndTime(formattedEndDate);
         }
 
-        for (Object object : annotationTable.getColumns()) {
-            TableColumn column = (TableColumn) object;
-            column.setCellValueFactory(new PropertyValueFactory<Annotation, String>(column.getId()));
+        for (TableColumn tableColumn : annotationTable.getColumns()) {
+            tableColumn.setCellValueFactory(new PropertyValueFactory<Annotation, String>(tableColumn.getId()));
         }
         addAnnotationButton.setOnAction(event -> openNewAnnotationDialogue());
         editAnnotationButton.setOnAction(event -> editAnnotationDialogue());
@@ -118,7 +117,7 @@ public class AnnotationTableHandler {
         alert.setContentText("Are you sure you would like to delete the selected annotation?");
 
         Optional<ButtonType> result = alert.showAndWait();
-        if (result.get() == ButtonType.OK) {
+        if (result.isPresent() && (result.get() == ButtonType.OK)) {
             deleteSelectedAnnotation();
         } else {
             alert.close();
@@ -128,17 +127,23 @@ public class AnnotationTableHandler {
     private void deleteSelectedAnnotation() {
 
         Annotation selectedAnnotation = getSelectedAnnotation();
+        int indexToRemove = -1;
 
         for (int i = 0; i < annotationTable.getItems().size(); i++) {
 
             Annotation IteratingAnnotation = annotationTable.getItems().get(i);
 
             if (selectedAnnotation == IteratingAnnotation) {
-
-                annotationTable.getItems().remove(i);
-                annotationTable.refresh();
+                indexToRemove = i;
+                break;
             }
 
+        }
+        if (indexToRemove != -1) {
+            annotationTable.getItems().remove(indexToRemove);
+            annotationTable.refresh();
+        } else {
+            System.out.println("INDEX NOT FOUND");
         }
     }
 
@@ -151,27 +156,29 @@ public class AnnotationTableHandler {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        Scene scene = new Scene(root);
-        scene.getStylesheets().add("com/carleton/cubic/nicu_data_explorer/stylesheets/stylesheet.css");
+        if (root != null) {
+            Scene scene = new Scene(root);
+            scene.getStylesheets().add("com/carleton/cubic/nicu_data_explorer/stylesheets/stylesheet.css");
 
-        stage.setScene(scene);
-        stage.show();
-        Button saveNewAnnotationButton = (Button) scene.lookup("#saveNewAnnotationButton");
-        TextField nameTextField = (TextField) scene.lookup("#nameTextField");
-        TextField categoryTextField = (TextField) scene.lookup("#categoryTextField");
+            stage.setScene(scene);
+            stage.show();
+            Button saveNewAnnotationButton = (Button) scene.lookup("#saveNewAnnotationButton");
+            TextField nameTextField = (TextField) scene.lookup("#nameTextField");
+            TextField categoryTextField = (TextField) scene.lookup("#categoryTextField");
 
-        saveNewAnnotationButton.setOnAction(event -> {
-            Annotation annotation = getSelectedAnnotation();
-            annotation.setName(nameTextField.getText());
-            annotation.setCategory(categoryTextField.getText());
-            stage.close();
-            annotationTable.refresh();
-        });
+            saveNewAnnotationButton.setOnAction(event -> {
+                Annotation annotation = getSelectedAnnotation();
+                annotation.setName(nameTextField.getText());
+                annotation.setCategory(categoryTextField.getText());
+                stage.close();
+                annotationTable.refresh();
+            });
+        }
 
 
     }
 
-    public void setPlayAllButtonAction(List<VideoDataViewer> listOfVideoDataViewers, List<PSMDataViewer> listOFPSMViewers, List<PmdiDataViewer> listOfPmdiViewers) {
+    void setPlayAllButtonAction(List<VideoDataViewer> listOfVideoDataViewers, List<PSMDataViewer> listOFPSMViewers, List<PmdiDataViewer> listOfPmdiViewers) {
 
         playAllButton.setOnAction(event -> {
 
@@ -277,7 +284,7 @@ public class AnnotationTableHandler {
     }
 
 
-    public void SaveAndUpdateButtonHandler(CustomRangeSlider customRangeSlider) {
+    void SaveAndUpdateButtonHandler(CustomRangeSlider customRangeSlider) {
         saveUpdatesButton.setOnAction(actionEvent -> {
 
             RangeSlider rangeSlider = customRangeSlider.getRangeSlider();
@@ -297,10 +304,10 @@ public class AnnotationTableHandler {
             Date newEndDate = new Date(startDate.getTime() + highValue * 100);
             formatAndSetNewDisplayEndTime(format, newEndDate, annotation);
 
-            Long newUnixStartTime = newStartDate.toInstant().toEpochMilli();
-            Long newUnixEndTime = newEndDate.toInstant().toEpochMilli();
+            long newUnixStartTime = newStartDate.toInstant().toEpochMilli();
+            long newUnixEndTime = newEndDate.toInstant().toEpochMilli();
             annotation.setStart_time(Long.toString(newUnixStartTime));
-            annotation.setEnd_time(newUnixEndTime.toString());
+            annotation.setEnd_time(Long.toString(newUnixEndTime));
             annotation.setIsUpdated(true);
             highlightColumnChanges();
             annotationTable.refresh();
@@ -319,8 +326,8 @@ public class AnnotationTableHandler {
 
 
     }
-    public static <T> ArrayList<String> removeDuplicates(List<String> list)
-    {
+
+    private static ArrayList<String> removeDuplicates(List<String> list) {
 
         // Create a new LinkedHashSet
 
@@ -347,35 +354,36 @@ public class AnnotationTableHandler {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        Scene scene = new Scene(root);
-        scene.getStylesheets().add("com/carleton/cubic/nicu_data_explorer/stylesheets/stylesheet.css");
-        stage.setScene(scene);
-        stage.show();
-        Button saveNewAnnotationButton = (Button) scene.lookup("#saveNewAnnotationButton");
-        ChoiceBox nameChoiceField = (ChoiceBox) scene.lookup("#nameChoiceField");
-        ChoiceBox categoryChoiceField = (ChoiceBox) scene.lookup("#categoryChoiceField");
-        nameChoiceField.getItems().addAll(eventNameList);
-        categoryChoiceField.getItems().addAll(categoryList);
-        Button customAnnotation = (Button) scene.lookup("#customAnnotationButton");
+        if (root != null) {
+            Scene scene = new Scene(root);
+            scene.getStylesheets().add("com/carleton/cubic/nicu_data_explorer/stylesheets/stylesheet.css");
+            stage.setScene(scene);
+            stage.show();
+            Button saveNewAnnotationButton = (Button) scene.lookup("#saveNewAnnotationButton");
+            ChoiceBox nameChoiceField = (ChoiceBox) scene.lookup("#nameChoiceField");
+            ChoiceBox categoryChoiceField = (ChoiceBox) scene.lookup("#categoryChoiceField");
+            nameChoiceField.getItems().addAll(eventNameList);
+            categoryChoiceField.getItems().addAll(categoryList);
+            Button customAnnotation = (Button) scene.lookup("#customAnnotationButton");
 
-        customAnnotation.setOnAction(event -> {
+            customAnnotation.setOnAction(event -> {
 
 
-            openCustomAnnotationDialogue();
-            stage.close();
-        });
+                openCustomAnnotationDialogue();
+                stage.close();
+            });
 
-        saveNewAnnotationButton.setOnAction(event -> {
-            Annotation annotation = new Annotation();
-            annotation.setName((String)nameChoiceField.getValue());
-            annotation.setCategory((String)categoryChoiceField.getValue());
-            annotation.setStart_time("0");
-            annotation.setEnd_time("10000000000000");
-            stage.close();
-            annotationTable.getItems().add(annotation);
-            annotationTable.refresh();
-        });
-
+            saveNewAnnotationButton.setOnAction(event -> {
+                Annotation annotation = new Annotation();
+                annotation.setName((String) nameChoiceField.getValue());
+                annotation.setCategory((String) categoryChoiceField.getValue());
+                annotation.setStart_time("0");
+                annotation.setEnd_time("10000000000000");
+                stage.close();
+                annotationTable.getItems().add(annotation);
+                annotationTable.refresh();
+            });
+        }
 
     }
 
@@ -388,23 +396,25 @@ public class AnnotationTableHandler {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        Scene scene = new Scene(root);
-        scene.getStylesheets().add("com/carleton/cubic/nicu_data_explorer/stylesheets/stylesheet.css");
-        stage.setScene(scene);
-        stage.show();
-        Button saveNewAnnotationButton = (Button) scene.lookup("#saveNewAnnotationButton");
-        TextField nameTextField = (TextField) scene.lookup("#nameTextField");
-        TextField categoryTextField = (TextField) scene.lookup("#categoryTextField");
-        saveNewAnnotationButton.setOnAction(event -> {
-            Annotation annotation = new Annotation();
-            annotation.setName(nameTextField.getText());
-            annotation.setCategory(categoryTextField.getText());
-            annotation.setStart_time("0");
-            annotation.setEnd_time("10000000000000");
-            stage.close();
-            annotationTable.getItems().add(annotation);
-            annotationTable.refresh();
-        });
+        if (root != null) {
+            Scene scene = new Scene(root);
+            scene.getStylesheets().add("com/carleton/cubic/nicu_data_explorer/stylesheets/stylesheet.css");
+            stage.setScene(scene);
+            stage.show();
+            Button saveNewAnnotationButton = (Button) scene.lookup("#saveNewAnnotationButton");
+            TextField nameTextField = (TextField) scene.lookup("#nameTextField");
+            TextField categoryTextField = (TextField) scene.lookup("#categoryTextField");
+            saveNewAnnotationButton.setOnAction(event -> {
+                Annotation annotation = new Annotation();
+                annotation.setName(nameTextField.getText());
+                annotation.setCategory(categoryTextField.getText());
+                annotation.setStart_time("0");
+                annotation.setEnd_time("10000000000000");
+                stage.close();
+                annotationTable.getItems().add(annotation);
+                annotationTable.refresh();
+            });
+        }
     }
 
     private void formatAndSetNewDisplayStartTime(SimpleDateFormat format, Date newStartDate, Annotation annotation) {
@@ -482,7 +492,7 @@ public class AnnotationTableHandler {
 
     }
 
-    public Annotation getSelectedAnnotation() {
+    Annotation getSelectedAnnotation() {
         Annotation selectedAnnotation;
         selectedAnnotation = annotationTable.getSelectionModel().getSelectedItem();
         return selectedAnnotation;
@@ -520,15 +530,7 @@ public class AnnotationTableHandler {
 
     }
 
-    public List<String> getCategoryList() {
-        return categoryList;
-    }
-
-    public List<String> getEventNameList() {
-        return eventNameList;
-    }
-
-    public void setAnnotationsPerVideo(List<VideoDataViewer> list, SlideScaler slideScaler, AnnotationTableHandler annotationTableHandler) {
+    void setAnnotationsPerVideo(List<VideoDataViewer> list, SlideScaler slideScaler, AnnotationTableHandler annotationTableHandler) {
 
         for (VideoDataViewer videoDataViewer : list) {
 
@@ -540,7 +542,7 @@ public class AnnotationTableHandler {
     }
 
 
-    public void setAnnotationsPerPSM(List<PSMDataViewer> listOfPSMDataViewers, SlideScaler slideScaler, AnnotationTableHandler annotationTableHandler) {
+    void setAnnotationsPerPSM(List<PSMDataViewer> listOfPSMDataViewers, SlideScaler slideScaler, AnnotationTableHandler annotationTableHandler) {
 
         for (PSMDataViewer psmDataViewer : listOfPSMDataViewers) {
             if (checkIfAnnotationWithinBounds(annotationTableHandler.getSelectedAnnotation(), psmDataViewer.getCustomRangeSlider())) {
@@ -551,7 +553,7 @@ public class AnnotationTableHandler {
     }
 
 
-    public void setAnnotationsPerPmdi(List<PmdiDataViewer> listOfPmdiDataViewers, SlideScaler slideScaler, AnnotationTableHandler annotationTableHandler) {
+    void setAnnotationsPerPmdi(List<PmdiDataViewer> listOfPmdiDataViewers, SlideScaler slideScaler, AnnotationTableHandler annotationTableHandler) {
 
         for (PmdiDataViewer pmdiDataViewer : listOfPmdiDataViewers) {
             if (checkIfAnnotationWithinBounds(annotationTableHandler.getSelectedAnnotation(), pmdiDataViewer.getCustomRangeSlider())) {
@@ -572,13 +574,7 @@ public class AnnotationTableHandler {
         Long absoluteStartTime = customRangeSlider.getAbsoluteStartDate().getTime();
         Long absoluteEndTime = customRangeSlider.getAbsoluteEndDate().getTime();
 
-        if ((annotationStartTime >= absoluteStartTime) && (annotationEndTime <= absoluteEndTime)) {
-
-            return true;
-        } else {
-
-            return false;
-        }
+        return (annotationStartTime >= absoluteStartTime) && (annotationEndTime <= absoluteEndTime);
     }
 
 

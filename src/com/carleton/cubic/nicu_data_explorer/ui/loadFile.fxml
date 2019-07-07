@@ -1,46 +1,72 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
-<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.carleton.cubic.nicu_data_explorer.ui.Controller">
-    <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
-        <Label text="Integrated Data Viewer">
-            <font>
-                <Font name="Garamond" size="36.0" />
-            </font>
-        </Label>
-    </HBox>
-    <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
-        <Label text="Selected Data:">
-            <font>
-                <Font size="14.0" />
-            </font>
-            <HBox.margin>
-                <Insets />
-            </HBox.margin>
-        </Label>
-        <ChoiceBox fx:id="dataChoiceBox" prefWidth="150.0">
-            <HBox.margin>
-                <Insets left="5.0" right="20.0" />
-            </HBox.margin>
-        </ChoiceBox>
-        <Button fx:id="fileLoadButton" mnemonicParsing="false" text="Load" />
-    </HBox>
-   <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
-      <children>
-          <Label text="v1.3"/>
-      </children></HBox>
-    <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
-         <TextField fx:id="scaleTextField" prefHeight="25.0" prefWidth="94.0" promptText="Scale Factor" text="1" />
-         <Button fx:id="zoomInButton" mnemonicParsing="false" text="Zoom In">
-         <HBox.margin>
-            <Insets left="30.0" />
-         </HBox.margin></Button>
-         <Button fx:id="zoomOutButton" mnemonicParsing="false" text="Zoom Out">
-         <HBox.margin>
-            <Insets left="10.0" />
-         </HBox.margin></Button>
-    </HBox>
-</VBox>
+
+<AnchorPane minHeight="-Infinity" minWidth="-Infinity" prefHeight="300.0" prefWidth="700.0" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.carleton.cubic.nicu_data_explorer.ui.Controller">
+   <children>
+      <VBox AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+          <HBox alignment="CENTER">
+              <Label text="Integrated Data Viewer">
+                  <font>
+                      <Font name="Garamond" size="36.0" />
+                  </font>
+              </Label>
+            <VBox.margin>
+               <Insets top="10.0" />
+            </VBox.margin>
+          </HBox>
+          <HBox alignment="CENTER">
+              <Label text="Selected Data:">
+                  <font>
+                      <Font size="28.0" />
+                  </font>
+                  <HBox.margin>
+                      <Insets />
+                  </HBox.margin>
+              </Label>
+              <ChoiceBox fx:id="dataChoiceBox">
+                  <HBox.margin>
+                      <Insets left="5.0" />
+                  </HBox.margin>
+              </ChoiceBox>
+              <Button fx:id="fileLoadButton" mnemonicParsing="false" text="Load">
+               <HBox.margin>
+                  <Insets left="10.0" />
+               </HBox.margin></Button>
+            <VBox.margin>
+               <Insets top="10.0" />
+            </VBox.margin>
+          </HBox>
+          <HBox alignment="CENTER">
+              <Label text="v1.3" />
+            <VBox.margin>
+               <Insets top="10.0" />
+            </VBox.margin>
+          </HBox>
+          <HBox alignment="CENTER">
+               <TextField fx:id="scaleTextField" promptText="Scale Factor" text="1" />
+               <Button fx:id="zoomInButton" mnemonicParsing="false" text="Zoom In">
+               <HBox.margin>
+                  <Insets left="30.0" />
+               </HBox.margin>
+            </Button>
+               <Button fx:id="zoomOutButton" mnemonicParsing="false" text="Zoom Out">
+               <HBox.margin>
+                  <Insets left="10.0" />
+               </HBox.margin>
+            </Button>
+            <VBox.margin>
+               <Insets top="10.0" />
+            </VBox.margin>
+          </HBox>
+      </VBox>
+   </children>
+</AnchorPane>

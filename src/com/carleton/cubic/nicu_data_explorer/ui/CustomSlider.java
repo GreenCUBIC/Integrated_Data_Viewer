@@ -5,81 +5,61 @@ import javafx.scene.media.MediaPlayer;
 import javafx.util.Duration;
 import org.controlsfx.control.RangeSlider;
 
-public class CustomSlider
-{
+class CustomSlider {
 
 
-    public CustomSlider()
-    {
+    CustomSlider() {
     }
 
-    public void sliderLimit(Slider mainSlider, RangeSlider sliderLimits)
-    {    //This method sets the limits for the main Slider based of the upper and lower bounds.
+    void sliderLimit(Slider mainSlider, RangeSlider sliderLimits) {    //This method sets the limits for the main Slider based of the upper and lower bounds.
 
         //Listener on main slider
         mainSlider.valueProperty().addListener((ov, old_val, new_val) -> {
 
-            if (new_val.doubleValue() < sliderLimits.getLowValue())
-            {
+            if (new_val.doubleValue() < sliderLimits.getLowValue()) {
                 mainSlider.adjustValue(sliderLimits.getLowValue());
 
-            }
-            else if (new_val.doubleValue() > sliderLimits.getHighValue())
-            {
+            } else if (new_val.doubleValue() > sliderLimits.getHighValue()) {
                 mainSlider.adjustValue(sliderLimits.getHighValue());
 
             }
         });
     }
 
-    public boolean shouldStopAtEnd(Slider mainSlider, RangeSlider rangeSlider, boolean loopActive)
-    {
+    boolean shouldStopAtEnd(Slider mainSlider, RangeSlider rangeSlider, boolean loopActive) {
 
         return mainSlider.getValue() == rangeSlider.getHighValue() && !loopActive;
 
     }
 
-    public boolean shouldLoopAtEnd(Slider mainSlider, RangeSlider rangeSlider, boolean loopActive)
-    {
+    boolean shouldLoopAtEnd(Slider mainSlider, RangeSlider rangeSlider, boolean loopActive) {
         return mainSlider.getValue() == rangeSlider.getHighValue() && loopActive;
     }
 
-    public boolean isPositionOutOfBounds(Slider mainSlider, RangeSlider rangeSlider)
-    {
+    boolean isPositionOutOfBounds(Slider mainSlider, RangeSlider rangeSlider) {
         return mainSlider.getValue() < rangeSlider.getLowValue() - 1 || mainSlider.getValue() > rangeSlider.getHighValue() + 1;
 
     }
 
-    public  void loopIfStoppedAtEnd(RangeSlider rangeSlider, Slider mainSlider, MediaPlayer mediaPlayer){
+    void loopIfStoppedAtEnd(RangeSlider rangeSlider, Slider mainSlider, MediaPlayer mediaPlayer) {
 
-        if(Math.abs(rangeSlider.getHighValue()-mainSlider.getValue())<5){
+        if (Math.abs(rangeSlider.getHighValue() - mainSlider.getValue()) < 5) {
 
             mainSlider.setValue(rangeSlider.getLowValue());
-            mediaPlayer.seek(Duration.seconds(rangeSlider.getLowValue()/10));
+            mediaPlayer.seek(Duration.seconds(rangeSlider.getLowValue() / 10));
         }
-
-
 
 
     }
 
-    public void loopIfStoppedAtEndPSM(RangeSlider rangeSlider, Slider timeSlider, int[] frameIndex, double psmFrameRatePerSec) {
+    void loopIfStoppedAtEndPSM(RangeSlider rangeSlider, Slider timeSlider, int[] frameIndex, double psmFrameRatePerSec) {
 
-        if(Math.abs(rangeSlider.getHighValue()-timeSlider.getValue())<5){
+        if (Math.abs(rangeSlider.getHighValue() - timeSlider.getValue()) < 5) {
 
             timeSlider.setValue(rangeSlider.getLowValue());
             double seekDurationValueSeconds = rangeSlider.getLowValue() / 10;
-            frameIndex[0]=(int) (seekDurationValueSeconds*psmFrameRatePerSec);        }
-    }
-
-    public boolean pausedAtRangeSliderLimit(RangeSlider rangeSlider, Slider timeSlider) {
-
-        if(rangeSlider.getLowValue() == timeSlider.getValue() ||rangeSlider.getHighValue() == timeSlider.getValue()){
-
-            return true;
+            frameIndex[0] = (int) (seekDurationValueSeconds * psmFrameRatePerSec);
         }
-
-
-        return false;
     }
+
 }

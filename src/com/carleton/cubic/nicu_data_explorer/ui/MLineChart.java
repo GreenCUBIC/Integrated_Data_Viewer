@@ -7,9 +7,9 @@ import javafx.scene.chart.LineChart;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MLineChart<X, Y> extends LineChart<X, Y> {
+class MLineChart<X, Y> extends LineChart<X, Y> {
 
-    public MLineChart(@NamedArg("xAxis") Axis<X> xAxis, @NamedArg("yAxis") Axis<Y> yAxis) {
+    MLineChart(@NamedArg("xAxis") Axis<X> xAxis, @NamedArg("yAxis") Axis<Y> yAxis) {
         super(xAxis, yAxis);
     }
 
@@ -19,8 +19,8 @@ public class MLineChart<X, Y> extends LineChart<X, Y> {
         final Axis<Y> ya = getYAxis();
         List<X> xData = null;
         List<Y> yData = null;
-        if (xa.isAutoRanging()) xData = new ArrayList<X>();
-        if (ya.isAutoRanging()) yData = new ArrayList<Y>();
+        if (xa.isAutoRanging()) xData = new ArrayList<>();
+        if (ya.isAutoRanging()) yData = new ArrayList<>();
         if (xData != null || yData != null) {
             for (Series<X, Y> series : getData()) {
                 if (series.getNode().isVisible()) { // consider only visible series

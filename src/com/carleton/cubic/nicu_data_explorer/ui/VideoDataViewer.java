@@ -104,7 +104,7 @@ public class VideoDataViewer extends IntegratedDataViewerInstance {
         }
     }
 
-    void openWithControls(MediaView mediaView) {
+    void openWithControls(MediaView mediaView, List listOfVideoDataViewers, List listOfPSMDataViewers) {
 
 
         RangeSlider rangeSlider = customRangeSlider.getRangeSlider();
@@ -126,7 +126,6 @@ public class VideoDataViewer extends IntegratedDataViewerInstance {
             customRangeSlider.setAbsoluteStartDate(getAbsoluteRecordingStartTime());
             customRangeSlider.setAbsoluteEndDate(calculateAbsoluteEndDate());
             setCustomRangeSliderStartAndEndDates();
-            //  adjustOtherInstanceRangeSliders(customRangeSlider, listOfVideoDataViewers, listOfPSMDataViewers);
 
         });
 
@@ -220,6 +219,8 @@ public class VideoDataViewer extends IntegratedDataViewerInstance {
 
     }
 
+
+
     private void setCustomRangeSliderStartAndEndDates() {
 
         customRangeSlider.setAbsoluteStartDate(getAbsoluteRecordingStartTime());
@@ -296,7 +297,6 @@ public class VideoDataViewer extends IntegratedDataViewerInstance {
         Optional<String> result = dialog.showAndWait();
         result.ifPresent(date -> customMetaDataMap.put(RECORDING_START_HEADER, date));
     }
-
 
     Date getAbsoluteRecordingStartTime() {
         String dateTimeStr = customMetaDataMap.get(RECORDING_START_HEADER);

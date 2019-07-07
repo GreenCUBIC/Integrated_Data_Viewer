@@ -33,14 +33,10 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
-public class PmdiDataViewer extends IntegratedDataViewerInstance {
+class PmdiDataViewer extends IntegratedDataViewerInstance {
 
-    private int HR_Y_LOWER_RANGE = -100;
-    private int HR_y_UPPER_RANGE = 100;
-    private int TICK_UNIT = 10;
-    private int UPDATE_INTERVAL_MS = 1000;
-    private Date absoluteStartDate;
-    private Date absoluteEndDate;
+    private final Date absoluteStartDate;
+    private final Date absoluteEndDate;
     private boolean bubblesActive = true;
 
 
@@ -52,7 +48,7 @@ public class PmdiDataViewer extends IntegratedDataViewerInstance {
     private MLineChart<Number, Number> lineChart;
     private NumberAxis xAxis = new NumberAxis();
     private NumberAxis yAxis = new NumberAxis();
-    private PMDIParser pmdiParser;
+    private final PMDIParser pmdiParser;
 
     private Data<Number, Number> nextHRPoint;
     private Data<Number, Number> nextRRPoint;
@@ -60,15 +56,14 @@ public class PmdiDataViewer extends IntegratedDataViewerInstance {
     private Data<Number, Number> nextPLsPoint;
     private int sampleSize;
 
-    private SequentialTransition animation;
+    private final SequentialTransition animation;
     private Button increaseSampleSizeButton;
     private Button decreaseSampleSizeButton;
     private Button autoScaleYAxisButton;
     private Button removeBubblesButton;
-    private Timeline timeline;
 
 
-    public PmdiDataViewer(SubScene subScene, File file, Stage stage, DefaultInstancePackage defaultInstancePackage, ButtonPackage pmdiButtonPackage) {
+    PmdiDataViewer(SubScene subScene, File file, Stage stage, DefaultInstancePackage defaultInstancePackage, ButtonPackage pmdiButtonPackage) {
         super(defaultInstancePackage);
         unpack(pmdiButtonPackage);
         sampleSize = 10;
@@ -96,7 +91,8 @@ public class PmdiDataViewer extends IntegratedDataViewerInstance {
         customSlider.sliderLimit(timeSlider, customRangeSlider.getRangeSlider());
         setRangeSliderMinAndMax(seconds);
         timeSlider.setMax(seconds * 10); //slider value is tenth of a second
-        timeline = new Timeline();
+        Timeline timeline = new Timeline();
+        int UPDATE_INTERVAL_MS = 1000;
         timeline.getKeyFrames().add(new KeyFrame(Duration.millis(UPDATE_INTERVAL_MS), actionEvent -> {
 
             incrementCounterAndShiftPoints();
@@ -243,10 +239,7 @@ public class PmdiDataViewer extends IntegratedDataViewerInstance {
 
     private void sampleSizeButtonHandler(Button increaseSampleSizeButton, Button decreaseSampleSizeButton) {
 
-        increaseSampleSizeButton.setOnAction(event -> {
-
-            sampleSize += 5;
-        });
+        increaseSampleSizeButton.setOnAction(event -> sampleSize += 5);
         decreaseSampleSizeButton.setOnAction(event -> {
             if (sampleSize > 5) {
                 sampleSize -= 5;
@@ -260,7 +253,7 @@ public class PmdiDataViewer extends IntegratedDataViewerInstance {
         customRangeSlider.setAbsoluteEndDate(absoluteEndDate);
     }
 
-    public void clearGraphAndSeekSeconds(long seekValueSeconds) {
+    void clearGraphAndSeekSeconds(long seekValueSeconds) {
 
 
         animation.pause();
@@ -301,7 +294,7 @@ public class PmdiDataViewer extends IntegratedDataViewerInstance {
         removePointsOverMaxNumber();
     }
 
-    public void toggleLegend() {
+    private void toggleLegend() {
         //Itai wrote this code on Stack Overflow and I really liked his structure of code. https://stackoverflow.com/a/44957354
 
 
@@ -335,7 +328,7 @@ public class PmdiDataViewer extends IntegratedDataViewerInstance {
     private void speedHandler() {
 
         playbackChoiceBox.setOnAction(event -> {
-            String dataSelectionValue = playbackChoiceBox.getValue();
+            String dataSelectionValue = (String)playbackChoiceBox.getValue();
             if (dataSelectionValue.equalsIgnoreCase("0.5")) {
                 animation.setRate(0.5);
             } else if (dataSelectionValue.equalsIgnoreCase("1.0")) {
@@ -416,7 +409,7 @@ public class PmdiDataViewer extends IntegratedDataViewerInstance {
         series4.getData().add(nextPLsPoint);
     }
 
-    public Parent createContent() {
+    private Parent createContent() {
         xAxis = new NumberAxis();
         xAxis.tickLabelFontProperty().set(Font.font(10));
         xAxis.setForceZeroInRange(false);
@@ -444,6 +437,9 @@ public class PmdiDataViewer extends IntegratedDataViewerInstance {
         xAxis.setAnimated(false);
         xAxis.setTickLabelFormatter(converter);
 
+        int HR_Y_LOWER_RANGE = -100;
+        int HR_y_UPPER_RANGE = 100;
+        int TICK_UNIT = 10;
         yAxis = new NumberAxis(HR_Y_LOWER_RANGE, HR_y_UPPER_RANGE, TICK_UNIT);
         yAxis.setAutoRanging(false);
         yAxis.setLowerBound(0);
@@ -474,19 +470,15 @@ public class PmdiDataViewer extends IntegratedDataViewerInstance {
         return lineChart;
     }
 
-    public void play() {
-        animation.play();
-    }
-
-    public void stop() {
+    void stop() {
         animation.pause();
     }
 
-    public Date getAbsoluteStartDate() {
+    Date getAbsoluteStartDate() {
         return absoluteStartDate;
     }
 
-    public Button getPlayButton() {
+    Button getPlayButton() {
 
         return playButton;
     }

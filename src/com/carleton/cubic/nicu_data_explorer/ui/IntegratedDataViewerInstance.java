@@ -6,27 +6,26 @@ import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 
-public class IntegratedDataViewerInstance {
+class IntegratedDataViewerInstance {
 
 
-    protected CustomRangeSlider customRangeSlider;
-    protected Slider timeSlider;
-    protected Button playButton;
-    protected Button loopButton;
-    protected ChoiceBox<String> playbackChoiceBox;
-    protected Label lowValText;
-    protected Label highValText;
-    protected Label playTime;
-    protected CustomSlider customSlider;
-    protected boolean loopRequested;
+    final CustomRangeSlider customRangeSlider;
+    final Slider timeSlider;
+    final Button playButton;
+    final Button loopButton;
+    final ChoiceBox playbackChoiceBox;
+    final Label lowValText;
+    final Label highValText;
+    final Label playTime;
+    final CustomSlider customSlider;
+    boolean loopRequested;
+    final static String LONG_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss.SSS";
+    final static String PLAY_BUTTON_STATUS_PLAY = "Play";
+    final static String PLAY_BUTTON_STATUS_PAUSE = "Pause";
+    final static String LOOP_STATUS_ON = "Loop:On";
+    final static String LOOP_STATUS_OFF = "Loop:Off";
 
-    protected final static String LONG_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss.SSS";
-    protected final static String PLAY_BUTTON_STATUS_PLAY = "Play";
-    protected final static String PLAY_BUTTON_STATUS_PAUSE = "Pause";
-    protected final static String LOOP_STATUS_ON = "Loop:On";
-    protected final static String LOOP_STATUS_OFF = "Loop:Off";
-
-    public IntegratedDataViewerInstance(DefaultInstancePackage defaultInstancePackage) {
+    IntegratedDataViewerInstance(DefaultInstancePackage defaultInstancePackage) {
 
         this.customRangeSlider = defaultInstancePackage.getCustomRangeSlider();
         this.loopButton = defaultInstancePackage.getLoopButton();
@@ -40,84 +39,12 @@ public class IntegratedDataViewerInstance {
         this.loopRequested = false;
     }
 
-
     public CustomRangeSlider getCustomRangeSlider() {
         return customRangeSlider;
-    }
-
-    public CustomSlider getCustomSlider() {
-        return customSlider;
-    }
-
-    public void setCustomRangeSlider(CustomRangeSlider customRangeSlider) {
-        this.customRangeSlider = customRangeSlider;
     }
 
     public Slider getTimeSlider() {
         return timeSlider;
     }
 
-    public void setTimeSlider(Slider timeSlider) {
-        this.timeSlider = timeSlider;
-    }
-
-    public Button getPlayButton() {
-        return playButton;
-    }
-
-    public void setPlayButton(Button playButton) {
-        this.playButton = playButton;
-    }
-
-    public Button getLoopButton() {
-        return loopButton;
-    }
-
-    public void setLoopButton(Button loopButton) {
-        this.loopButton = loopButton;
-    }
-
-    public ChoiceBox<String> getPlaybackChoiceBox() {
-        return playbackChoiceBox;
-    }
-
-    public void setPlaybackChoiceBox(ChoiceBox<String> playbackChoiceBox) {
-        this.playbackChoiceBox = playbackChoiceBox;
-    }
-
-    public Label getLowValText() {
-        return lowValText;
-    }
-
-    public void setLowValText(Label lowValText) {
-        this.lowValText = lowValText;
-    }
-
-    public Label getHighValText() {
-        return highValText;
-    }
-
-    public void setHighValText(Label highValText) {
-        this.highValText = highValText;
-    }
-
-    public Label getPlayTime() {
-        return playTime;
-    }
-
-    public void setPlayTime(Label playTime) {
-        this.playTime = playTime;
-    }
-
-    public void setCustomSlider(CustomSlider customSlider) {
-        this.customSlider = customSlider;
-    }
-
-    public boolean isLoopRequested() {
-        return loopRequested;
-    }
-
-    public void setLoopRequested(boolean loopRequested) {
-        this.loopRequested = loopRequested;
-    }
 }

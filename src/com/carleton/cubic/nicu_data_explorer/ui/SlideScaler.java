@@ -5,31 +5,31 @@ import com.carleton.cubic.nicu_data_explorer.util.Annotation;
 import java.util.Date;
 
 
-public class SlideScaler {
+class SlideScaler {
     private Date relativeStartDate;
     private Date relativeEndDate;
     private Date absoluteStartDate;
     private Date absoluteEndDate;
     private double scalingFactor = 1;
-    private Boolean isActive = false;
 
 
-    public SlideScaler() {
+    SlideScaler() {
 
 
     }
-    public void calculateRelativeScalingDates(CustomRangeSlider customRangeSlider, Annotation annotation){
+
+    private void calculateRelativeScalingDates(CustomRangeSlider customRangeSlider, Annotation annotation) {
 
         absoluteStartDate = customRangeSlider.getAbsoluteStartDate();
         absoluteEndDate = customRangeSlider.getAbsoluteEndDate();
         Date annotationStartDate = new Date(Long.parseLong(annotation.getStart_time()));
         Date annotationEndDate = new Date(Long.parseLong(annotation.getEnd_time()));
-        Long annotationRangeInMillis = (annotationEndDate.getTime()-annotationStartDate.getTime());
+        long annotationRangeInMillis = (annotationEndDate.getTime() - annotationStartDate.getTime());
 
-        if(annotationRangeInMillis<1000){
+        if (annotationRangeInMillis < 1000) {
 
 
-            annotationRangeInMillis=(long)1000;
+            annotationRangeInMillis = (long) 1000;
         }
 
         long relativeStartTime = annotationStartDate.getTime() - Math.round((scalingFactor * annotationRangeInMillis));
@@ -41,62 +41,50 @@ public class SlideScaler {
     }
 
 
-    public void scaleInstance(CustomRangeSlider customRangeSlider, Annotation annotation) {
+    void scaleInstance(CustomRangeSlider customRangeSlider, Annotation annotation) {
 
 
-            calculateRelativeScalingDates(customRangeSlider,annotation);
-            setRelativeMinMaxOfSlider(customRangeSlider);
+        calculateRelativeScalingDates(customRangeSlider, annotation);
+        setRelativeMinMaxOfSlider(customRangeSlider);
 
     }
 
-    public void setRelativeMinMaxOfSlider(CustomRangeSlider customRangeSlider) {
+    private void setRelativeMinMaxOfSlider(CustomRangeSlider customRangeSlider) {
 
-       if(scalingFactor>0) {
-           checkIfWithinAbsoluteBounds();
-           customRangeSlider.setMinUsingDate(relativeStartDate);
-           customRangeSlider.setMaxUsingDate(relativeEndDate);
+        if (scalingFactor > 0) {
+            checkIfWithinAbsoluteBounds();
+            customRangeSlider.setMinUsingDate(relativeStartDate);
+            customRangeSlider.setMaxUsingDate(relativeEndDate);
 
-       }
+        }
     }
 
     private void checkIfWithinAbsoluteBounds() {
 
-        if(relativeStartDate.getTime()<absoluteStartDate.getTime()){
-            relativeStartDate=absoluteStartDate;
+        if (relativeStartDate.getTime() < absoluteStartDate.getTime()) {
+            relativeStartDate = absoluteStartDate;
         }
-        if(relativeEndDate.getTime()>absoluteEndDate.getTime()){
-            relativeEndDate=absoluteEndDate;
+        if (relativeEndDate.getTime() > absoluteEndDate.getTime()) {
+            relativeEndDate = absoluteEndDate;
         }
 
     }
 
-    public double getScalingFactor() {
+    double getScalingFactor() {
         return scalingFactor;
     }
 
-    public void setScalingFactor(double scalingFactor) {
+    void setScalingFactor(double scalingFactor) {
         this.scalingFactor = scalingFactor;
     }
 
-    public Boolean getActive() {
-        return isActive;
-    }
-
-    public void setActive(Boolean active) {
-        isActive = active;
-    }
-
-    public Date getRelativeStartDate() {
+    Date getRelativeStartDate() {
         return relativeStartDate;
     }
 
-    public Date getRelativeEndDate() {
-        return relativeEndDate;
-    }
 
+    boolean relativeStartDateWithinBounds(CustomRangeSlider customRangeSlider) {
 
-    public boolean relativeStartDateWithinBounds(CustomRangeSlider customRangeSlider) {
-
-        return customRangeSlider.getAbsoluteStartDate().getTime()<=relativeStartDate.getTime() && relativeStartDate.getTime()<=absoluteEndDate.getTime();
+        return customRangeSlider.getAbsoluteStartDate().getTime() <= relativeStartDate.getTime() && relativeStartDate.getTime() <= absoluteEndDate.getTime();
     }
 }
