@@ -120,5 +120,6 @@
                 <ChoiceBox fx:id="playbackChoiceBox" prefHeight="31.0" prefWidth="81.0"/>
             </VBox>
         </HBox>
+
     </VBox>
 </VBox>

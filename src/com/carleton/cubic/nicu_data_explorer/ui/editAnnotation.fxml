@@ -49,4 +49,5 @@
          <Button fx:id="saveNewAnnotationButton" mnemonicParsing="false" text="Save"/>
       </HBox>
    </VBox>
+
 </VBox>

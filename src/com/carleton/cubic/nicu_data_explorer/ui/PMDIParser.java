@@ -46,6 +46,7 @@ class PMDIParser {
             case 3:
                 selectedSeries = plsSeries;
                 break;
+
         }
         point = selectedSeries.getData().get(counter);
 
@@ -55,6 +56,7 @@ class PMDIParser {
     }
 
     private XYChart.Series<Number, Number> extractSeriesFromList(int columnNumber) {
+
 
         XYChart.Series<Number, Number> extractedSeries = new XYChart.Series<>();
         for (int i = 1; i < content.size(); i++) {
@@ -74,6 +76,7 @@ class PMDIParser {
 
             } else {
                 extractedSeries.getData().add(new XYChart.Data<>(i * 10, 0));
+
             }
         }
         return extractedSeries;
@@ -129,6 +132,7 @@ class PMDIParser {
 
 
     int getCounter() {
+
         return counter;
     }
 

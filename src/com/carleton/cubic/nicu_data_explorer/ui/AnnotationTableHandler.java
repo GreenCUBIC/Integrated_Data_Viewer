@@ -174,8 +174,6 @@ class AnnotationTableHandler {
                 annotationTable.refresh();
             });
         }
-
-
     }
 
     void setPlayAllButtonAction(List<VideoDataViewer> listOfVideoDataViewers, List<PSMDataViewer> listOFPSMViewers, List<PmdiDataViewer> listOfPmdiViewers) {
