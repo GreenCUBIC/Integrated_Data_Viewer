@@ -3,7 +3,7 @@ package com.carleton.cubic.nicu_data_explorer.util;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class Metadatum {
+class Metadatum {
 
     @SerializedName("key")
     @Expose
@@ -11,14 +11,6 @@ public class Metadatum {
     @SerializedName("value")
     @Expose
     private String value;
-
-    public String getKey() {
-        return key;
-    }
-
-    public void setKey(String key) {
-        this.key = key;
-    }
 
     public String getValue() {
         return value;
@@ -28,12 +20,5 @@ public class Metadatum {
         this.value = value;
     }
 
-    public static Metadatum createMetaDatum(String key, String value)
-    {
-        Metadatum m = new Metadatum();
-        m.setKey(key);
-        m.setValue(value);
-        return m;
-    }
 
 }

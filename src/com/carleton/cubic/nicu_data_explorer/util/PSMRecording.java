@@ -8,20 +8,18 @@ import java.util.Map;
 public class PSMRecording
 {
 
-    private Map<String, HeaderValue> fileHeader;
-    private ArrayList<Map<String, HeaderValue>> frameHeaders;
-    private ArrayList<float[][]> frameData;
+    private final Map<String, HeaderValue> fileHeader;
+    private final ArrayList<Map<String, HeaderValue>> frameHeaders;
+    private final ArrayList<float[][]> frameData;
 
-    private boolean parsingComplete = false;
-
-    public PSMRecording()
+    PSMRecording()
     {
         this.fileHeader = new HashMap<>();
         this.frameHeaders = new ArrayList<>();
         this.frameData = new ArrayList<>();
     }
 
-    public void putFileHeader(String key, String value)
+    void putFileHeader(String key, String value)
     {
 
         this.fileHeader.put(key, new HeaderValue(value));
@@ -32,7 +30,7 @@ public class PSMRecording
         return this.fileHeader.get(key);
     }
 
-    public void addFrameHeader(int frameIndex, String key, String value)
+    void addFrameHeader(int frameIndex, String key, String value)
     {
         Map<String, HeaderValue> frameHeader = frameHeaders.get(frameIndex);
         frameHeader.put(key, new HeaderValue(value));
@@ -44,12 +42,12 @@ public class PSMRecording
         return frameHeader.get(key);
     }
 
-    public void addNewFrame()
+    void addNewFrame()
     {
         this.frameHeaders.add(new HashMap<>());
     }
 
-    public void addFrameData(int frameIndex, int frameRow, float[] columnValues)
+    void addFrameData(int frameIndex, int frameRow, float[] columnValues)
     {
         if (frameData.size() < frameIndex + 1)
         {
@@ -72,13 +70,4 @@ public class PSMRecording
         return frameData.get(frameIndex);
     }
 
-    public boolean isParsingComplete()
-    {
-        return parsingComplete;
-    }
-
-    public void setParsingComplete(boolean parsingComplete)
-    {
-        this.parsingComplete = parsingComplete;
-    }
 }

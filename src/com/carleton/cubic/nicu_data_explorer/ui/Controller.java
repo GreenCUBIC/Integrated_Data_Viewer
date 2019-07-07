@@ -35,66 +35,59 @@ public class Controller {
     private Button zoomInButton;
     @FXML
     private TextField scaleTextField;
+
     private AnnotationTableHandler annotationTableHandler;
     private VideoDataViewer videoDataViewerInstance;
-    private List<VideoDataViewer> listOfVideoDataViewers = new ArrayList<>();
-    private List<PSMDataViewer> listOfPSMDataViewers = new ArrayList<>();
+    private final List<VideoDataViewer> listOfVideoDataViewers = new ArrayList<>();
+    private final List<PSMDataViewer> listOfPSMDataViewers = new ArrayList<>();
     private PSMDataViewer psmDataViewerInstance;
     private PmdiDataViewer pmdiDataViewerInstance;
-    private SlideScaler slideScaler = new SlideScaler();
+    private final SlideScaler slideScaler = new SlideScaler();
     private double currentScalingFactor = 1;
-    private List<PmdiDataViewer> listOfPmdiDataViewers = new ArrayList<>();
-
-
-    public Controller() {
-
-    }
-
+    private final List<PmdiDataViewer> listOfPmdiDataViewers = new ArrayList<>();
     private static final String VIDEO_SELECTOR_LABEL = "Video";
     private static final String PSM_SELECTOR_LABEL = "PSM";
     private static final String ANNOTATION_SELECTOR_LABEL = "Annotation";
     private static final String PMDI_SELECTOR_LABEL = "PMDI";
 
-
     @FXML
     public void initialize() {
+        setupZoomActions();
+        setupInstanceSelection();
+    }
 
-        zoomInOutHandler();
+    private void setupInstanceSelection() {
+
         dataChoiceBox.setItems(FXCollections.observableArrayList(
                 VIDEO_SELECTOR_LABEL, PSM_SELECTOR_LABEL, ANNOTATION_SELECTOR_LABEL, PMDI_SELECTOR_LABEL)
         );
-
         dataChoiceBox.getSelectionModel().selectFirst();
 
         fileLoadButton.setOnAction(actionEvent -> {
             FileChooser fileChooser = new FileChooser();
             setFileExtension(dataChoiceBox, fileChooser);
-
             File file = fileChooser.showOpenDialog(((Node) actionEvent.getTarget()).getScene().getWindow());
-            if (file == null) {
-                return;
-            }
 
-            String dataSelectionValue = dataChoiceBox.getValue();
-            if (dataSelectionValue.equalsIgnoreCase(VIDEO_SELECTOR_LABEL)) {
+            if (file != null) {
+                String dataSelectionValue = dataChoiceBox.getValue();
+                if (dataSelectionValue.equalsIgnoreCase(VIDEO_SELECTOR_LABEL)) {
 
-                loadVideoInstance(file);
+                    loadVideoInstance(file);
 
-            } else if (dataSelectionValue.equalsIgnoreCase(PSM_SELECTOR_LABEL)) {
+                } else if (dataSelectionValue.equalsIgnoreCase(PSM_SELECTOR_LABEL)) {
 
-                loadPSMInstance(file);
+                    loadPSMInstance(file);
 
-            } else if (dataSelectionValue.equalsIgnoreCase(ANNOTATION_SELECTOR_LABEL)) {
+                } else if (dataSelectionValue.equalsIgnoreCase(ANNOTATION_SELECTOR_LABEL)) {
 
-                createAnnotationInstance(file);
+                    createAnnotationInstance(file);
 
 
-            } else if (dataSelectionValue.equalsIgnoreCase(PMDI_SELECTOR_LABEL)) {
-                loadPMDIInstance(file);
+                } else if (dataSelectionValue.equalsIgnoreCase(PMDI_SELECTOR_LABEL)) {
+                    loadPMDIInstance(file);
+                }
             }
         });
-
-
     }
 
 
@@ -108,23 +101,28 @@ public class Controller {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        Scene scene = new Scene(root);
-        scene.getStylesheets().add("com/carleton/cubic/nicu_data_explorer/stylesheets/stylesheet.css");
+        if (root !=null){
+            Scene scene = new Scene(root);
+            scene.getStylesheets().add("com/carleton/cubic/nicu_data_explorer/stylesheets/stylesheet.css");
 
-        stage.setScene(scene);
-        DefaultInstancePackage defaultInstancePackage = assignInstanceControls(scene);
-        SubScene subScene = (SubScene) scene.lookup("#subScene");
-        Button increaseSampleSizeButton = (Button) scene.lookup("#increaseSampleSizeButton");
-        Button decreaseSampleSizeButton = (Button) scene.lookup("#decreaseSampleSizeButton");
-        Button autoScaleYAxisButton = (Button) scene.lookup("#autoScaleYAxisButton");
-        Button removeBubblesButton = (Button) scene.lookup("#removeBubblesButton");
-
-        ButtonPackage pmdiButtonPackage = new ButtonPackage(increaseSampleSizeButton, decreaseSampleSizeButton, autoScaleYAxisButton, removeBubblesButton);
+            stage.setScene(scene);
+            DefaultInstancePackage defaultInstancePackage = assignInstanceControls(scene);
+            SubScene subScene = (SubScene) scene.lookup("#subScene");
+            Button increaseSampleSizeButton = (Button) scene.lookup("#increaseSampleSizeButton");
+            Button decreaseSampleSizeButton = (Button) scene.lookup("#decreaseSampleSizeButton");
+            Button autoScaleYAxisButton = (Button) scene.lookup("#autoScaleYAxisButton");
+            Button removeBubblesButton = (Button) scene.lookup("#removeBubblesButton");
 
 
-        pmdiDataViewerInstance = new PmdiDataViewer(subScene, file, stage, defaultInstancePackage, pmdiButtonPackage);
-        listOfPmdiDataViewers.add(pmdiDataViewerInstance);
-        AnnotationUpdateFocusListener(scene, defaultInstancePackage);
+            ButtonPackage pmdiButtonPackage = new ButtonPackage(increaseSampleSizeButton, decreaseSampleSizeButton, autoScaleYAxisButton, removeBubblesButton);
+
+
+            pmdiDataViewerInstance = new PmdiDataViewer(subScene, file, stage, defaultInstancePackage, pmdiButtonPackage);
+            listOfPmdiDataViewers.add(pmdiDataViewerInstance);
+            adjustOtherInstanceRangeSliders(listOfVideoDataViewers, listOfPSMDataViewers, listOfPmdiDataViewers);
+            AnnotationUpdateFocusListener(scene, defaultInstancePackage);
+        }
+
 
 
     }
@@ -140,21 +138,25 @@ public class Controller {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        Scene scene = new Scene(root);
-        scene.getStylesheets().add("com/carleton/cubic/nicu_data_explorer/stylesheets/stylesheet.css");
+        if (root !=null) {
 
-        stage.setScene(scene);
 
-        MediaView mediaViewInstance = (MediaView) scene.lookup("#mediaView");
-        DefaultInstancePackage defaultInstancePackage = assignInstanceControls(scene);
-        stage.show();
+            Scene scene = new Scene(root);
+            scene.getStylesheets().add("com/carleton/cubic/nicu_data_explorer/stylesheets/stylesheet.css");
 
-        videoDataViewerInstance = new VideoDataViewer(file, mediaViewInstance, defaultInstancePackage, scene);
-        videoDataViewerInstance.openWithControls(mediaViewInstance, listOfVideoDataViewers, listOfPSMDataViewers);
-        listOfVideoDataViewers.add(videoDataViewerInstance);
+            stage.setScene(scene);
 
-        AnnotationUpdateFocusListener(scene, defaultInstancePackage);
+            MediaView mediaViewInstance = (MediaView) scene.lookup("#mediaView");
+            DefaultInstancePackage defaultInstancePackage = assignInstanceControls(scene);
+            stage.show();
 
+            videoDataViewerInstance = new VideoDataViewer(file, defaultInstancePackage, scene);
+            videoDataViewerInstance.openWithControls(mediaViewInstance, listOfVideoDataViewers, listOfPSMDataViewers);
+            listOfVideoDataViewers.add(videoDataViewerInstance);
+            adjustOtherInstanceRangeSliders(listOfVideoDataViewers, listOfPSMDataViewers, listOfPmdiDataViewers);
+
+            AnnotationUpdateFocusListener(scene, defaultInstancePackage);
+        }
     }
 
 
@@ -168,21 +170,26 @@ public class Controller {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        Scene scene = new Scene(root);
-        scene.getStylesheets().add("com/carleton/cubic/nicu_data_explorer/stylesheets/stylesheet.css");
-
-        stage.setScene(scene);
-
-        Canvas canvasInstance = (Canvas) scene.lookup("#canvas");
-        DefaultInstancePackage defaultInstancePackage = assignInstanceControls(scene);
-        stage.show();
+        if (root !=null) {
 
 
-        psmDataViewerInstance = new PSMDataViewer(file, defaultInstancePackage);
-        psmDataViewerInstance.openWithControls(canvasInstance, scene, listOfVideoDataViewers, listOfPSMDataViewers);
-        listOfPSMDataViewers.add(psmDataViewerInstance);
+            Scene scene = new Scene(root);
+            scene.getStylesheets().add("com/carleton/cubic/nicu_data_explorer/stylesheets/stylesheet.css");
 
-        AnnotationUpdateFocusListener(scene, defaultInstancePackage);
+            stage.setScene(scene);
+
+            Canvas canvasInstance = (Canvas) scene.lookup("#canvas");
+            DefaultInstancePackage defaultInstancePackage = assignInstanceControls(scene);
+            stage.show();
+
+
+            psmDataViewerInstance = new PSMDataViewer(file, defaultInstancePackage);
+            psmDataViewerInstance.openWithControls(canvasInstance);
+            listOfPSMDataViewers.add(psmDataViewerInstance);
+            adjustOtherInstanceRangeSliders(listOfVideoDataViewers, listOfPSMDataViewers, listOfPmdiDataViewers);
+
+            AnnotationUpdateFocusListener(scene, defaultInstancePackage);
+        }
     }
 
     private void createAnnotationInstance(File file) {
@@ -260,9 +267,40 @@ public class Controller {
 
     }
 
+    private void adjustOtherInstanceRangeSliders(List<VideoDataViewer> listOfVideoDataViewers, List<PSMDataViewer> listOfPSMDataViewers, List<PmdiDataViewer> listOfPmdiDataViewers) {
 
-    public void zoomInOutHandler() {
+        List<IntegratedDataViewerInstance> compiledList = new ArrayList<>();
+        compiledList.addAll(listOfVideoDataViewers);
+        compiledList.addAll(listOfPSMDataViewers);
+        compiledList.addAll(listOfPmdiDataViewers);
 
+        for (IntegratedDataViewerInstance individualInstance : compiledList) {
+            RangeSlider currentRangeSlider = individualInstance.getCustomRangeSlider().getRangeSlider();
+            currentRangeSlider.lowValueProperty().addListener((ov, old_val, new_val) -> {
+                if (currentRangeSlider.isFocused()) {
+                    for (IntegratedDataViewerInstance otherInstance : compiledList) {
+                        CustomRangeSlider otherCustomRangeSlider = otherInstance.getCustomRangeSlider();
+                        RangeSlider otherRangeSlider = otherCustomRangeSlider.getRangeSlider();
+                        otherRangeSlider.setLowValue((Double) new_val);
+                    }
+                }
+
+            });
+            currentRangeSlider.highValueProperty().addListener((ov, old_val, new_val) -> {
+                if (currentRangeSlider.isFocused()) {
+
+                    for (IntegratedDataViewerInstance otherInstance : compiledList) {
+                        CustomRangeSlider otherCustomRangeSlider = otherInstance.getCustomRangeSlider();
+                        RangeSlider otherRangeSlider = otherCustomRangeSlider.getRangeSlider();
+                        otherRangeSlider.setHighValue((Double) new_val);
+                    }
+                }
+
+            });
+
+        }
+    }
+    private void setupZoomActions() {
 
         zoomInButton.setOnAction(event -> {
 

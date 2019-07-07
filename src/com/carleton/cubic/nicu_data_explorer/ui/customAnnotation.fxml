@@ -11,7 +11,7 @@
 <VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="250.0"
       prefWidth="500.0" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1">
    <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0">
-      <Label alignment="CENTER" text="Edit Annotation">
+      <Label alignment="CENTER" text="Add Annotation">
          <font>
             <Font size="18.0"/>
          </font>
@@ -49,5 +49,4 @@
          <Button fx:id="saveNewAnnotationButton" mnemonicParsing="false" text="Save"/>
       </HBox>
    </VBox>
-
 </VBox>
