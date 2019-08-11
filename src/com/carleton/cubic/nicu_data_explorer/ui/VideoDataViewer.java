@@ -215,7 +215,6 @@ public class VideoDataViewer extends IntegratedDataViewerInstance {
 
         timeSlider.setLabelFormatter(labelFormatterForSlider);
         rangeSlider.setLabelFormatter(labelFormatterForSlider);
-        System.out.println(timeSlider.getStyle());
         StackPane trackPane = (StackPane) timeSlider.lookup(".track");
         rangeSlider.lowValueProperty().addListener((ov, old_val, new_val) -> {
             int percent1 = (int)((new_val.doubleValue()/rangeSlider.getMax())*100);

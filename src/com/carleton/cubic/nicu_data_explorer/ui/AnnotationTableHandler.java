@@ -4,6 +4,7 @@ package com.carleton.cubic.nicu_data_explorer.ui;
 import com.carleton.cubic.nicu_data_explorer.util.Annotation;
 import com.carleton.cubic.nicu_data_explorer.util.Session;
 import com.sun.javafx.scene.control.skin.TableColumnHeader;
+import com.sun.javafx.scene.control.skin.TableHeaderRow;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
@@ -14,6 +15,7 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
+import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -79,9 +81,8 @@ class AnnotationTableHandler {
         SimpleDateFormat format = new SimpleDateFormat(SIMPLE_DATE_FORMAT);
         this.jsonDataViewer = jsonDataViewer;
         for (int i = 0; i < annotationTable.getItems().size(); i++) {
+
             Annotation annotation = annotationTable.getItems().get(i);
-
-
             String formattedStartDate = formatStartDate(annotation, format);
             annotation.setDisplayStartTime(formattedStartDate);
 
@@ -423,7 +424,6 @@ class AnnotationTableHandler {
     }
 
     private String formatStartDate(Annotation annotation, SimpleDateFormat format) {
-
         Date startDate = new Date(Long.parseLong(annotation.getStart_time()));
         return format.format(startDate);
 
@@ -566,15 +566,19 @@ class AnnotationTableHandler {
     }
 
     private boolean checkIfAnnotationWithinBounds(Annotation selectedAnnotation, CustomRangeSlider customRangeSlider) {
+        if(selectedAnnotation!=null) {
+            Date annotationStartDate = new Date(Long.parseLong(selectedAnnotation.getStart_time()));
+            Date annotationEndDate = new Date(Long.parseLong(selectedAnnotation.getEnd_time()));
+            Long annotationStartTime = annotationStartDate.getTime();
+            Long annotationEndTime = annotationEndDate.getTime();
+            Long absoluteStartTime = customRangeSlider.getAbsoluteStartDate().getTime();
+            Long absoluteEndTime = customRangeSlider.getAbsoluteEndDate().getTime();
+            return (annotationStartTime >= absoluteStartTime) && (annotationEndTime <= absoluteEndTime);
+        }
+        else{
+            return false;
 
-        Date annotationStartDate = new Date(Long.parseLong(selectedAnnotation.getStart_time()));
-        Date annotationEndDate = new Date(Long.parseLong(selectedAnnotation.getEnd_time()));
-        Long annotationStartTime = annotationStartDate.getTime();
-        Long annotationEndTime = annotationEndDate.getTime();
-        Long absoluteStartTime = customRangeSlider.getAbsoluteStartDate().getTime();
-        Long absoluteEndTime = customRangeSlider.getAbsoluteEndDate().getTime();
-
-        return (annotationStartTime >= absoluteStartTime) && (annotationEndTime <= absoluteEndTime);
+        }
     }
 
 

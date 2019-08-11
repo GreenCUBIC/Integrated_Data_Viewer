@@ -11,8 +11,8 @@
 
 <VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="650.0" prefWidth="650.0" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1">
     <TitledPane animated="false" prefHeight="450.0" text="Annotation Log">
-        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="536.0" prefWidth="598.0">
-             <TableView fx:id="annotationTable" editable="true" prefHeight="415.0" prefWidth="650.0" tableMenuButtonVisible="true">
+        <AnchorPane>
+             <TableView fx:id="annotationTable" editable="true" prefWidth="650.0" tableMenuButtonVisible="true">
                  <columns>
                      <TableColumn fx:id="category" prefWidth="110.0" text="Category" />
                      <TableColumn fx:id="name" prefWidth="110.0" text="Name" />
@@ -25,40 +25,40 @@
              </TableView>
         </AnchorPane>
     </TitledPane>
-    <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
+    <HBox alignment="CENTER">
         <VBox.margin>
-            <Insets bottom="3.0"/>
+            <Insets bottom="3.0" />
         </VBox.margin>
         <Button fx:id="addAnnotationButton" mnemonicParsing="false" text="Add">
           <HBox.margin>
-              <Insets left="20.0"/>
+              <Insets left="20.0" />
           </HBox.margin>
         </Button>
         <Button fx:id="editAnnotationButton" layoutX="30.0" layoutY="10.0" mnemonicParsing="false" text="Edit">
           <HBox.margin>
-              <Insets left="20.0"/>
+              <Insets left="20.0" />
           </HBox.margin>
         </Button>
         <Button fx:id="deleteAnnotationButton" mnemonicParsing="false" text="Delete">
           <HBox.margin>
-              <Insets left="20.0"/>
+              <Insets left="20.0" />
           </HBox.margin>
         </Button>
     </HBox>
-    <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
+    <HBox alignment="CENTER">
         <Button fx:id="playAllButton" mnemonicParsing="false" text="Play All">
             <HBox.margin>
-                <Insets left="40.0"/>
+                <Insets left="40.0" />
             </HBox.margin>
         </Button>
         <Button fx:id="saveUpdatesButton" mnemonicParsing="false" text="Save Updates">
         <HBox.margin>
-            <Insets left="20.0"/>
+            <Insets left="20.0" />
         </HBox.margin>
         </Button>
         <Button fx:id="saveSessionButton" mnemonicParsing="false" text="Save File">
         <HBox.margin>
-            <Insets left="20.0"/>
+            <Insets left="20.0" />
         </HBox.margin>
         </Button>
     </HBox>

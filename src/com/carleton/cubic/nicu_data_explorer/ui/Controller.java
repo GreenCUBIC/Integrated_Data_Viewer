@@ -20,7 +20,9 @@ import org.controlsfx.control.RangeSlider;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 
 public class Controller {
@@ -50,9 +52,15 @@ public class Controller {
     private static final String PSM_SELECTOR_LABEL = "PSM";
     private static final String ANNOTATION_SELECTOR_LABEL = "Annotation";
     private static final String PMDI_SELECTOR_LABEL = "PMDI";
+    private static final String TIME_ZONE = "PMDI";
+
 
     @FXML
     public void initialize() {
+        TimeZone zone = TimeZone.getDefault();
+        Date date = new Date();
+        TimeZone tz = TimeZone.getDefault();
+        String name = tz.getDisplayName(tz.inDaylightTime(date), TimeZone.LONG);
         setupZoomActions();
         setupInstanceSelection();
     }
