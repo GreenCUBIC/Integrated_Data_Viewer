@@ -6,9 +6,11 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Slider?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.media.MediaView?>
 <?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
 <?import org.controlsfx.control.RangeSlider?>
 
 <VBox fx:id="vBox" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="650.0" prefWidth="650.0" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1">
@@ -20,104 +22,110 @@
     </VBox>
     <VBox alignment="TOP_CENTER" prefHeight="200.0" prefWidth="650.0">
         <VBox alignment="TOP_CENTER" prefHeight="86.0" prefWidth="650.0">
-            <Slider fx:id="mainSlider" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
-                    minWidth="-Infinity" prefHeight="14.0" prefWidth="600.0">
-                <padding>
-                    <Insets top="3.0"/>
-                </padding>
-          </Slider>
-            <RangeSlider fx:id="rangeSlider" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity"
-                         minWidth="-Infinity" prefHeight="14.0" prefWidth="600.0">
-                <padding>
-                    <Insets top="30.0"/>
-                </padding>
+         <Pane>
+            <children>
+                  <Slider fx:id="mainSlider" layoutX="3.0" layoutY="1.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="14.0" prefWidth="600.0">
+                      <padding>
+                          <Insets top="3.0" />
+                      </padding>
+                </Slider>
+               <Text fx:id="mainSliderText" fill="#fffdfd" layoutX="294.0" layoutY="15.0" strokeType="OUTSIDE" strokeWidth="0.0">
+                  <font>
+                     <Font size="10.0" />
+                  </font>
+               </Text>
+            </children>
+            <VBox.margin>
+               <Insets bottom="30.0" left="20.0" />
+            </VBox.margin>
+         </Pane>
+            <RangeSlider fx:id="rangeSlider" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="14.0" prefWidth="600.0">
                 <VBox.margin>
-                    <Insets top="18.0"/>
+                    <Insets />
                 </VBox.margin>
             </RangeSlider>
         </VBox>
         <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0">
             <padding>
-                <Insets top="20.0"/>
+                <Insets top="20.0" />
             </padding>
             <Button fx:id="playButton" mnemonicParsing="false" prefHeight="39.0" prefWidth="128.0" text="Play">
                 <HBox.margin>
-                    <Insets left="5.0"/>
+                    <Insets left="5.0" />
                 </HBox.margin>
             </Button>
             <Button fx:id="loopButton" mnemonicParsing="false" prefHeight="39.0" prefWidth="179.0" text="Loop">
                 <HBox.margin>
-                    <Insets left="8.0"/>
+                    <Insets left="8.0" />
                 </HBox.margin>
            </Button>
             <VBox prefHeight="58.0" prefWidth="150.0">
                 <HBox.margin>
-                    <Insets top="4.0"/>
+                    <Insets top="4.0" />
                 </HBox.margin>
                 <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
                     <Label prefHeight="15.0" prefWidth="58.0" text="low Val: ">
                         <font>
-                            <Font size="10.0"/>
+                            <Font size="10.0" />
                         </font>
                         <HBox.margin>
-                            <Insets left="5.0"/>
+                            <Insets left="5.0" />
                         </HBox.margin>
                     </Label>
                     <Label fx:id="lowValText" prefHeight="21.0" prefWidth="93.0" text="Waiting">
                         <HBox.margin>
-                            <Insets left="5.0"/>
+                            <Insets left="5.0" />
                         </HBox.margin>
                         <font>
-                            <Font size="12.0"/>
+                            <Font size="12.0" />
                         </font>
                     </Label>
                 </HBox>
                 <HBox alignment="CENTER" prefHeight="100.0" prefWidth="116.0">
                     <Label prefHeight="15.0" prefWidth="65.0" text="high Val: ">
                         <HBox.margin>
-                            <Insets left="5.0"/>
+                            <Insets left="5.0" />
                         </HBox.margin>
                         <font>
-                            <Font size="10.0"/>
+                            <Font size="10.0" />
                         </font>
                     </Label>
                     <Label fx:id="highValText" prefHeight="21.0" prefWidth="105.0" text="Waiting">
                         <HBox.margin>
-                            <Insets left="5.0"/>
+                            <Insets left="5.0" />
                         </HBox.margin>
                         <font>
-                            <Font size="12.0"/>
+                            <Font size="12.0" />
                         </font>
                     </Label>
                 </HBox>
             </VBox>
             <VBox prefHeight="200.0" prefWidth="100.0">
-                <HBox alignment="CENTER" minHeight="-Infinity" minWidth="-Infinity" prefHeight="62.0"
-                      prefWidth="122.0">
+                <HBox alignment="CENTER" minHeight="-Infinity" minWidth="-Infinity" prefHeight="62.0" prefWidth="122.0">
                     <Label prefHeight="19.0" prefWidth="48.0" text="Timeline: ">
                         <HBox.margin>
-                            <Insets/>
+                            <Insets />
                         </HBox.margin>
                         <font>
-                            <Font size="10.0"/>
+                            <Font size="10.0" />
                         </font>
                     </Label>
                     <Label fx:id="timeLineText" prefHeight="21.0" prefWidth="74.0" text="Waiting">
                         <font>
-                            <Font size="12.0"/>
+                            <Font size="12.0" />
                         </font>
                     </Label>
                 </HBox>
             </VBox>
             <VBox alignment="CENTER" minHeight="-Infinity" minWidth="-Infinity" prefHeight="80.0" prefWidth="101.0">
                 <HBox.margin>
-                    <Insets/>
+                    <Insets />
                 </HBox.margin>
                 <opaqueInsets>
-                    <Insets/>
+                    <Insets />
                 </opaqueInsets>
-                <Label alignment="CENTER" prefHeight="21.0" prefWidth="121.0" text="Playback"/>
-                <ChoiceBox fx:id="playbackChoiceBox" prefHeight="31.0" prefWidth="81.0"/>
+                <Label alignment="CENTER" prefHeight="21.0" prefWidth="121.0" text="Playback" />
+                <ChoiceBox fx:id="playbackChoiceBox" prefHeight="31.0" prefWidth="81.0" />
             </VBox>
         </HBox>
     </VBox>

@@ -3,9 +3,11 @@ package com.carleton.cubic.nicu_data_explorer.ui;
 import com.carleton.cubic.nicu_data_explorer.util.DefaultInstancePackage;
 import com.carleton.cubic.nicu_data_explorer.util.TimeUtils;
 import javafx.application.Platform;
+import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.layout.StackPane;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaView;
@@ -104,7 +106,7 @@ public class VideoDataViewer extends IntegratedDataViewerInstance {
         }
     }
 
-    void openWithControls(MediaView mediaView, List listOfVideoDataViewers, List listOfPSMDataViewers) {
+    void openWithControls(MediaView mediaView) {
 
 
         RangeSlider rangeSlider = customRangeSlider.getRangeSlider();
@@ -192,6 +194,7 @@ public class VideoDataViewer extends IntegratedDataViewerInstance {
         timeSlider.setShowTickMarks(true);
         timeSlider.setShowTickLabels(true);
 
+
         rangeSlider.setMajorTickUnit(10 * 600); // Every ten minute
         rangeSlider.setShowTickMarks(true);
 
@@ -212,13 +215,25 @@ public class VideoDataViewer extends IntegratedDataViewerInstance {
 
         timeSlider.setLabelFormatter(labelFormatterForSlider);
         rangeSlider.setLabelFormatter(labelFormatterForSlider);
-
-        rangeSlider.lowValueProperty().addListener((ov, old_val, new_val) -> lowValText.setText(TimeUtils.getFormattedTimeWithMillis(TimeUtils.addOffsetToTime(absoluteRecordingTime, rangeSlider.getLowValue() * 100))));
-        rangeSlider.highValueProperty().addListener((ov, old_val, new_val) -> highValText.setText(TimeUtils.getFormattedTimeWithMillis(TimeUtils.addOffsetToTime(absoluteRecordingTime, rangeSlider.getHighValue() * 100))));
-        timeSlider.valueProperty().addListener((ov, old_val, new_val) -> playTime.setText(TimeUtils.getFormattedTimeWithMillis(TimeUtils.addOffsetToTime(absoluteRecordingTime, timeSlider.getValue() * 100))));
+        System.out.println(timeSlider.getStyle());
+        StackPane trackPane = (StackPane) timeSlider.lookup(".track");
+        rangeSlider.lowValueProperty().addListener((ov, old_val, new_val) -> {
+            int percent1 = (int)((new_val.doubleValue()/rangeSlider.getMax())*100);
+            int percent2 = (int)((rangeSlider.getHighValue()/rangeSlider.getMax())*100);
+            trackPane.setStyle("-fx-background-color: linear-gradient(to right, white 0%, white "+percent1+"%, #90C7E0 "+percent1+"%, #90C7E0 "+percent2+"%,white "+percent2+"%, white 100%);");
+            lowValText.setText(TimeUtils.getFormattedTimeWithMillis(TimeUtils.addOffsetToTime(absoluteRecordingTime, rangeSlider.getLowValue() * 100)));
+        });
+        rangeSlider.highValueProperty().addListener((ov, old_val, new_val) -> {
+            int percent1 = (int)((rangeSlider.getLowValue()/rangeSlider.getMax())*100);
+            int percent2 = (int)((new_val.doubleValue()/rangeSlider.getMax())*100);
+            trackPane.setStyle("-fx-background-color: linear-gradient(to right, white 0%, white "+percent1+"%, #90C7E0 "+percent1+"%, #90C7E0 "+percent2+"%,white "+percent2+"%, white 100%);");
+            highValText.setText(TimeUtils.getFormattedTimeWithMillis(TimeUtils.addOffsetToTime(absoluteRecordingTime, rangeSlider.getHighValue() * 100)));
+        });
+        timeSlider.valueProperty().addListener((ov, old_val, new_val) -> {
+            playTime.setText(TimeUtils.getFormattedTimeWithMillis(TimeUtils.addOffsetToTime(absoluteRecordingTime, timeSlider.getValue() * 100)));
+        });
 
     }
-
 
 
     private void setCustomRangeSliderStartAndEndDates() {

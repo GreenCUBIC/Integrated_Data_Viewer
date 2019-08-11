@@ -12,6 +12,7 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.media.MediaView;
+import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.controlsfx.control.RangeSlider;
@@ -149,12 +150,30 @@ public class Controller {
             stage.show();
 
             videoDataViewerInstance = new VideoDataViewer(file, defaultInstancePackage, scene);
-            videoDataViewerInstance.openWithControls(mediaViewInstance, listOfVideoDataViewers, listOfPSMDataViewers);
+            videoDataViewerInstance.openWithControls(mediaViewInstance);
+            setTextLabelsToThumbs(defaultInstancePackage);
             listOfVideoDataViewers.add(videoDataViewerInstance);
             adjustOtherInstanceRangeSliders(listOfVideoDataViewers, listOfPSMDataViewers, listOfPmdiDataViewers);
-
             AnnotationUpdateFocusListener(scene, defaultInstancePackage);
         }
+    }
+
+    private void setTextLabelsToThumbs(DefaultInstancePackage defaultInstancePackage) {
+
+        Slider mainSlider = defaultInstancePackage.getTimeSlider();
+        Text text = defaultInstancePackage.getText();
+        double initialMin = mainSlider.getMin();
+
+        text.setLayoutX(mainSlider.getLayoutX() + (mainSlider.getValue() - initialMin)
+                / (mainSlider.getMax() - initialMin) * mainSlider.getWidth());
+
+        mainSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
+            final double timeSliderMin = mainSlider.getMin();
+            text.textProperty().bind(defaultInstancePackage.getPlayTime().textProperty());
+            text.setLayoutX(mainSlider.getLayoutX() + (mainSlider.getValue() - timeSliderMin)
+                    / (mainSlider.getMax() - timeSliderMin) * mainSlider.getWidth());
+        });
+
     }
 
 
@@ -360,7 +379,8 @@ public class Controller {
         Label highValText = (Label) scene.lookup("#highValText");
         Label timeLineText = (Label) scene.lookup("#timeLineText");
         ChoiceBox playbackChoiceBoxInstance = (ChoiceBox) scene.lookup("#playbackChoiceBox");
-        return new DefaultInstancePackage(playButtonInstance, loopButtonInstance, sliderInstance, customRangeSliderInstance, playbackChoiceBoxInstance, lowValText, highValText, timeLineText);
+        Text text = (Text) scene.lookup("#mainSliderText");
+        return new DefaultInstancePackage(playButtonInstance, loopButtonInstance, sliderInstance, customRangeSliderInstance, playbackChoiceBoxInstance, lowValText, highValText, timeLineText, text);
     }
 
 
