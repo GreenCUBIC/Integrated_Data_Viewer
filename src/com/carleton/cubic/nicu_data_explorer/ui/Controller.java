@@ -12,6 +12,7 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.media.MediaView;
+import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.controlsfx.control.RangeSlider;
@@ -19,7 +20,9 @@ import org.controlsfx.control.RangeSlider;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 
 public class Controller {
@@ -49,9 +52,15 @@ public class Controller {
     private static final String PSM_SELECTOR_LABEL = "PSM";
     private static final String ANNOTATION_SELECTOR_LABEL = "Annotation";
     private static final String PMDI_SELECTOR_LABEL = "PMDI";
+    private static final String TIME_ZONE = "PMDI";
 
     @FXML
     public void initialize() {
+        TimeZone zone = TimeZone.getDefault();
+        Date date = new Date();
+        TimeZone tz = TimeZone.getDefault();
+        String name = tz.getDisplayName(tz.inDaylightTime(date), TimeZone.LONG);
+
         setupZoomActions();
         setupInstanceSelection();
     }
@@ -151,9 +160,29 @@ public class Controller {
             stage.show();
 
             videoDataViewerInstance = new VideoDataViewer(file, defaultInstancePackage, scene);
-            videoDataViewerInstance.openWithControls(mediaViewInstance, listOfVideoDataViewers, listOfPSMDataViewers);
+            videoDataViewerInstance.openWithControls(mediaViewInstance);
+            setTextLabelsToThumbs(defaultInstancePackage);
             listOfVideoDataViewers.add(videoDataViewerInstance);
             adjustOtherInstanceRangeSliders(listOfVideoDataViewers, listOfPSMDataViewers, listOfPmdiDataViewers);
+            AnnotationUpdateFocusListener(scene, defaultInstancePackage);
+        }
+    }
+
+    private void setTextLabelsToThumbs(DefaultInstancePackage defaultInstancePackage) {
+
+        Slider mainSlider = defaultInstancePackage.getTimeSlider();
+        Text text = defaultInstancePackage.getText();
+        double initialMin = mainSlider.getMin();
+
+        text.setLayoutX(mainSlider.getLayoutX() + (mainSlider.getValue() - initialMin)
+                / (mainSlider.getMax() - initialMin) * mainSlider.getWidth());
+
+        mainSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
+            final double timeSliderMin = mainSlider.getMin();
+            text.textProperty().bind(defaultInstancePackage.getPlayTime().textProperty());
+            text.setLayoutX(mainSlider.getLayoutX() + (mainSlider.getValue() - timeSliderMin)
+                    / (mainSlider.getMax() - timeSliderMin) * mainSlider.getWidth());
+        });
 
             AnnotationUpdateFocusListener(scene, defaultInstancePackage);
         }
@@ -183,10 +212,13 @@ public class Controller {
             stage.show();
 
 
+            stage.setScene(scene);
+
             psmDataViewerInstance = new PSMDataViewer(file, defaultInstancePackage);
             psmDataViewerInstance.openWithControls(canvasInstance);
             listOfPSMDataViewers.add(psmDataViewerInstance);
             adjustOtherInstanceRangeSliders(listOfVideoDataViewers, listOfPSMDataViewers, listOfPmdiDataViewers);
+
 
             AnnotationUpdateFocusListener(scene, defaultInstancePackage);
         }
@@ -298,6 +330,7 @@ public class Controller {
 
             });
 
+
         }
     }
     private void setupZoomActions() {
@@ -363,7 +396,8 @@ public class Controller {
         Label highValText = (Label) scene.lookup("#highValText");
         Label timeLineText = (Label) scene.lookup("#timeLineText");
         ChoiceBox playbackChoiceBoxInstance = (ChoiceBox) scene.lookup("#playbackChoiceBox");
-        return new DefaultInstancePackage(playButtonInstance, loopButtonInstance, sliderInstance, customRangeSliderInstance, playbackChoiceBoxInstance, lowValText, highValText, timeLineText);
+        Text text = (Text) scene.lookup("#mainSliderText");
+        return new DefaultInstancePackage(playButtonInstance, loopButtonInstance, sliderInstance, customRangeSliderInstance, playbackChoiceBoxInstance, lowValText, highValText, timeLineText, text);
     }
 
 

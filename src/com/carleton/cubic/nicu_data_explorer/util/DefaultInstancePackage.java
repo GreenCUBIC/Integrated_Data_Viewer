@@ -5,6 +5,8 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
+import javafx.scene.text.Text;
+
 
 public class DefaultInstancePackage {
 
@@ -17,9 +19,11 @@ public class DefaultInstancePackage {
     private final Label lowValText;
     private final Label highValText;
     private final Label playTime;
+    private final Text text;
 
 
-    public DefaultInstancePackage(Button playButton, Button loopButton, Slider timeSlider,CustomRangeSlider customRangeSlider, ChoiceBox<String> playbackChoiceBox, Label lowValText, Label highValText, Label playTime) {
+    public DefaultInstancePackage(Button playButton, Button loopButton, Slider timeSlider,CustomRangeSlider customRangeSlider, ChoiceBox<String> playbackChoiceBox, Label lowValText, Label highValText, Label playTime, Text text) {
+
         this.playButton = playButton;
         this.loopButton = loopButton;
         this.timeSlider = timeSlider;
@@ -28,6 +32,7 @@ public class DefaultInstancePackage {
         this.lowValText = lowValText;
         this.highValText = highValText;
         this.playTime = playTime;
+        this.text = text;
     }
 
     public Button getPlayButton() {
@@ -60,6 +65,9 @@ public class DefaultInstancePackage {
 
     public Label getPlayTime() {
         return playTime;
+    }
+    public Text getText() {
+        return text;
     }
 
 }
