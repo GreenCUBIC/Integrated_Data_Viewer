@@ -122,6 +122,7 @@ public class Controller {
             Button autoScaleYAxisButton = (Button) scene.lookup("#autoScaleYAxisButton");
             Button removeBubblesButton = (Button) scene.lookup("#removeBubblesButton");
 
+
             ButtonPackage pmdiButtonPackage = new ButtonPackage(increaseSampleSizeButton, decreaseSampleSizeButton, autoScaleYAxisButton, removeBubblesButton);
 
 
@@ -147,6 +148,7 @@ public class Controller {
             e.printStackTrace();
         }
         if (root !=null) {
+
 
             Scene scene = new Scene(root);
             scene.getStylesheets().add("com/carleton/cubic/nicu_data_explorer/stylesheets/stylesheet.css");
@@ -196,6 +198,7 @@ public class Controller {
             e.printStackTrace();
         }
         if (root !=null) {
+
 
             Scene scene = new Scene(root);
             scene.getStylesheets().add("com/carleton/cubic/nicu_data_explorer/stylesheets/stylesheet.css");

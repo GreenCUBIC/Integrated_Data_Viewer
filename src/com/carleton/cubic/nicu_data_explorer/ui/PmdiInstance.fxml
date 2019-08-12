@@ -60,6 +60,7 @@
                     <Label prefHeight="15.0" prefWidth="58.0" text="low Val: ">
                         <font>
                             <Font size="10.0"/>
+
                         </font>
                         <HBox.margin>
                             <Insets left="5.0"/>
@@ -102,6 +103,7 @@
                         </HBox.margin>
                         <font>
                             <Font size="10.0"/>
+
                         </font>
                     </Label>
                     <Label fx:id="timeLineText" prefHeight="21.0" prefWidth="74.0" text="Waiting">

@@ -37,6 +37,7 @@ class PmdiDataViewer extends IntegratedDataViewerInstance {
 
     private final Date absoluteStartDate;
     private final Date absoluteEndDate;
+
     private boolean bubblesActive = true;
 
 

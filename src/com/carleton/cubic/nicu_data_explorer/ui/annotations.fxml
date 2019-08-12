@@ -47,6 +47,7 @@
     </HBox>
     <HBox alignment="CENTER">
         <Button fx:id="playAllButton" mnemonicParsing="false" text="Play All">
+
             <HBox.margin>
                 <Insets left="40.0" />
             </HBox.margin>
