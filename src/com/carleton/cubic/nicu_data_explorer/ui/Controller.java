@@ -54,13 +54,13 @@ public class Controller {
     private static final String PMDI_SELECTOR_LABEL = "PMDI";
     private static final String TIME_ZONE = "PMDI";
 
-
     @FXML
     public void initialize() {
         TimeZone zone = TimeZone.getDefault();
         Date date = new Date();
         TimeZone tz = TimeZone.getDefault();
         String name = tz.getDisplayName(tz.inDaylightTime(date), TimeZone.LONG);
+
         setupZoomActions();
         setupInstanceSelection();
     }
@@ -184,6 +184,8 @@ public class Controller {
                     / (mainSlider.getMax() - timeSliderMin) * mainSlider.getWidth());
         });
 
+            AnnotationUpdateFocusListener(scene, defaultInstancePackage);
+        }
     }
 
 
@@ -210,10 +212,13 @@ public class Controller {
             stage.show();
 
 
+            stage.setScene(scene);
+
             psmDataViewerInstance = new PSMDataViewer(file, defaultInstancePackage);
             psmDataViewerInstance.openWithControls(canvasInstance);
             listOfPSMDataViewers.add(psmDataViewerInstance);
             adjustOtherInstanceRangeSliders(listOfVideoDataViewers, listOfPSMDataViewers, listOfPmdiDataViewers);
+
 
             AnnotationUpdateFocusListener(scene, defaultInstancePackage);
         }
@@ -324,6 +329,7 @@ public class Controller {
                 }
 
             });
+
 
         }
     }

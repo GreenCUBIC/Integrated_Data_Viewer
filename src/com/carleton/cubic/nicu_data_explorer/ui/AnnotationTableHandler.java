@@ -577,6 +577,7 @@ class AnnotationTableHandler {
             return false;
 
         }
+
     }
 
 

@@ -42,6 +42,7 @@
             <RangeSlider fx:id="rangeSlider" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="14.0" prefWidth="600.0">
                 <VBox.margin>
                     <Insets />
+
                 </VBox.margin>
             </RangeSlider>
         </VBox>
@@ -52,16 +53,19 @@
             <Button fx:id="playButton" mnemonicParsing="false" prefHeight="39.0" prefWidth="128.0" text="Play">
                 <HBox.margin>
                     <Insets left="5.0" />
+
                 </HBox.margin>
             </Button>
             <Button fx:id="loopButton" mnemonicParsing="false" prefHeight="39.0" prefWidth="179.0" text="Loop">
                 <HBox.margin>
                     <Insets left="8.0" />
+
                 </HBox.margin>
            </Button>
             <VBox prefHeight="58.0" prefWidth="150.0">
                 <HBox.margin>
                     <Insets top="4.0" />
+
                 </HBox.margin>
                 <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
                     <Label prefHeight="15.0" prefWidth="58.0" text="low Val: ">
@@ -70,6 +74,7 @@
                         </font>
                         <HBox.margin>
                             <Insets left="5.0" />
+
                         </HBox.margin>
                     </Label>
                     <Label fx:id="lowValText" prefHeight="21.0" prefWidth="93.0" text="Waiting">
@@ -78,6 +83,7 @@
                         </HBox.margin>
                         <font>
                             <Font size="12.0" />
+
                         </font>
                     </Label>
                 </HBox>
@@ -88,6 +94,7 @@
                         </HBox.margin>
                         <font>
                             <Font size="10.0" />
+
                         </font>
                     </Label>
                     <Label fx:id="highValText" prefHeight="21.0" prefWidth="105.0" text="Waiting">
@@ -96,6 +103,7 @@
                         </HBox.margin>
                         <font>
                             <Font size="12.0" />
+
                         </font>
                     </Label>
                 </HBox>
@@ -108,11 +116,13 @@
                         </HBox.margin>
                         <font>
                             <Font size="10.0" />
+
                         </font>
                     </Label>
                     <Label fx:id="timeLineText" prefHeight="21.0" prefWidth="74.0" text="Waiting">
                         <font>
                             <Font size="12.0" />
+
                         </font>
                     </Label>
                 </HBox>
@@ -126,6 +136,7 @@
                 </opaqueInsets>
                 <Label alignment="CENTER" prefHeight="21.0" prefWidth="121.0" text="Playback" />
                 <ChoiceBox fx:id="playbackChoiceBox" prefHeight="31.0" prefWidth="81.0" />
+
             </VBox>
         </HBox>
 

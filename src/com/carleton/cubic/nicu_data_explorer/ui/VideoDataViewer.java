@@ -109,6 +109,7 @@ public class VideoDataViewer extends IntegratedDataViewerInstance {
     void openWithControls(MediaView mediaView) {
 
 
+
         RangeSlider rangeSlider = customRangeSlider.getRangeSlider();
         mediaView.setMediaPlayer(mediaPlayer);
         Date absoluteRecordingTime = getAbsoluteRecordingStartTime();
@@ -232,7 +233,9 @@ public class VideoDataViewer extends IntegratedDataViewerInstance {
             playTime.setText(TimeUtils.getFormattedTimeWithMillis(TimeUtils.addOffsetToTime(absoluteRecordingTime, timeSlider.getValue() * 100)));
         });
 
+
     }
+
 
 
     private void setCustomRangeSliderStartAndEndDates() {

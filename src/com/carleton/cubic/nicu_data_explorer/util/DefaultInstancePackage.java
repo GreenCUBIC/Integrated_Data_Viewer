@@ -7,6 +7,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.text.Text;
 
+
 public class DefaultInstancePackage {
 
 
@@ -22,6 +23,7 @@ public class DefaultInstancePackage {
 
 
     public DefaultInstancePackage(Button playButton, Button loopButton, Slider timeSlider,CustomRangeSlider customRangeSlider, ChoiceBox<String> playbackChoiceBox, Label lowValText, Label highValText, Label playTime, Text text) {
+
         this.playButton = playButton;
         this.loopButton = loopButton;
         this.timeSlider = timeSlider;
