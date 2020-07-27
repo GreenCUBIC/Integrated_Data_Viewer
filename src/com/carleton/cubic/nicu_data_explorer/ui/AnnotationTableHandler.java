@@ -83,11 +83,11 @@ class AnnotationTableHandler {
         for (int i = 0; i < annotationTable.getItems().size(); i++) {
 
             Annotation annotation = annotationTable.getItems().get(i);
-            String formattedStartDate = formatStartDate(annotation, format);
-            annotation.setDisplayStartTime(formattedStartDate);
 
-            String formattedEndDate = formatEndDate(annotation, format);
-            annotation.setDisplayEndTime(formattedEndDate);
+            setStartDate(annotation, format);
+            setEndDate(annotation, format);
+
+
         }
 
         for (TableColumn tableColumn : annotationTable.getColumns()) {
@@ -421,17 +421,19 @@ class AnnotationTableHandler {
         annotation.setDisplayStartTime(newDisplayStartTime);
     }
 
-    private String formatStartDate(Annotation annotation, SimpleDateFormat format) {
-        Date startDate = new Date(Long.parseLong(annotation.getStart_time()));
-        return format.format(startDate);
+    private void setStartDate(Annotation annotation, SimpleDateFormat format){
+        if(annotation.getStart_time()!=null){
+            Date startDate = new Date(Long.parseLong(annotation.getStart_time()));
+            annotation.setDisplayStartTime(format.format(startDate));
+        }
 
     }
 
-    private String formatEndDate(Annotation annotation, SimpleDateFormat format) {
-
-        Date endDate = new Date(Long.parseLong(annotation.getEnd_time()));
-        return format.format(endDate);
-
+    private void setEndDate(Annotation annotation, SimpleDateFormat format){
+        if(annotation.getEnd_time()!=null){
+            Date endDate = new Date(Long.parseLong(annotation.getEnd_time()));
+            annotation.setDisplayEndTime(format.format(endDate));
+        }
     }
 
     private void formatAndSetNewDisplayEndTime(SimpleDateFormat format, Date newEndDate, Annotation annotation) {
