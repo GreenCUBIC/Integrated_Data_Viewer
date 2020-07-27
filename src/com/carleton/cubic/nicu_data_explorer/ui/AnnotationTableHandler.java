@@ -4,6 +4,7 @@ package com.carleton.cubic.nicu_data_explorer.ui;
 import com.carleton.cubic.nicu_data_explorer.util.Annotation;
 import com.carleton.cubic.nicu_data_explorer.util.Session;
 import com.sun.javafx.scene.control.skin.TableColumnHeader;
+import com.sun.javafx.scene.control.skin.TableHeaderRow;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
@@ -14,6 +15,7 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
+import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -84,6 +86,7 @@ class AnnotationTableHandler {
 
             setStartDate(annotation, format);
             setEndDate(annotation, format);
+
 
         }
 
@@ -423,6 +426,7 @@ class AnnotationTableHandler {
             Date startDate = new Date(Long.parseLong(annotation.getStart_time()));
             annotation.setDisplayStartTime(format.format(startDate));
         }
+
     }
 
     private void setEndDate(Annotation annotation, SimpleDateFormat format){

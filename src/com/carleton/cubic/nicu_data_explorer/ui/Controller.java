@@ -164,6 +164,7 @@ public class Controller {
             setTextLabelsToThumbs(defaultInstancePackage,scene);
             listOfVideoDataViewers.add(videoDataViewerInstance);
             adjustOtherInstanceRangeSliders(listOfVideoDataViewers, listOfPSMDataViewers, listOfPmdiDataViewers);
+
             AnnotationUpdateFocusListener(scene, defaultInstancePackage);
         }
     }
