@@ -161,14 +161,14 @@ public class Controller {
 
             videoDataViewerInstance = new VideoDataViewer(file, defaultInstancePackage, scene);
             videoDataViewerInstance.openWithControls(mediaViewInstance);
-            setTextLabelsToThumbs(defaultInstancePackage);
+            setTextLabelsToThumbs(defaultInstancePackage,scene);
             listOfVideoDataViewers.add(videoDataViewerInstance);
             adjustOtherInstanceRangeSliders(listOfVideoDataViewers, listOfPSMDataViewers, listOfPmdiDataViewers);
             AnnotationUpdateFocusListener(scene, defaultInstancePackage);
         }
     }
 
-    private void setTextLabelsToThumbs(DefaultInstancePackage defaultInstancePackage) {
+    private void setTextLabelsToThumbs(DefaultInstancePackage defaultInstancePackage, Scene scene) {
 
         Slider mainSlider = defaultInstancePackage.getTimeSlider();
         Text text = defaultInstancePackage.getText();
@@ -186,7 +186,7 @@ public class Controller {
 
             AnnotationUpdateFocusListener(scene, defaultInstancePackage);
         }
-    }
+
 
 
     private void loadPSMInstance(File file) {
